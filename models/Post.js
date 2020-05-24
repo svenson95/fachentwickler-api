@@ -42,4 +42,4 @@ const PostSchema = mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('lf-2', PostSchema);
+module.exports = PostSchema;
