@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const Post = require('../models/Post');
+// const Post = require('../models/Post');
 const LF1 = require('../models/LF-1');
 const LF2 = require('../models/LF-2');
 
 // Get all the posts
-router.get('/', async (req, res) => {
-    try {
-        const posts = await Post.find();
-        res.json(posts);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
+// router.get('/', async (req, res) => {
+//     try {
+//         const posts = await Post.find();
+//         res.json(posts);
+//     } catch (error) {
+//         res.json({ message: error });
+//     }
+// });
 
 router.get('/lf-1', async (req, res) => {
     try {
