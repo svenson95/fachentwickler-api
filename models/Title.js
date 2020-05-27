@@ -6,12 +6,14 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
 });
 
 const Title = connection.model('postsTitles', new mongoose.Schema({
-    subject: { type: String, required: true },
-    topics: { type: Object, default: [
+    subject: { type: String },
+    topics: { type: Array, default: [
         {
-            title: { type: String },
+            type: Object,
+            title: { type: String, required: true },
             links: Array, default: [
                 {
+                    type: Object,
                     title: String,
                     description: String,
                     url: String,
@@ -21,6 +23,7 @@ const Title = connection.model('postsTitles', new mongoose.Schema({
     ]},
     tests: { type: Array, default: [
         {
+            type: Object,
             title: String,
             description: String,
             url: String
