@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const LF1_Post = require('../models/LF1_Post');
 const LF2_Post = require('../models/LF2_Post');
-const Title = require('../models/Title');
+const TitlesSchema = require('../models/Title');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -15,7 +15,7 @@ db.once("open", function() {
 // Get all the posts
 router.get('/allPosts', async (req, res) => {
     try {
-        const posts = await Title.find();
+        const posts = await TitlesSchema.find();
         res.json(posts);
     } catch (error) {
         res.json({ message: error });

@@ -5,27 +5,16 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
     useNewUrlParser: true
 });
 
-const Title = connection.model('postsTitles', new mongoose.Schema({
+const TitlesSchema = connection.model('postsTitles', new mongoose.Schema({
     subject: { type: String },
     topics: { type: Array, default: [
         {
-            title: { type: String, required: true },
-            links: Array, default: [
-                {
-                    title: String,
-                    description: String,
-                    url: String
-                },
-            ]
+            type: Object
         }
     ]},
     tests: { type: Array, default: [
-        {
-            title: String,
-            description: String,
-            url: String
-        },
+        { type: Object },
     ]}
 }));
 
-module.exports = Title;
+module.exports = TitlesSchema;
