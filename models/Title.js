@@ -7,7 +7,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
 
 const Title = connection.model('postsTitles', new mongoose.Schema({
     subject: { type: String, required: true },
-    topics: { type: Array, default: [
+    topics: { type: Object, default: [
         {
             title: { type: String },
             links: Array, default: [
