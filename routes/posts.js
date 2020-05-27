@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function() {
-    console.log("Connection successful!");
+    console.log("Connection successful! 2");
 });
 
 // Get all the posts

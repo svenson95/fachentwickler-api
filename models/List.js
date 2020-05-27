@@ -7,28 +7,34 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
 
 connection.on("error", console.error.bind(console, "connection error:"));
 connection.once("open", function() {
-    console.log("Connection successful!");
+    console.log("Connection successful! 3");
 });
 
 const List = connection.model('list', new mongoose.Schema({
-    subject: { type: String, required: true },
-    topics: { type: Array, default: [
-        {
-            title: {
-                type: String, required: true
-            },
-            links: Array, default: [
-                { title: String, required: true },
-                { description: String, required: true },
-                { url: String, required: true },
-            ]
-        }
-    ]},
-    tests: { type: Array, required: false, default: [
-        { title: String, required: true },
-        { description: String, required: true },
-        { url: String, required: true },
-    ]}
+    url:            { type: String, required: true },
+    topic:          { type: String, required: true},
+    elements:       { type: Array, default: [
+            {
+                type: {
+                    type: String,
+                    required: true
+                },
+                content: {
+                    type: String,
+                    required: true
+                },
+                list: {
+                    type: Array,
+                    required: false,
+                    default: [
+                        {
+                            type: String,
+                            required: true
+                        }
+                    ]
+                },
+            }
+        ]}
 }));
 
 module.exports = List;

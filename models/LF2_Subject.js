@@ -5,7 +5,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SUBJECTS,
     useNewUrlParser: true
 });
 
-const LF2_Subject = connection.model('lf-2', new mongoose.Schema({
+const LF2_Subject = connection.model('lf-2-subjects', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
         {
