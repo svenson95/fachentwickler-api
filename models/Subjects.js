@@ -13,16 +13,12 @@ const Subjects = connection.model('school-subjects', new mongoose.Schema({
                 type: String, required: true
             },
             links: Array, default: [
-                { title: String, required: true },
-                { description: String, required: true },
-                { url: String, required: true },
+                { title: String, description: String, url: String }
             ]
         }
     ]},
     tests: { type: Array, required: false, default: [
-            { title: String, required: true },
-            { description: String, required: true },
-            { url: String, required: true },
+            { title: String, description: String, url: String }
     ]}
 }));
 
