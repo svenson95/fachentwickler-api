@@ -1,22 +1,25 @@
 const express = require('express');
 const router = express.Router();
-// const Post = require('../models/Post');
-const LF1 = require('../models/LF-1');
-const LF2 = require('../models/LF-2');
+const Post = require('../models/Post');
+const mongoose = require('mongoose');
+
+// Database Connection
+mongoose.connect(process.env.DB_CONNECTION_POSTS, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+});
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function() {
+    console.log("Connection successful!");
+});
 
 // Get all the posts
-// router.get('/', async (req, res) => {
-//     try {
-//         const posts = await Post.find();
-//         res.json(posts);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
-
 router.get('/lf-1', async (req, res) => {
     try {
-        const posts = await LF1.find();
+        const lf1_collection = mongoose.model("lf-1", PostSchema);
+        const posts = await Post.find();
         res.json(posts);
     } catch (error) {
         res.json({ message: error });
@@ -25,7 +28,7 @@ router.get('/lf-1', async (req, res) => {
 
 router.get('/lf-2', async (req, res) => {
     try {
-        const posts = await LF2.find();
+        const posts = await Post.find();
         res.json(posts);
     } catch (error) {
         res.json({ message: error });
