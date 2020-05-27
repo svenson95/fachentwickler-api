@@ -12,6 +12,15 @@ db.once("open", function() {
     console.log("Connection successful! 1");
 });
 
+router.get('/posts', async (req, res) => {
+    try {
+        const posts = await PostTitles.find();
+        res.json(posts);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
 router.get('/lf-1', async (req, res) => {
     try {
         const subjects = await LF1Subject.find();
@@ -25,15 +34,6 @@ router.get('/lf-2', async (req, res) => {
     try {
         const subjects = await LF2Subject.find();
         res.json(subjects);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
-
-router.get('/posts', async (req, res) => {
-    try {
-        const posts = await PostTitles.find();
-        res.json(posts);
     } catch (error) {
         res.json({ message: error });
     }
