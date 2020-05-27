@@ -13,7 +13,7 @@ db.once("open", function() {
 });
 
 // Get all the posts
-router.get('/', async (req, res) => {
+router.get('/allPosts', async (req, res) => {
     try {
         const posts = await Title.find();
         res.json(posts);
