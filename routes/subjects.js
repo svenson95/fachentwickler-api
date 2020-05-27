@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const LF1Subject = require('../models/LF1_Subject');
-const LF2Subject = require('../models/LF2_Subject');
-const PostTitles = require('../models/PostTitles');
+const Subjects = require('../models/Subjects');
+// const LF2Subject = require('../models/LF2_Subject');
+// const PostTitles = require('../models/PostTitles');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -12,37 +12,37 @@ db.once("open", function() {
     console.log("Connection successful! 1");
 });
 
-router.get('/posts', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const subjects = await PostTitles.find();
+        const subjects = await Subjects.find();
         res.json(subjects);
     } catch (error) {
         res.json({ message: error });
     }
 });
 
-router.get('/lf-1', async (req, res) => {
-    try {
-        const subjects = await LF1Subject.find();
-        res.json(subjects);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
-
-router.get('/lf-2', async (req, res) => {
-    try {
-        const subjects = await LF2Subject.find();
-        res.json(subjects);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
+// router.get('/lf-1', async (req, res) => {
+//     try {
+//         const subjects = await LF1Subject.find();
+//         res.json(subjects);
+//     } catch (error) {
+//         res.json({ message: error });
+//     }
+// });
+//
+// router.get('/lf-2', async (req, res) => {
+//     try {
+//         const subjects = await LF2Subject.find();
+//         res.json(subjects);
+//     } catch (error) {
+//         res.json({ message: error });
+//     }
+// });
 
 // Get specific subject
-router.get('/:subjectId', async (req, res) => {
+router.get('/:subject', async (req, res) => {
     try {
-        const subject = await LF2Subject.findById(req.params.subjectId);
+        const subject = await Subjects.findById(req.params.subject);
         res.json(subject);
     } catch (error) {
         res.json({ message: error });
@@ -51,7 +51,7 @@ router.get('/:subjectId', async (req, res) => {
 
 // Submit new subject
 router.post('/', async (req, res) => {
-    const subject = new LF2Subject({
+    const subject = new Subjects({
         subject: req.body.subject,
         topics: req.body.topics,
         tests: req.body.tests
@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
 // Delete specific subject
 router.delete('/:subjectId', async (req, res) => {
     try {
-        const removedSubject = await LF2Subject.remove({ _id: req.params.subjectId });
+        const removedSubject = await Subjects.remove({ _id: req.params.subjectId });
         res.json(removedSubject);
     } catch (error) {
         res.json({ message: error });
@@ -78,7 +78,7 @@ router.delete('/:subjectId', async (req, res) => {
 // Update a subject
 router.patch('/:subjectId', async (req, res) => {
     try {
-        const updatedSubject = await LF2Subject.updateOne(
+        const updatedSubject = await Subjects.updateOne(
             { _id: req.params.subjectId },             // get the subject
             { $set: { subject: req.body.subject } }     // set the changed subject
         );

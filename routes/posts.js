@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const LF1_Post = require('../models/LF1_Post');
-const LF2_Post = require('../models/LF2_Post');
-const PostTitles = require('../models/PostTitles');
+const Posts = require('../models/Posts');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -22,14 +21,14 @@ router.get('/lf-1', async (req, res) => {
     }
 });
 
-router.get('/lf-2', async (req, res) => {
-    try {
-        const posts = await LF2_Post.find();
-        res.json(posts);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
+// router.get('/lf-2', async (req, res) => {
+//     try {
+//         const posts = await LF2_Post.find();
+//         res.json(posts);
+//     } catch (error) {
+//         res.json({ message: error });
+//     }
+// });
 
 // Get specific post
 router.get('/:postId', async (req, res) => {
