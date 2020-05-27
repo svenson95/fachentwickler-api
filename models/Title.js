@@ -20,10 +20,10 @@ const Title = connection.model('postsTitles', new mongoose.Schema({
             }
         ]},
     tests: { type: Array, default: [
-            { title: String },
-            { description: String },
-            { url: String },
-        ]}
+            {title: String},
+            {description: String},
+            {url: String},
+        ] || null}
 }));
 
 module.exports = Title;
