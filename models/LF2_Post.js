@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const LF2_Post = mongoose.Schema({
+const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS);
+const LF2_Post = connection.model('lf-2-posts', new mongoose.Schema({
     url:            { type: String, required: true },
     topic:          { type: String, required: true},
     elements:       { type: Array, default: [
@@ -25,6 +26,6 @@ const LF2_Post = mongoose.Schema({
             },
         }
     ]}
-});
+}));
 
-module.exports = mongoose.model('lf-2-posts', LF2_Post);
+module.exports = LF2_Post;

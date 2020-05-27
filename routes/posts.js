@@ -5,11 +5,6 @@ const LF2_Post = require('../models/LF2_Post');
 const mongoose = require('mongoose');
 
 // Database Connection
-mongoose.connect(process.env.DB_CONNECTION_POSTS, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-});
-
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function() {

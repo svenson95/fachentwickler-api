@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const LF1_Subject = mongoose.Schema({
+const connection = mongoose.createConnection(process.env.DB_CONNECTION_SUBJECTS);
+const LF1_Subject = connection.model('lf-1', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
         {
@@ -19,6 +20,6 @@ const LF1_Subject = mongoose.Schema({
             { description: String, required: true },
             { url: String, required: true },
     ]}
-});
+}));
 
-module.exports = mongoose.model('lf-1', LF1_Subject);
+module.exports = LF1_Subject;
