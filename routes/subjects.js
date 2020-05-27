@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const LF1Subject = require('../models/LF1_Subject');
 const LF2Subject = require('../models/LF2_Subject');
+const Title = require('../models/Title');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -31,7 +32,7 @@ router.get('/lf-2', async (req, res) => {
 
 router.get('/allTitles', async (req, res) => {
     try {
-        const subjects = await LF2Subject.find();
+        const subjects = await Title.find();
         res.json(subjects);
     } catch (error) {
         res.json({ message: error });
