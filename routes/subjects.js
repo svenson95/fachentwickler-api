@@ -14,8 +14,8 @@ db.once("open", function() {
 
 router.get('/posts', async (req, res) => {
     try {
-        const posts = await PostTitles.find();
-        res.json(posts);
+        const subjects = await PostTitles.find();
+        res.json(subjects);
     } catch (error) {
         res.json({ message: error });
     }
