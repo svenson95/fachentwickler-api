@@ -29,6 +29,15 @@ router.get('/lf-2', async (req, res) => {
     }
 });
 
+router.get('/allTitles', async (req, res) => {
+    try {
+        const subjects = await LF2Subject.find();
+        res.json(subjects);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
 // Get specific subject
 router.get('/:subjectId', async (req, res) => {
     try {
