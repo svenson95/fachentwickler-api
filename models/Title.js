@@ -9,13 +9,13 @@ const Title = connection.model('postsTitles', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
         {
-            title: {
-                type: String, required: true
-            },
+            title: { type: String },
             links: Array, default: [
-                { title: String, required: true },
-                { description: String, required: true },
-                { url: String, required: true },
+                {
+                    title: String,
+                    description: String,
+                    url: String,
+                },
             ]
         }
     ]},
