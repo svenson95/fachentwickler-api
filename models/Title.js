@@ -9,21 +9,18 @@ const Title = connection.model('postsTitles', new mongoose.Schema({
     subject: { type: String },
     topics: { type: Array, default: [
         {
-            type: Object,
             title: { type: String, required: true },
             links: Array, default: [
                 {
-                    type: Object,
                     title: String,
                     description: String,
-                    url: String,
+                    url: String
                 },
             ]
         }
     ]},
     tests: { type: Array, default: [
         {
-            type: Object,
             title: String,
             description: String,
             url: String
