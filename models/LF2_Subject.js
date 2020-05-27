@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-const connection = mongoose.createConnection(process.env.DB_CONNECTION_SUBJECTS);
+const connection = mongoose.createConnection(process.env.DB_CONNECTION_SUBJECTS, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+});
+
 const LF2_Subject = connection.model('lf-2', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [

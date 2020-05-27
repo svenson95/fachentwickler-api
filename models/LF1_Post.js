@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS);
+const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+});
+
 const LF1_Post = connection.model('lf-1-posts', new mongoose.Schema({
     url:            { type: String, required: true },
     topic:          { type: String, required: true},
