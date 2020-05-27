@@ -16,15 +16,15 @@ db.once("open", function() {
 });
 
 // Get all the posts
-router.get('/lf-1', async (req, res) => {
-    try {
-        const lf1_collection = mongoose.model("lf-1", PostSchema);
-        const posts = await Post.find();
-        res.json(posts);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
+// router.get('/lf-1', async (req, res) => {
+//     try {
+//         const lf1_collection = mongoose.model("lf-1", PostSchema);
+//         const posts = await Post.find();
+//         res.json(posts);
+//     } catch (error) {
+//         res.json({ message: error });
+//     }
+// });
 
 router.get('/lf-2', async (req, res) => {
     try {
