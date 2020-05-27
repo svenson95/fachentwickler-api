@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const LF1Subject = require('../models/LF1Subject');
+const Subjects = require('../models/Subjects');
 // const LF2Subject = require('../models/LF2_Subject');
 // const PostTitles = require('../models/PostTitles');
 const mongoose = require('mongoose');
@@ -14,7 +14,7 @@ db.once("open", function() {
 
 router.get('/lf-1', async (req, res) => {
     try {
-        const subjects = await LF1Subject.find();
+        const subjects = await Subjects.find();
         res.json(subjects);
     } catch (error) {
         res.json({ message: error });
@@ -42,7 +42,7 @@ router.get('/lf-1', async (req, res) => {
 // Get specific subject
 router.get('/:subject', async (req, res) => {
     try {
-        const subject = await Subjects.findById(req.params.subject);
+        const subject = await Subjects.find(el => el.subject === req.params.subject);
         res.json(subject);
     } catch (error) {
         res.json({ message: error });
