@@ -48,9 +48,8 @@ router.get('/:postId', async (req, res) => {
 // Submit new post
 router.post('/', async (req, res) => {
     const post = new Post({
-       title: req.body.title,
-       description: req.body.description,
        url: req.body.url,
+       topic: req.body.description,
        elements: req.body.elements
     });
 

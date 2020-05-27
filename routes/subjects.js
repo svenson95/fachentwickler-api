@@ -15,17 +15,6 @@ db.once("open", function() {
     console.log("Connection successful!");
 });
 
-// Get all the subjects
-// router.get('/lf-1', async (req, res) => {
-//     try {
-//         // const lf1_collection = mongoose.model("lf-1", SubjectSchema);
-//         const subjects = await Subject.find();
-//         res.json(subjects);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
-
 router.get('/lf-2', async (req, res) => {
     try {
         const subjects = await Subject.find();
@@ -48,10 +37,9 @@ router.get('/:subjectId', async (req, res) => {
 // Submit new subject
 router.post('/', async (req, res) => {
     const subject = new Subject({
-        title: req.body.title,
-        description: req.body.description,
-        url: req.body.url,
-        elements: req.body.elements
+        subject: req.body.subject,
+        topics: req.body.topics,
+        tests: req.body.tests
     });
 
     try {
@@ -77,7 +65,7 @@ router.patch('/:subjectId', async (req, res) => {
     try {
         const updatedSubject = await Subject.updateOne(
             { _id: req.params.subjectId },             // get the subject
-            { $set: { title: req.body.title } }     // set the changed subject
+            { $set: { subject: req.body.subject } }     // set the changed subject
         );
         res.json(updatedSubject);
     } catch (error) {
