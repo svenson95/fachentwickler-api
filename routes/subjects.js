@@ -1,17 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const List = require('../models/List');
-// const LF2Subject = require('../models/LF2_Subject');
 const mongoose = require('mongoose');
 
 // Database Connection
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-    console.log("Connection successful!");
-});
-
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
         const subjects = await List.find();
         res.json(subjects);

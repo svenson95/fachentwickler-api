@@ -5,6 +5,11 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
     useNewUrlParser: true
 });
 
+connection.on("error", console.error.bind(console, "connection error:"));
+connection.once("open", function() {
+    console.log("Connection successful!");
+});
+
 const List = connection.model('list', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
