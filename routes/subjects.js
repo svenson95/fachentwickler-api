@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Subject = require('../models/Subject');
+const LF2Subject = require('../models/LF2_Subject');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -17,7 +17,7 @@ db.once("open", function() {
 
 router.get('/lf-2', async (req, res) => {
     try {
-        const subjects = await Subject.find();
+        const subjects = await LF2Subject.find();
         res.json(subjects);
     } catch (error) {
         res.json({ message: error });
@@ -27,7 +27,7 @@ router.get('/lf-2', async (req, res) => {
 // Get specific subject
 router.get('/:subjectId', async (req, res) => {
     try {
-        const subject = await Subject.findById(req.params.subjectId);
+        const subject = await LF2Subject.findById(req.params.subjectId);
         res.json(subject);
     } catch (error) {
         res.json({ message: error });
@@ -36,7 +36,7 @@ router.get('/:subjectId', async (req, res) => {
 
 // Submit new subject
 router.post('/', async (req, res) => {
-    const subject = new Subject({
+    const subject = new LF2Subject({
         subject: req.body.subject,
         topics: req.body.topics,
         tests: req.body.tests
@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
 // Delete specific subject
 router.delete('/:subjectId', async (req, res) => {
     try {
-        const removedSubject = await Subject.remove({ _id: req.params.subjectId });
+        const removedSubject = await LF2Subject.remove({ _id: req.params.subjectId });
         res.json(removedSubject);
     } catch (error) {
         res.json({ message: error });
@@ -63,7 +63,7 @@ router.delete('/:subjectId', async (req, res) => {
 // Update a subject
 router.patch('/:subjectId', async (req, res) => {
     try {
-        const updatedSubject = await Subject.updateOne(
+        const updatedSubject = await LF2Subject.updateOne(
             { _id: req.params.subjectId },             // get the subject
             { $set: { subject: req.body.subject } }     // set the changed subject
         );

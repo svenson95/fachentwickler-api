@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SubjectSchema = mongoose.Schema({
+const LF2_Subject = mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
         {
@@ -21,4 +21,4 @@ const SubjectSchema = mongoose.Schema({
     ]}
 });
 
-module.exports = mongoose.model('lf-2', SubjectSchema);
+module.exports = mongoose.model('lf-2', LF2_Subject);

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const PostSchema = mongoose.Schema({
+
+const LF2_Post = mongoose.Schema({
     url:            { type: String, required: true },
     topic:          { type: String, required: true},
     elements:       { type: Array, default: [
@@ -26,4 +27,4 @@ const PostSchema = mongoose.Schema({
     ]}
 });
 
-module.exports = mongoose.model('lf-2', PostSchema);
+module.exports = mongoose.model('lf-2-posts', LF2_Post);

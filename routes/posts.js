@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Post = require('../models/Post');
+const LF1_Post = require('../models/LF1_Post');
+const LF2_Post = require('../models/LF2_Post');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -16,19 +17,18 @@ db.once("open", function() {
 });
 
 // Get all the posts
-// router.get('/lf-1', async (req, res) => {
-//     try {
-//         const lf1_collection = mongoose.model("lf-1", PostSchema);
-//         const posts = await Post.find();
-//         res.json(posts);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
+router.get('/lf-1', async (req, res) => {
+    try {
+        const posts = await LF1_Post.find();
+        res.json(posts);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
 
 router.get('/lf-2', async (req, res) => {
     try {
-        const posts = await Post.find();
+        const posts = await LF2_Post.find();
         res.json(posts);
     } catch (error) {
         res.json({ message: error });
@@ -38,7 +38,7 @@ router.get('/lf-2', async (req, res) => {
 // Get specific post
 router.get('/:postId', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId);
+        const post = await LF2_Post.findById(req.params.postId);
         res.json(post);
     } catch (error) {
         res.json({ message: error });
@@ -47,7 +47,7 @@ router.get('/:postId', async (req, res) => {
 
 // Submit new post
 router.post('/', async (req, res) => {
-    const post = new Post({
+    const post = new LF2_Post({
        url: req.body.url,
        topic: req.body.description,
        elements: req.body.elements
@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
 // Delete specific post
 router.delete('/:postId', async (req, res) => {
     try {
-        const removedPost = await Post.remove({ _id: req.params.postId });
+        const removedPost = await LF2_Post.remove({ _id: req.params.postId });
         res.json(removedPost);
     } catch (error) {
         res.json({ message: error });
@@ -74,7 +74,7 @@ router.delete('/:postId', async (req, res) => {
 // Update a post
 router.patch('/:postId', async (req, res) => {
     try {
-        const updatedPost = await Post.updateOne(
+        const updatedPost = await LF2_Post.updateOne(
             { _id: req.params.postId },             // get the post
             { $set: { title: req.body.title } }     // set the changed post
         );
