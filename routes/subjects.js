@@ -15,6 +15,15 @@ db.once("open", function() {
     console.log("Connection successful!");
 });
 
+router.get('/lf-1', async (req, res) => {
+    try {
+        const subjects = await LF2Subject.find();
+        res.json(subjects);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
 router.get('/lf-2', async (req, res) => {
     try {
         const subjects = await LF2Subject.find();
