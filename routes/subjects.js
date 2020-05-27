@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const LF1Subject = require('../models/LF1_Subject');
 const LF2Subject = require('../models/LF2_Subject');
 const mongoose = require('mongoose');
 
@@ -17,7 +18,7 @@ db.once("open", function() {
 
 router.get('/lf-1', async (req, res) => {
     try {
-        const subjects = await LF2Subject.find();
+        const subjects = await LF1Subject.find();
         res.json(subjects);
     } catch (error) {
         res.json({ message: error });
