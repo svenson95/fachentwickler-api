@@ -20,20 +20,11 @@ router.get('/lf-1', async (req, res) => {
     }
 });
 
-// router.get('/lf-2', async (req, res) => {
-//     try {
-//         const posts = await LF2_Post.find();
-//         res.json(posts);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
-
 // Get specific post
 router.get('/:postUrl', async (req, res) => {
     try {
-        const post = await LF1_Post.find({ "url": req.params.postUrl }, () => {
-            console.log('searched')
+        const post = await LF1_Post.findOne({ "url": req.params.postUrl }, (err, user) => {
+            console.log('searched', user)
         });
         res.json(post);
     } catch (error) {
