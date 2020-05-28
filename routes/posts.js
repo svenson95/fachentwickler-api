@@ -33,6 +33,7 @@ router.get('/lf-1', async (req, res) => {
 router.get('/:postId', async (req, res) => {
     try {
         // const post = await LF1_Post.findById(req.params.postId);
+        console.log(req.params.postUrl);
         const post = await LF1_Post.find({ url: req.params.postUrl });
         res.json(post);
     } catch (error) {
