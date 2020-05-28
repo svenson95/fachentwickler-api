@@ -10,12 +10,20 @@ db.once("open", function() {
     console.log("Connection successful! 2");
 });
 
+router.get('/', async (req, res) => {
+    try {
+        const posts = await LF1_Post.find();
+        res.json(posts);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
 // Get specific post
 router.get('/:postId', async (req, res) => {
     try {
         // const post = await LF1_Post.findById(req.params.postId);
         console.log(req.params.postUrl);
-        const post = await LF1_Post.find({ url: req.params.postUrl });
+        const post = await LF1_Post.find({ url: req.params.postUrl.toString() });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
