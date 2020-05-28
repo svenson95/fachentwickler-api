@@ -21,7 +21,7 @@ router.get('/lf-1', async (req, res) => {
 });
 
 // Get specific post
-router.get('/:subject/:topic/:postTitle', async (req, res) => {
+router.get('/:subject/:topic/:postTitle*', async (req, res) => {
     try {
         const post = await LF1_Post.find({ "url": `/${subject}/${topic}/${postTitle}` });
         console.log(req.params.subject);
