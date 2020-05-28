@@ -12,7 +12,7 @@ db.once("open", function() {
     console.log("Connection successful! 1");
 });
 
-router.get('/lf-1', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const subjects = await Subjects.find();
         res.json(subjects);
@@ -40,9 +40,9 @@ router.get('/lf-1', async (req, res) => {
 // });
 
 // Get specific subject
-router.get('/:subject', async (req, res) => {
+router.get('/:subjectId', async (req, res) => {
     try {
-        const subject = await Subjects.find(el => el.subject === req.params.subject);
+        const subject = await Subjects.find(el => el.subject === req.params.subjectId);
         res.json(subject);
     } catch (error) {
         res.json({ message: error });
@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
 // Delete specific subject
 router.delete('/:subjectId', async (req, res) => {
     try {
-        const removedSubject = await Subjects.remove({ _id: req.params.subjectId });
+        const removedSubject = await Subjects.findById({ _id: req.params.subjectId });
         res.json(removedSubject);
     } catch (error) {
         res.json({ message: error });
