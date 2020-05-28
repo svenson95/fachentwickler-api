@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 // Get specific subject
 router.get('/:subjectId', async (req, res) => {
     try {
-        const subject = await Subjects.find(el => el.subject === req.params.subjectId);
+        const subject = await Subjects.findById(req.params.subjectId);
         res.json(subject);
     } catch (error) {
         res.json({ message: error });
