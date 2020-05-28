@@ -31,7 +31,7 @@ router.get('/lf-1', async (req, res) => {
 // });
 
 // Get specific post
-router.get('/lf-1/:postUrl', async (req, res) => {
+router.get('/:postId', async (req, res) => {
     try {
         // const post = await LF1_Post.findById(req.params.postId);
         const post = await LF1_Post.find({ url: req.params.postUrl });
