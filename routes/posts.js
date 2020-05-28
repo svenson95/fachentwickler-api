@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const LF1_Post = require('../models/LF1_Post');
-const Posts = require('../models/Posts');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -34,7 +33,6 @@ router.get('/lf-1', async (req, res) => {
 router.get('/:postId', async (req, res) => {
     try {
         // const post = await LF1_Post.findById(req.params.postId);
-        console.log(req.params.postUrl);
         const post = await LF1_Post.find({ url: req.params.postUrl });
         res.json(post);
     } catch (error) {
