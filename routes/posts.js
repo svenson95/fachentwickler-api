@@ -21,12 +21,12 @@ router.get('/lf-1', async (req, res) => {
 });
 
 // Get specific post
-router.get('/:postUrl/:test22*', async (req, res) => {
+router.get('/:subject/:topic/:postTitle', async (req, res) => {
     try {
-        const convertedUrl = req.params.postUrl.replace("%2F", "/");
-        const post = await LF1_Post.find({ "url": convertedUrl });
-        console.log(req.params.postUrl);
-        console.log(req.params.test22);
+        const post = await LF1_Post.find({ "url": `/${subject}/${topic}/${postTitle}` });
+        console.log(req.params.subject);
+        console.log(req.params.topic);
+        console.log(req.params.postTitle);
         res.json(post);
     } catch (error) {
         res.json({ message: error });
