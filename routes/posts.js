@@ -24,7 +24,8 @@ router.get('/lf-1', async (req, res) => {
 router.get('/:postUrl', async (req, res) => {
     try {
         const convertedUrl = req.params.postUrl.replace("%2F", "/");
-        console.log(req.params);
+        console.log(req.params.postUrl);
+        console.log("converted: ", convertedUrl);
         const post = await LF1_Post.find({ "url": convertedUrl });
         res.json(post);
     } catch (error) {
