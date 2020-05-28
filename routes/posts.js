@@ -23,7 +23,7 @@ router.get('/lf-1', async (req, res) => {
 // Get specific post
 router.get('/:postUrl', async (req, res) => {
     try {
-        const post = await LF1_Post.findOne({ "url": req.params.postUrl }, (err, user) => {
+        const post = await LF1_Post.find({ "url": req.params.postUrl }, (err, user) => {
             console.log('searched', user)
         });
         res.json(post);
