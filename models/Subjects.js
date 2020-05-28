@@ -17,9 +17,7 @@ const Subjects = connection.model('school-subjects', new mongoose.Schema({
             ]
         }
     ]},
-    tests: { type: Array, required: false, default: [
-            { title: String, description: String, url: String }
-    ]}
+    tests: { type: Array, required: false, default: null}
 }));
 
 module.exports = Subjects;
