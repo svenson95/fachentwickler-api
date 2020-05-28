@@ -23,7 +23,9 @@ router.get('/lf-1', async (req, res) => {
 // Get specific post
 router.get('/:postUrl', async (req, res) => {
     try {
-        const post = await LF1_Post.find({ "url": req.params.postUrl });
+        const convertedUrl = req.params.postUrl.replace("%2F", "/");
+        console.log(req.params.postUrl);
+        const post = await LF1_Post.find({ "url": convertedUrl });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
