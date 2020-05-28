@@ -10,6 +10,18 @@ db.once("open", function() {
     console.log("Connection successful! 2");
 });
 
+// Get specific post
+router.get('/:postId', async (req, res) => {
+    try {
+        // const post = await LF1_Post.findById(req.params.postId);
+        console.log(req.params.postUrl);
+        const post = await LF1_Post.find({ url: req.params.postUrl });
+        res.json(post);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
 // Get all the posts
 router.get('/lf-1', async (req, res) => {
     try {
@@ -28,18 +40,6 @@ router.get('/lf-1', async (req, res) => {
 //         res.json({ message: error });
 //     }
 // });
-
-// Get specific post
-router.get('/:postId', async (req, res) => {
-    try {
-        // const post = await LF1_Post.findById(req.params.postId);
-        console.log(req.params.postUrl);
-        const post = await LF1_Post.find({ url: req.params.postUrl });
-        res.json(post);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
 
 // Submit new post
 router.post('/', async (req, res) => {
