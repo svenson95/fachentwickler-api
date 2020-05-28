@@ -31,9 +31,10 @@ router.get('/lf-1', async (req, res) => {
 // });
 
 // Get specific post
-router.get('/:postId', async (req, res) => {
+router.get('/lf-1/:postUrl', async (req, res) => {
     try {
-        const post = await LF2_Post.findById(req.params.postId);
+        // const post = await LF1_Post.findById(req.params.postId);
+        const post = await LF1_Post.find({ url: req.params.postUrl });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
@@ -42,7 +43,7 @@ router.get('/:postId', async (req, res) => {
 
 // Submit new post
 router.post('/', async (req, res) => {
-    const post = new LF2_Post({
+    const post = new LF1_Post({
        url: req.body.url,
        topic: req.body.description,
        elements: req.body.elements
@@ -59,7 +60,7 @@ router.post('/', async (req, res) => {
 // Delete specific post
 router.delete('/:postId', async (req, res) => {
     try {
-        const removedPost = await LF2_Post.remove({ _id: req.params.postId });
+        const removedPost = await LF1_Post.remove({ _id: req.params.postId });
         res.json(removedPost);
     } catch (error) {
         res.json({ message: error });
@@ -69,7 +70,7 @@ router.delete('/:postId', async (req, res) => {
 // Update a post
 router.patch('/:postId', async (req, res) => {
     try {
-        const updatedPost = await LF2_Post.updateOne(
+        const updatedPost = await LF1_Post.updateOne(
             { _id: req.params.postId },             // get the post
             { $set: { title: req.body.title } }     // set the changed post
         );
