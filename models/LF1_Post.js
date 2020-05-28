@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTS, {
+const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBASE, {
     useUnifiedTopology: true,
     useNewUrlParser: true
 });
