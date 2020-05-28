@@ -21,7 +21,7 @@ router.get('/lf-1', async (req, res) => {
 });
 
 // Get specific post
-router.get('/:postUrl', async (req, res) => {
+router.get('/:postUrl*', async (req, res) => {
     try {
         const convertedUrl = req.params.postUrl.replace("%2F", "/");
         console.log(req.params.postUrl);
