@@ -29,6 +29,7 @@ router.get('/:subject/:topic/:postTitle*', async (req, res) => {
         model = LF1_Post;
     } else if (topic === "lf-2") {
         model = LF2_Post;
+        console.log("lf-2 passed")
     }
 
     try {
