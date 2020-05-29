@@ -23,13 +23,12 @@ router.get('/lf-1', async (req, res) => {
 
 // Get specific post
 router.get('/:subject/:topic/:postTitle*', async (req, res) => {
-    const topic = req.params.topic;
+    const subject = req.params.subject;
     let model;
-    if (topic === "lf-1") {
+    if (subject === "lf-1") {
         model = LF1_Post;
-    } else if (topic === "lf-2") {
+    } else if (subject === "lf-2") {
         model = LF2_Post;
-        console.log("lf-2 passed")
     }
 
     try {
