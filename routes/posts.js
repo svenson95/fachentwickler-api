@@ -21,12 +21,10 @@ router.get('/lf-1', async (req, res) => {
 });
 
 // Get specific post
-router.get('/:subject/:topic', async (req, res) => {
+router.get('/:subject/:topic/:postTitle*', async (req, res) => {
     try {
-        const post = await LF1_Post.find({ "url": `/${subject}/${topic}/${postTitle}` });
-        console.log(req.params.subject);
-        console.log(req.params.topic);
-        console.log(req.params.postTitle);
+        const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.postTitle;
+        const post = await LF1_Post.find({ "url": urlString });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
@@ -34,9 +32,11 @@ router.get('/:subject/:topic', async (req, res) => {
 });
 
 // Submit new post
-router.post('/', async (req, res) => {
+router.post('/:subject/:topic/:postTitle*', async (req, res) => {
+
+    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.postTitle;
     const post = new LF1_Post({
-       url: req.body.url,
+       url: urlString,
        topic: req.body.description,
        elements: req.body.elements
     });
