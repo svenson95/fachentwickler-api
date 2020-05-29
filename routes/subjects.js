@@ -21,45 +21,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-// router.get('/lf-1', async (req, res) => {
-//     try {
-//         const subjects = await LF1Subject.find();
-//         res.json(subjects);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
-//
-// router.get('/lf-2', async (req, res) => {
-//     try {
-//         const subjects = await LF2Subject.find();
-//         res.json(subjects);
-//     } catch (error) {
-//         res.json({ message: error });
-//     }
-// });
-
 // Get specific subject
 router.get('/:subjectId', async (req, res) => {
     try {
         const subject = await Subjects.findById(req.params.subjectId);
         res.json(subject);
-    } catch (error) {
-        res.json({ message: error });
-    }
-});
-
-// Submit new subject
-router.post('/', async (req, res) => {
-    const subject = new Subjects({
-        subject: req.body.subject,
-        topics: req.body.topics,
-        tests: req.body.tests
-    });
-
-    try {
-        const savedSubject = await subject.save();
-        res.json(savedSubject);
     } catch (error) {
         res.json({ message: error });
     }
@@ -76,7 +42,7 @@ router.delete('/:subjectId', async (req, res) => {
 });
 
 // Update a subject
-router.patch('/:subjectId', async (req, res) => {
+router.patch('/:subjectId/edit', async (req, res) => {
     try {
         const updatedSubject = await Subjects.updateOne(
             { _id: req.params.subjectId },             // get the subject
