@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const LF1_Post = require('../models/LF1_Post');
+const LF2_Post = require('../models/LF2_Post');
 const mongoose = require('mongoose');
 
 // Database Connection
@@ -22,9 +23,17 @@ router.get('/lf-1', async (req, res) => {
 
 // Get specific post
 router.get('/:subject/:topic/:postTitle*', async (req, res) => {
+    const topic = req.params.topic;
+    let model;
+    if (topic === "lf-1") {
+        model = LF1_Post;
+    } else if (topic === "lf-2") {
+        model = LF2_Post;
+    }
+
     try {
         const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.postTitle;
-        const post = await LF1_Post.find({ "url": urlString });
+        const post = await model.find({ "url": urlString });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
