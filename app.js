@@ -11,6 +11,7 @@ app.use(cors());
 // Import routes
 app.use('/posts', require('./routes/posts'));
 app.use('/subjects', require('./routes/subjects'));
+app.use('/images', require('./routes/images'));
 
 // Routes
 app.get('/', (req, res) => {

@@ -2,14 +2,9 @@ const express = require('express');
 const router = express.Router();
 const LF1_Post = require('../models/LF1_Post');
 const LF2_Post = require('../models/LF2_Post');
-const mongoose = require('mongoose');
-
-// Database Connection
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-    console.log("Connection successful! 2");
-});
+const LF3_Post = require('../models/LF3_Post');
+const LF4_Post = require('../models/LF4_Post');
+const LF5_Post = require('../models/LF5_Post');
 
 // Get all the posts
 router.get('/lf-1', async (req, res) => {
@@ -29,6 +24,12 @@ router.get('/:subject/:topic/:postTitle*', async (req, res) => {
         model = LF1_Post;
     } else if (subject === "lf-2") {
         model = LF2_Post;
+    } else if (subject === "lf-3") {
+        model = LF3_Post;
+    } else if (subject === "lf-4") {
+        model = LF4_Post;
+    } else if (subject === "lf-5") {
+        model = LF5_Post;
     }
 
     try {

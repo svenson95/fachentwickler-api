@@ -1,16 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Subjects = require('../models/Subjects');
-// const LF2Subject = require('../models/LF2_Subject');
-// const PostTitles = require('../models/PostTitles');
-const mongoose = require('mongoose');
-
-// Database Connection
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-    console.log("Connection successful! 1");
-});
 
 router.get('/', async (req, res) => {
     try {
