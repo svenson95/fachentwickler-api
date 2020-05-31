@@ -35,8 +35,12 @@ router.delete('/:subjectId', async (req, res) => {
 router.patch('/:subjectId/edit', async (req, res) => {
     try {
         const updatedSubject = await Subjects.updateOne(
-            { _id: req.params.subjectId },             // get the subject
-            { $set: { subject: req.body.subject } }     // set the changed subject
+            { _id: req.params.subjectId },              // get the subject
+            { $set: {                                   // set the changed subject
+                subject: req.body.subject,
+                tests: req.body.tests,
+                topics: req.body.topics,
+            }}
         );
         res.json(updatedSubject);
     } catch (error) {

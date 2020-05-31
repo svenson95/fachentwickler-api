@@ -5,7 +5,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
     useNewUrlParser: true
 });
 
-const LF4_Post = connection.model('lf-4-posts', new mongoose.Schema({
+const LF41_Post = connection.model('lf-4-1-posts', new mongoose.Schema({
     url:            { type: String, required: true },
     topic:          { type: String, required: true},
     elements:       { type: Array, default: [
@@ -32,4 +32,4 @@ const LF4_Post = connection.model('lf-4-posts', new mongoose.Schema({
         ]}
 }));
 
-module.exports = LF4_Post;
+module.exports = LF41_Post;
