@@ -5,7 +5,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTIMAGE
     useNewUrlParser: true
 });
 
-const Photo = connection.model('photos.files', new mongoose.Schema({
+const PhotoFiles = connection.model('photos.files', new mongoose.Schema({
     uploadDate: { type: Date, required: true },
     filename: { type: String, required: true },
     md5: { type: String, required: true },
@@ -16,4 +16,4 @@ const Photo = connection.model('photos.files', new mongoose.Schema({
     },
 }));
 
-module.exports = Photo;
+module.exports = PhotoFiles;

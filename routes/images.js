@@ -21,10 +21,11 @@ db.once("open", () => {
 
 router.get("/", homeController.getHome);
 
-// Get specific post
-router.get('/:filename/', async (req, res) => {
+// Get specific post - by id
+router.get('/:id', async (req, res) => {
     try {
-        const post = await PhotoChunks.findById(req.params.filename);
+        const post = await PhotoChunks.findById(req.params.id);
+        // const post = await PhotoChunks.find({ "id": req.params.id });
         res.json(post);
     } catch (error) {
         res.json({ message: error });
