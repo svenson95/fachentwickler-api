@@ -88,11 +88,12 @@ router.delete('/:postId', async (req, res) => {
 });
 
 // Update a post
-router.patch('/:subject/:postId/edit', async (req, res) => {
+router.patch('/:subject/:topic/:postUrl/edit', async (req, res) => {
     setSubject(req.params.subject);
+    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.postUrl;
     try {
         const updatedPost = await subjectModel.updateOne(
-            { _id: req.params.postId },             // get the post
+            { "url": urlString },                   // get the post
             { $set: {                               // set the changed post
                 topic: req.body.topic,
                 url: req.body.url,
