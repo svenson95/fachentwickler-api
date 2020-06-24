@@ -5,7 +5,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
     useNewUrlParser: true
 });
 
-const Subjects = connection.model('school-subjects', new mongoose.Schema({
+const Subject = connection.model('school-subjects', new mongoose.Schema({
     subject: { type: String, required: true },
     topics: { type: Array, default: [
         {
@@ -20,4 +20,4 @@ const Subjects = connection.model('school-subjects', new mongoose.Schema({
     tests: { type: Array, required: false, default: null}
 }));
 
-module.exports = Subjects;
+module.exports = Subject;

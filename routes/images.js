@@ -4,7 +4,7 @@ const homeController = require("../controllers/home");
 const uploadController = require("../controllers/upload");
 const mongoose = require('mongoose');
 const mongo = require('mongodb');
-const PhotoChunks = require('../models/Photos.chunks');
+const PhotoChunks = require('../models/photos/Photos.chunks');
 
 var Grid = require('gridfs-stream');
 var gfs;

@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const LF1_Post = require('../models/LF1_Post');
-const LF2_Post = require('../models/LF2_Post');
-const LF3_Post = require('../models/LF3_Post');
-const LF4_1_Post = require('../models/LF4-1_Post');
-const LF4_2_Post = require('../models/LF4-2_Post');
-const LF5_Post = require('../models/LF5_Post');
-const LF6_Post = require('../models/LF6_Post');
-const WiSo_Post = require('../models/WiSo_Post');
-const Englisch_Post = require('../models/Englisch_Post');
-const Deutsch_Post = require('../models/Deutsch_Post');
+const LF1_Post = require('../models/posts/LF1_Post');
+const LF2_Post = require('../models/posts/LF2_Post');
+const LF3_Post = require('../models/posts/LF3_Post');
+const LF4_1_Post = require('../models/posts/LF4-1_Post');
+const LF4_2_Post = require('../models/posts/LF4-2_Post');
+const LF5_Post = require('../models/posts/LF5_Post');
+const LF6_Post = require('../models/posts/LF6_Post');
+const WiSo_Post = require('../models/posts/WiSo_Post');
+const Englisch_Post = require('../models/posts/Englisch_Post');
+const Deutsch_Post = require('../models/posts/Deutsch_Post');
 
 let subjectModel;
 
