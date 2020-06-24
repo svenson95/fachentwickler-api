@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const StudyProgress = require('../models/StudyProgress');
+const StudyProgress = require('../user/StudyProgress');
 
 const UserSchema = new mongoose.Schema({
     username: {
