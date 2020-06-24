@@ -1,6 +1,6 @@
 const express = require('express');
 const userRouter = express.Router();
-const passport = require('middleware/passport');
+const passport = require('passport');
 const passportConfig = require('../middleware/passport');
 const JWT = require('jsonwebtoken');
 const User = require('../models/User');
