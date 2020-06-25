@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const User = require('../models/User');
 
-const studyProgSchema = new mongoose.Schema({
+const progressSchema = new mongoose.Schema({
+    author: {
+        type: User,
+        default: null
+    },
     name: {
         type: String,
         required: true
@@ -12,6 +17,6 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLUSE
     useNewUrlParser: true
 });
 
-const StudyProg = connection.model('studyProgs', studyProgSchema, 'studyProgs');
+const Progress = connection.model('Progress', progressSchema, 'progress');
 
-module.exports = StudyProg;
+module.exports = Progress;

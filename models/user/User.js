@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const StudyProgress = require('../user/StudyProgress');
+const Progress = require('./Progress');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
         enum: ['user', 'admin', 'teacher'],
         required: true
     },
-    studyProg: [{ type: mongoose.Schema.Types.ObjectId, ref: StudyProgress }]
+    progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }]
 });
 
 // function(next) as arrow function not work, no access to 'this'

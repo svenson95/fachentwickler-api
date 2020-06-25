@@ -4,7 +4,7 @@ const passport = require('passport');
 const passportConfig = require('../middleware/passport');
 const JWT = require('jsonwebtoken');
 const User = require('../models/user/User');
-const StudyProgress = require('../models/user/StudyProgress');
+const Progress = require('../models/user/Progress');
 
 const signToken = userId => {
     return JWT.sign({
@@ -50,12 +50,12 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req
 });
 
 userRouter.post('/progress', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const studyProgress = new StudyProgress(req.body);
-    studyProgress.save(err => {
+    const progress = new Progress(req.body);
+    progress.save(err => {
         if (err) {
             res.status(500).json({ message: { msgBody: 'Error has occured while post progress data (1)', msgError: true }})
         } else {
-            req.user.studyProg.push(studyProgress);
+            req.user.progress.push(progress);
             req.user.save(err => {
                 if (err) {
                     res.status(500).json({ message: { msgBody: 'Error has occured while post progress data (2)', msgError: true}})
@@ -68,7 +68,7 @@ userRouter.post('/progress', passport.authenticate('jwt', { session: false }), (
 });
 
 userRouter.get('/progress', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await User.findById({ _id : req.user._id }).populate('studyProgs').exec((err, document) => {
+    await User.findById({ _id : req.user._id }).populate('progress').exec((err, document) => {
         if (err) {
             res.status(500).json({ message : {msgBody: 'Error has occured while get progress data', msgError : true }})
         } else {
