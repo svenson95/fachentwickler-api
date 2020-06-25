@@ -77,4 +77,16 @@ userRouter.get('/progress', passport.authenticate('jwt', { session: false }), as
     })
 });
 
+userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    if (req.user.role === 'admin') {
+        res.status(200).json({ message: { body: 'Admin logged in', error: false }});
+    } else {
+        res.status(403).json({ message: { body: 'You are not an admin', error: true }})
+    }
+});
+
+userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    res.status(200).json({ isAuthenticated: true, user: req.user });
+});
+
 module.exports = userRouter;
