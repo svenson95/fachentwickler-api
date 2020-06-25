@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const UserSchema = require('./User');
 
 const progressSchema = new mongoose.Schema({
+    author: {
+        type: UserSchema,
+        default: null
+    },
     name: {
         type: String,
         required: true

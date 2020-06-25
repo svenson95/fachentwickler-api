@@ -1,25 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const Progress = require('./Progress');
-
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        min: 4,
-        max: 15
-    },
-    password : {
-        type: String,
-        required: true
-    },
-    role: {
-        type: String,
-        enum: ['user', 'admin', 'teacher'],
-        required: true
-    },
-    progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }]
-});
+const UserSchema = require('./UserSchema');
 
 // function(next) as arrow function not work, no access to 'this'
 UserSchema.pre('save', function(next) {
