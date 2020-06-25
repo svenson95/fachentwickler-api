@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserSchema = require('./User');
+const UserSchema = require('./UserSchema');
 
 const progressSchema = new mongoose.Schema({
     author: {
