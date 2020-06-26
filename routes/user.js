@@ -10,8 +10,8 @@ const signToken = userId => {
     return JWT.sign({
         iss: 'devedu-95-secret',
         sub: userId
-    }, 'devedu-95-secret', { expiresIn: '30d' })
-}
+    }, 'devedu-95-secret', { expiresIn: '1h' })
+};
 
 userRouter.post('/register', (req, res) => {
    const { name, password, role } = req.body;
