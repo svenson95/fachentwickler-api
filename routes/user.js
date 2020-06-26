@@ -10,7 +10,7 @@ const signToken = userId => {
     return JWT.sign({
         iss: 'devedu-95-secret',
         sub: userId
-    }, 'devedu-95-secret', { expiresIn: '1h' })
+    }, 'devedu-95-secret', { expiresIn: '30d' })
 }
 
 userRouter.post('/register', (req, res) => {
@@ -20,7 +20,7 @@ userRouter.post('/register', (req, res) => {
            res.status(500).json({message: {msgBody: "Error has occured", msgError: true }});
        }
        if (user) {
-           res.status(400).json({message: {msgBody: "Username is already taken", msgError: true }});
+           res.status(409).json({message: {msgBody: "Username is already taken", msgError: true }});
        } else {
            const newUser = new User({ username, password, role });
            newUser.save(err => {
@@ -39,14 +39,14 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
         const { _id, username, role } = req.user;
         const token = signToken(_id);
         res.cookie('access_token', token, { httpOnly: true, sameSite: true });
-        res.status(200).json({ isAuthenticated: true, user: { username, role }});
+        res.status(200).json({ isAuthenticated: true, user: { username, role }, token: token });
     }
 });
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
     // req.logout();
     res.clearCookie('access_token');
-    res.json({ user: { username: '', role: '' }, success: true });
+    res.json({ message: 'Successfully logged out', success: true });
 });
 
 userRouter.post('/progress', passport.authenticate('jwt', { session: false }), (req, res) => {
