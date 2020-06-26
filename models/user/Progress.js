@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const progressSchema = new mongoose.Schema({
-    author: {
-        type: Object,
-        default: null
-    },
     name: {
         type: String,
         required: true

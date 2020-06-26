@@ -3,11 +3,17 @@ const bcrypt = require('bcrypt');
 const Progress = require('./Progress');
 
 const UserSchema = new mongoose.Schema({
-    username: {
+    name: {
         type: String,
         required: true,
         min: 4,
         max: 15
+    },
+    email: {
+        type: String,
+        required: true,
+        min: 4,
+        max: 20
     },
     password : {
         type: String,
