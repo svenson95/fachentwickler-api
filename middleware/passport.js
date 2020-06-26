@@ -27,8 +27,8 @@ passport.use(new JwtStrategy({
 }));
 
 // authorization
-passport.use(new LocalStrategy((username, password, done) => {
-    User.findOne({username}, (err, user) => {
+passport.use(new LocalStrategy((name, password, done) => {
+    User.findOne({name}, (err, user) => {
         if (err)    // something went wrong with database
             return done(err);
         if (!user)  // if no user exist
