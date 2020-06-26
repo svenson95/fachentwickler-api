@@ -14,7 +14,7 @@ const signToken = userId => {
 }
 
 userRouter.post('/register', (req, res) => {
-   const { name, password, email, role } = req.body;
+   const { name, password, role } = req.body;
    User.findOne({ name }, (err, user) => {
        if (err) {
            res.status(500).json({message: {msgBody: "Error has occured", msgError: true }});
@@ -22,7 +22,7 @@ userRouter.post('/register', (req, res) => {
        if (user) {
            res.status(409).json({message: {msgBody: "Username is already taken", msgError: true }});
        } else {
-           const newUser = new User({ name, password, email, role });
+           const newUser = new User({ name, password, role });
            newUser.save(err => {
                if (err) {
                    res.status(500).json({message: {msgBody: "Error has occured while creating user", msgError: true }});
@@ -36,10 +36,10 @@ userRouter.post('/register', (req, res) => {
 
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
-        const { _id, name, email, role } = req.user;
+        const { _id, name, role } = req.user;
         const token = signToken(_id);
         res.cookie('access_token', token, { httpOnly: true, sameSite: true });
-        res.status(200).json({ isAuthenticated: true, user: { name, email, role }, token: token });
+        res.status(200).json({ isAuthenticated: true, user: { name, role }, token: token });
     }
 });
 
