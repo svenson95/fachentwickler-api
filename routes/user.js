@@ -14,7 +14,7 @@ const signToken = userId => {
 };
 
 userRouter.post('/register', (req, res) => {
-   const { name, password, role } = req.body;
+   const { name, password, role, email } = req.body;
    User.findOne({ name }, (err, user) => {
        if (err) {
            res.status(500).json({message: {msgBody: "Error has occured", msgError: true }});
@@ -22,7 +22,7 @@ userRouter.post('/register', (req, res) => {
        if (user) {
            res.status(409).json({message: {msgBody: "Username is already taken", msgError: true }});
        } else {
-           const newUser = new User({ name, password, role });
+           const newUser = new User({ name, password, role, email });
            newUser.save(err => {
                if (err) {
                    res.status(500).json({message: {msgBody: "Error has occured while creating user", msgError: true }});

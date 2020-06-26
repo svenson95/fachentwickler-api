@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema({
         enum: ['user', 'admin', 'teacher'],
         required: true
     },
+    email: {
+        type: String,
+        default: ''
+    },
     progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }]
 });
 
