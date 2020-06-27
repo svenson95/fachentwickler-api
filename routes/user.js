@@ -36,10 +36,9 @@ userRouter.post('/register', (req, res) => {
 
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
-        const { _id, name, role } = req.user;
-        const token = signToken(_id);
-        res.cookie('access_token', token, { httpOnly: true, sameSite: true });
-        res.status(200).json({ isAuthenticated: true, user: { name, role }, token: token });
+        const token = signToken(req.user._id);
+        res.cookie('devedu_token', token, { httpOnly: true, sameSite: true });
+        res.status(200).json({ isAuthenticated: true, user: req.user, token: token });
     }
 });
 
@@ -72,7 +71,7 @@ userRouter.get('/progress', passport.authenticate('jwt', { session: false }), as
         if (err) {
             res.status(500).json({ message : {msgBody: 'Error has occured while get progress data', msgError : true }})
         } else {
-            res.status(200).json({ user: document, authenticated : true });
+            res.status(200).json({ user: document });
         }
     })
 });
@@ -86,7 +85,11 @@ userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async
 });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    res.status(200).json({ isAuthenticated: true, user: req.user });
+    if (req.isAuthenticated()) {
+        res.status(200).json({ isAuthenticated: true, user: req.user });
+    } else {
+        res.status(400).json({ message: { body: 'You are not logged in', error: true }})
+    }
 });
 
 module.exports = userRouter;
