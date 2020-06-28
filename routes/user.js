@@ -10,7 +10,7 @@ const signToken = userId => {
     return JWT.sign({
         iss: 'devedu-95-secret',
         sub: userId
-    }, 'devedu-95-secret', { expiresIn: '1h' })
+    }, 'devedu-95-secret', { expiresIn: '30d' })
 };
 
 userRouter.post('/register', (req, res) => {
@@ -31,7 +31,7 @@ userRouter.post('/register', (req, res) => {
                }
            })
        }
-   })
+   });
 });
 
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
@@ -44,7 +44,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
     // req.logout();
-    res.clearCookie('access_token');
+    res.clearCookie('devedu_token');
     res.json({ message: 'Successfully logged out', success: true });
 });
 
@@ -85,11 +85,7 @@ userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async
 });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    if (req.isAuthenticated()) {
-        res.status(200).json({ isAuthenticated: true, user: req.user });
-    } else {
-        res.status(400).json({ message: { body: 'You are not logged in', error: true }})
-    }
+    res.status(200).json({ isAuthenticated: true, user: req.user });
 });
 
 module.exports = userRouter;

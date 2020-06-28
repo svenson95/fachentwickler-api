@@ -24,7 +24,7 @@ router.get("/", homeController.getHome);
 // Get specific post - by id
 router.get('/:id', async (req, res) => {
     try {
-        const post = await PhotoChunks.findOne({ files_id: req.params.id }, (err, file) => {
+        await PhotoChunks.findOne({ files_id: req.params.id }, (err, file) => {
             if (err) {
                 res.json(err);
             } else {
