@@ -6,14 +6,13 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTIMAGE
 });
 
 const PhotoFiles = connection.model('photos.files', new mongoose.Schema({
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    length: { type: Number, required: true },
+    chunkSize: { type: Number, required: true },
     uploadDate: { type: Date, required: true },
     filename: { type: String, required: true },
     md5: { type: String, required: true },
-    contentType: { type: String, required: true },
-    image_file: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'GridFs'
-    },
+    contentType: { type: String, required: true }
 }));
 
 module.exports = PhotoFiles;

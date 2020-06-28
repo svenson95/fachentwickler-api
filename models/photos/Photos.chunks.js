@@ -6,14 +6,12 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_POSTIMAGE
 });
 
 const PhotoChunks = connection.model('photos.chunks', new mongoose.Schema({
-    uploadDate: { type: Date, required: true },
-    filename: { type: String, required: true },
-    md5: { type: String, required: true },
-    contentType: { type: String, required: true },
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    files_id: { type: mongoose.Schema.Types.ObjectId, required: true },
     image_file: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GridFs'
-    },
+    }
 }));
 
 module.exports = PhotoChunks;
