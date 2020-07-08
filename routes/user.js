@@ -88,7 +88,17 @@ userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async
 });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    res.status(200).json({ isAuthenticated: true, user: req.user });
+    res.status(200).json({
+        isAuthenticated: true,
+        user: {
+            email: req.user.email,
+            name: req.user.name,
+            progress: req.user.progress,
+            role: req.user.role,
+            __v: req.user.__v,
+            _id: req.user._id,
+        }
+    });
 });
 
 module.exports = userRouter;
