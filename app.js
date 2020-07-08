@@ -8,7 +8,9 @@ require('dotenv/config');
 // Middleware - enabled CORS from every origin
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    credentials: true, origin: true
+}));
 
 // Import routes
 app.use('/posts', require('./routes/posts'));

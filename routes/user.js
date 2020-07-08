@@ -37,7 +37,10 @@ userRouter.post('/register', (req, res) => {
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
         const token = signToken(req.user._id);
-        res.cookie('devedu_token', token, { httpOnly: true, sameSite: true });
+        res.cookie('devedu_token', token, {
+            maxAge: 1000 * 3600 * 30, // would expire after 30 days
+            httpOnly: true, // The cookie only accessible by the web server
+        });
         res.status(200).json({ isAuthenticated: true, user: req.user, token: token });
     }
 });
