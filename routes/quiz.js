@@ -7,9 +7,9 @@ router.get('/:subject/:topic/:quizTitle/quiz', async (req, res) => {
     try {
         const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.quizTitle + "/quiz";
         const post = await Quiz.find({ "url": urlString });
-        res.json(post);
+        return res.json(post);
     } catch (error) {
-        res.json({ message: error });
+        return res.json({ message: error });
     }
 });
 
@@ -30,7 +30,7 @@ router.post('/new', async (req, res) => {
             }
         });
     } catch (error) {
-        await res.json({ message: error });
+        return res.json({ message: error });
     }
 });
 
@@ -38,15 +38,14 @@ router.post('/new', async (req, res) => {
 router.delete('/:url', async (req, res) => {
     try {
         const removedQuiz = await Quiz.remove({ url: req.params.url });
-        res.json(removedQuiz);
+        return res.json(removedQuiz);
     } catch (error) {
-        res.json({ message: error });
+        return res.json({ message: error });
     }
 });
 
 // Update a quiz
 router.patch('/:subject/:quiz/edit', async (req, res) => {
-    setSubject(req.params.subject);
     const urlString = "/" + req.params.subject + "/" + req.params.quiz;
     try {
         const updatedQuiz = await Quiz.updateOne(
@@ -56,9 +55,9 @@ router.patch('/:subject/:quiz/edit', async (req, res) => {
                 questions: req.body.questions
             }}
         );
-        res.json(updatedQuiz);
+        return res.json(updatedQuiz);
     } catch (error) {
-        res.json({ message: error });
+        return res.json({ message: error });
     }
 });
 
