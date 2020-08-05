@@ -15,9 +15,46 @@ router.get('/', async (req, res) => {
 router.get('/:subjectId', async (req, res) => {
     try {
         const subject = await Subjects.findById(req.params.subjectId);
-        res.json(subject);
+        res.json({
+            subject: subject.subject,
+            topics: subject.topics.map(el => {
+                return {
+                    title: el.title,
+                    links: el.links.map(link => {
+                        return {
+                            title: link.title,
+                            description: link.description,
+                            url: link.url,
+                            topic: link.topic,
+                        }
+                    })
+                }
+            }),
+            tests: subject.tests.map(test => {
+                return {
+                    description: test.description,
+                    title: test.title,
+                    url: test.url,
+                }
+            })
+        });
     } catch (error) {
         res.json({ message: error });
+    }
+});
+
+router.get('/:subject/:topic/:article', async (req, res) => {
+    try {
+        const subject = await Subjects.find({ "subject": req.params.subject });
+        const articleUrl = req.params.topic + "/" + req.params.article;
+        let article;
+        const topic = subject[0].topics?.find(el => el?.links.find(el => el.url === articleUrl));
+        const topicArticle = topic?.links.find(el => el.url === articleUrl);
+        const testArticle = subject[0].tests?.find(el => el.url === articleUrl);
+        article = topicArticle || testArticle;
+        res.json(article);
+    } catch (error) {
+        res.json({ error: true, message: "No subject found" + error });
     }
 });
 

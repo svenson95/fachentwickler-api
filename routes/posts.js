@@ -38,9 +38,9 @@ function setSubject(subject) {
 }
 
 // Get all the posts
-router.get('/lf-1', async (req, res) => {
+router.get('/:subject', async (req, res) => {
     try {
-        const posts = await LF1_Post.find();
+        const posts = await subjectModel.find();
         res.json(posts);
     } catch (error) {
         res.json({ message: error });
@@ -78,9 +78,11 @@ router.post('/:subject/new', async (req, res) => {
 });
 
 // Delete specific post
-router.delete('/:postId', async (req, res) => {
+router.delete('/:subject/:topic/:post*', async (req, res) => {
+    setSubject(req.params.subject);
+    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.post;
     try {
-        const removedPost = await LF1_Post.remove({ _id: req.params.postId });
+        const removedPost = await LF1_Post.remove({ "url": urlString });
         res.json(removedPost);
     } catch (error) {
         res.json({ message: error });
@@ -88,9 +90,9 @@ router.delete('/:postId', async (req, res) => {
 });
 
 // Update a post
-router.patch('/:subject/:topic/:postUrl/edit', async (req, res) => {
+router.patch('/:subject/:topic/:post/edit', async (req, res) => {
     setSubject(req.params.subject);
-    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.postUrl;
+    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.post;
     try {
         const updatedPost = await subjectModel.updateOne(
             { "url": urlString },                   // get the post
