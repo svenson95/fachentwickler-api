@@ -15,6 +15,7 @@ app.use(cors({
 // Import routes
 app.use('/quiz', require('./routes/quiz'));
 app.use('/posts', require('./routes/posts'));
+app.use('/search', require('./routes/search'));
 app.use('/subjects', require('./routes/subjects'));
 app.use('/images', require('./routes/images'));
 app.use('/user', require('./routes/user'));

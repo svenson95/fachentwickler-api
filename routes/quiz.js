@@ -1,15 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/quiz/Quiz');
+const Subjects = require('../models/subject/Subject');
 
 // Get specific quiz
-router.get('/:subject/:topic/:quizTitle/quiz', async (req, res) => {
+router.get('/:subject/:topic/:quiz/quiz', async (req, res) => {
     try {
-        const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.quizTitle + "/quiz";
-        const post = await Quiz.find({ "url": urlString });
-        return res.json(post);
+        const quizUrl = req.params.topic + "/" + req.params.quiz + "/quiz";
+        const subject = await Subjects.findOne({ subject: req.params.subject });
+        const topic = subject.topics?.find(topic => topic.links?.find(link => link.url === quizUrl));
+        const quizDetails = topic?.links.find(el => el.url === quizUrl);
+        const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.quiz + "/quiz";
+        const quiz = await Quiz.findOne({ "url": urlString });
+        return res.json({ content: quiz, details: quizDetails });
     } catch (error) {
-        return res.json({ message: error });
+        res.json({ message: 'Failed get quiz', error: error })
     }
 });
 

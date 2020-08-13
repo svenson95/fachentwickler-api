@@ -16,25 +16,6 @@ const Subject = connection.model('school-subjects', new mongoose.Schema({
                 title: String,
                 description: String,
                 url: String,
-                topic: String,
-                elements: [{
-                    type: {
-                        type: String,
-                        required: true
-                    },
-                    content: {
-                        type: String,
-                        required: true
-                    },
-                    list: {
-                        type: Array,
-                        default: [
-                            {
-                                type: String
-                            }
-                        ]
-                    }
-                }]
             }]
         }
     ]},
