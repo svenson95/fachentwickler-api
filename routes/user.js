@@ -34,11 +34,31 @@ userRouter.post('/register', (req, res) => {
    });
 });
 
+userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const { name } = req.body;
+    User.findOne({ name }, async (err, user) => {
+        if (user) {
+            user.name = req.body.name;
+            user.password = req.body.password;
+            user.email = req.body.email;
+            user.save(err => {
+                if (err) {
+                    res.status(500).json({ message: "Error has occured while changing password", error: err });
+                } else {
+                    res.status(201).json({ message: "Password successfully changed", user: user });
+                }
+            });
+        } else if (err) {
+            res.status(500).json({message: {msgBody: "User not found | " + err, msgError: true }});
+        }
+    });
+});
+
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
         const token = signToken(req.user._id);
         res.cookie('devedu_token', token, {
-            maxAge: 1000 * 3600 * 30, // would expire after 30 days
+            maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
             httpOnly: true, // The cookie only accessible by the web server
         });
         res.status(200).json({ isAuthenticated: true, user: req.user, token: token });
@@ -88,17 +108,21 @@ userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async
 });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    res.status(200).json({
-        isAuthenticated: true,
-        user: {
-            email: req.user.email,
-            name: req.user.name,
-            progress: req.user.progress,
-            role: req.user.role,
-            __v: req.user.__v,
-            _id: req.user._id,
-        }
-    });
+    if (req.isAuthenticated()) {
+        res.status(200).json({
+            isAuthenticated: true,
+            user: {
+                email: req.user.email,
+                name: req.user.name,
+                progress: req.user.progress,
+                role: req.user.role,
+                __v: req.user.__v,
+                _id: req.user._id,
+            }
+        });
+    } else {
+        res.status(401).json({ message: 'You are not logged in', res: res, req: req })
+    }
 });
 
 module.exports = userRouter;

@@ -35,7 +35,6 @@ UserSchema.pre('save', function(next) {
         this.password = passwordHash;
         next();
     });
-
 });
 
 UserSchema.methods.comparePassword = function(password, callback) {
