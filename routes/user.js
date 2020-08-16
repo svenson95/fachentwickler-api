@@ -60,6 +60,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
         res.cookie('devedu_token', token, {
             maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
             httpOnly: true, // The cookie only accessible by the web server
+            sameSite: true
         });
         res.status(200).json({ isAuthenticated: true, user: req.user, token: token });
     }
@@ -111,14 +112,7 @@ userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }
     if (req.isAuthenticated()) {
         res.status(200).json({
             isAuthenticated: true,
-            user: {
-                email: req.user.email,
-                name: req.user.name,
-                progress: req.user.progress,
-                role: req.user.role,
-                __v: req.user.__v,
-                _id: req.user._id,
-            }
+            user: req.user
         });
     } else {
         res.status(401).json({ message: 'You are not logged in', res: res, req: req })
