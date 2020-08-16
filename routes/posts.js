@@ -7,6 +7,10 @@ const LF4_1_Post = require('../models/posts/LF4-1_Post');
 const LF4_2_Post = require('../models/posts/LF4-2_Post');
 const LF5_Post = require('../models/posts/LF5_Post');
 const LF6_Post = require('../models/posts/LF6_Post');
+const LF7_Post = require('../models/posts/LF7_Post');
+const LF8_Post = require('../models/posts/LF8_Post');
+const LF9_Post = require('../models/posts/LF9_Post');
+const WP_Post = require('../models/posts/WP_Post');
 const WiSo_Post = require('../models/posts/WiSo_Post');
 const Englisch_Post = require('../models/posts/Englisch_Post');
 const Deutsch_Post = require('../models/posts/Deutsch_Post');
@@ -29,6 +33,14 @@ function setPostModel(subject) {
         postModel = LF5_Post
     } else if (subject === "lf-6") {
         postModel = LF6_Post
+    } else if (subject === "lf-7") {
+        postModel = LF7_Post
+    } else if (subject === "lf-8") {
+        postModel = LF8_Post
+    } else if (subject === "lf-9") {
+        postModel = LF9_Post
+    } else if (subject === "wp") {
+        postModel = WP_Post
     } else if (subject === "wiso") {
         postModel = WiSo_Post
     } else if (subject === "englisch") {
