@@ -19,6 +19,7 @@ app.use('/search', require('./routes/search'));
 app.use('/subjects', require('./routes/subjects'));
 app.use('/images', require('./routes/images'));
 app.use('/user', require('./routes/user'));
+app.use('/substitution-schedule', require('./routes/substitution-schedule'));
 
 // Routes
 app.get('/', (req, res) => {
