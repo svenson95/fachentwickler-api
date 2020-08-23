@@ -27,6 +27,7 @@ router.get('/:subject/:topic/test', async (req, res) => {
             title: testDetails?.title,
             description: testDetails?.description,
             topic: post.topic,
+            subject: post.subject,
             url: post.url,
             elements: post.elements,
             _id: post._id
@@ -51,6 +52,7 @@ router.get('/:subject/:topic/:post', async (req, res) => {
             title: postDetails.title,
             description: postDetails.description,
             topic: post.topic,
+            subject: post.subject,
             url: post.url,
             elements: post.elements,
             _id: post._id
