@@ -15,7 +15,7 @@ const SubstitutionSchedule = connection.model('substitution-schedule', new mongo
         schoolWeek: { type: String },
         turnus: { type: String },
         turnusWeek: { type: String },
-        classes: { type: Map, of: Map }
+        classes: { type: Array }
     },
     tomorrow: {
         weekday: { type: String },
@@ -24,7 +24,7 @@ const SubstitutionSchedule = connection.model('substitution-schedule', new mongo
         schoolWeek: { type: String },
         turnus: { type: String },
         turnusWeek: { type: String },
-        classes: { type: Map, of: Map }
+        classes: { type: Array }
     }
 }));
 

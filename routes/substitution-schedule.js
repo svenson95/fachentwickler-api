@@ -5,8 +5,8 @@ const SubstitutionSchedule = require('../models/substitution-schedule/Substituti
 // Get substitution schedule for all classes
 router.get('/', async (req, res) => {
     try {
-        const classSchedule = await SubstitutionSchedule.find();
-        res.json(classSchedule);
+        const subSchedule = await SubstitutionSchedule.find();
+        res.json(subSchedule);
     } catch (error) {
         res.json({ error: true, message: error });
     }
@@ -48,11 +48,11 @@ router.get('/:className', async (req, res) => {
 // Submit new substitution schedule
 router.post('/upload', async (req, res) => {
 
-    const substitutionSchedule = new SubstitutionSchedule(req.body);
+    const subSchedule = new SubstitutionSchedule(req.body);
 
     try {
-        await substitutionSchedule.save();
-        res.json({ substitutionSchedule });
+        await subSchedule.save();
+        res.json({ message: "Successfully added substitution schedule", substitutionSchedule: subSchedule });
     } catch (error) {
         res.json({ message: error, error: true });
     }
