@@ -140,12 +140,12 @@ router.post('/:subject/:topic/new', async (req, res) => {
 // Delete specific post
 router.delete('/:subject/:topic/:post*', async (req, res) => {
     setPostModel(req.params.subject);
-    const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.post;
+    const urlString = req.params.topic + "/" + req.params.post;
     try {
-        const removedPost = await LF1_Post.remove({ "url": urlString });
-        res.json(removedPost);
+        const removedPost = await postModel.remove({ "url": urlString });
+        res.json({ message: "Post successfully removed", post: removedPost });
     } catch (error) {
-        res.json({ message: error });
+        res.json({ message: "Delete post failed", error: error });
     }
 });
 
