@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
 
 // Search all posts for specific text
@@ -9,30 +10,35 @@ router.get('/:text', async (req, res) => {
         const subjects = await Subjects.find();
         const foundPosts = [];
         const searchText = req.params.text.toLowerCase();
-        subjects.filter(() => {
-            const withoutBackups = subjects.filter(subject => subject.subject.substr(-6) !==  "backup");
-            withoutBackups.find(subject => {
-                subject.topics.find(topic => {
-                    topic.links.find(post => {
-                        const postTitle = post.title.toLowerCase();
-                        if (postTitle.includes(searchText) && !foundPosts.includes(post)) {
-                            post.subject = subject.subject;
-                            foundPosts.push(post);
-                        }
-                        if (post.elements) {
-                            post.elements.find(element => {
-                                const postContent = element.content.toLowerCase();
-                                if (postContent.includes(searchText) && !foundPosts.includes(post)) {
-                                    post.subject = subject.subject;
-                                    foundPosts.push(post);
-                                }
-                            })
-                        }
-                    })
+        subjects.find(subject => {
+            subject.topics.find(topic => {
+                topic.links.find(post => {
+                    const postTitle = post.title.toLowerCase();
+                    if (postTitle.includes(searchText) && !foundPosts.includes(post)) {
+                        post.subject = subject.subject;
+                        foundPosts.push(post);
+                    }
                 })
             })
         });
-        console.log(foundPosts);
+        const posts = await Posts.find();
+        posts.find(post => {
+            post.elements.find(element => {
+                if (element.content.includes(searchText)) {
+                    subjects.find(subject => {
+                        subject.topics.find(topic => {
+                            topic.links.find(subjectPost => {
+                                if (subjectPost.url === post.url && !foundPosts.includes(post)) {
+                                    subjectPost.subject = subject.subject;
+                                    foundPosts.push(subjectPost);
+                                }
+                            })
+                        })
+                    })
+
+                }
+            })
+        });
         res.json(foundPosts);
     } catch (error) {
         res.json({ error: true, message: "No posts found" + error });

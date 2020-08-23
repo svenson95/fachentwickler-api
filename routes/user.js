@@ -5,21 +5,7 @@ const passportConfig = require('../middleware/passport');
 const JWT = require('jsonwebtoken');
 const User = require('../models/user/User');
 const Progress = require('../models/user/Progress');
-
-const LF1_Post = require('../models/posts/LF1_Post');
-const LF2_Post = require('../models/posts/LF2_Post');
-const LF3_Post = require('../models/posts/LF3_Post');
-const LF4_1_Post = require('../models/posts/LF4-1_Post');
-const LF4_2_Post = require('../models/posts/LF4-2_Post');
-const LF5_Post = require('../models/posts/LF5_Post');
-const LF6_Post = require('../models/posts/LF6_Post');
-const LF7_Post = require('../models/posts/LF7_Post');
-const LF8_Post = require('../models/posts/LF8_Post');
-const LF9_Post = require('../models/posts/LF9_Post');
-const WP_Post = require('../models/posts/WP_Post');
-const WiSo_Post = require('../models/posts/WiSo_Post');
-const Englisch_Post = require('../models/posts/Englisch_Post');
-const Deutsch_Post = require('../models/posts/Deutsch_Post');
+const Posts = require('../models/posts/Posts');
 
 const signToken = userId => {
     return JWT.sign({
@@ -52,14 +38,6 @@ userRouter.post('/register', (req, res) => {
                    })
                }
            });
-           // const newUser = new User({ name, password, role, email: req.body.email });
-           // newUser.save(err => {
-           //     if (err) {
-           //         res.status(500).json({message: "Registration process failed", error: err });
-           //     } else {
-           //         res.status(201).json({message: "Account successfully created", msgError: false });
-           //     }
-           // })
        }
    });
 });
@@ -135,100 +113,11 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
 userRouter.get('/max-progress', async (req, res) => {
     const posts = [];
     try {
-        posts.push({ subject: "lf-1", posts: await LF1_Post.find().map(function(user) {
+        posts.push(await Posts.find().map(function(user) {
             const arr = [];
             user.forEach(el => arr.push(el._id));
             return arr;
-        })});
-        posts.push({ subject: "lf-2", posts: await LF2_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => arr.push(el._id));
-            return arr;
-        })});
-        posts.push({ subject: "lf-3", posts: await LF3_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-4-1", posts: await LF4_1_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-4-2", posts: await LF4_2_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-5", posts: await LF5_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-6", posts: await LF6_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-7", posts: await LF7_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-8", posts: await LF8_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "lf-9", posts: await LF9_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "wp", posts: await WP_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "wiso", posts: await WiSo_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "englisch", posts: await Englisch_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
-        posts.push({ subject: "deutsch", posts: await Deutsch_Post.find().map(function(user) {
-            const arr = [];
-            user.forEach(el => {
-                arr.push(el._id);
-            });
-            return arr;
-        })});
+        }));
         res.status(200).json(posts);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get full progress data', error: error });

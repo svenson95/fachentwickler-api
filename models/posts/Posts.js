@@ -5,15 +5,10 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
     useNewUrlParser: true
 });
 
-const LF5_Post = connection.model('deutsch-posts', new mongoose.Schema({
-    url: {
-        type: String,
-        required: true
-    },
-    topic: {
-        type: String,
-        required: true
-    },
+const Posts = connection.model('subjects-posts', new mongoose.Schema({
+    url: { type: String, required: true },
+    topic: { type: String, required: true },
+    subject: { type: String, required: true },
     elements: {
         type: Array,
         default: [{
@@ -39,4 +34,4 @@ const LF5_Post = connection.model('deutsch-posts', new mongoose.Schema({
     }
 }));
 
-module.exports = LF5_Post;
+module.exports = Posts;
