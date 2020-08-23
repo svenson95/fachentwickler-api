@@ -6,6 +6,7 @@ const JWT = require('jsonwebtoken');
 const User = require('../models/user/User');
 const Progress = require('../models/user/Progress');
 const Posts = require('../models/posts/Posts');
+const Quizzes = require('../models/quiz/Quiz');
 
 const signToken = userId => {
     return JWT.sign({
@@ -19,13 +20,13 @@ userRouter.post('/register', (req, res) => {
    User.findOne({ name }, (error, nameData) => {
        if (error) {
            res.status(500).json({message: {msgBody: "Error has occured", error: error }});
-       } else if (nameData?.name === name) {
+       } else if (nameData) {
            res.status(409).json({ message: "Username is already taken", error: error });
        } else {
            User.findOne({ email }, (error, emailData) => {
                if (error) {
                    res.status(500).json({message: {msgBody: "Error has occured", error: error }});
-               } else if (emailData?.email === email) {
+               } else if (emailData) {
                    res.status(409).json({ message: "E-Mail is already taken", error: error });
                } else {
                    const newUser = new User({ name, password, role, email: req.body.email });
@@ -84,7 +85,7 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req
 userRouter.get('/progress', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await User.findById({ _id : req.user._id }).populate('progress').exec((err, document) => {
         if (err) {
-            res.status(500).json({ message : {msgBody: 'Error has occured while get progress data', msgError : true }})
+            res.status(500).json({ message : {msgBody: 'Get progress data failed', msgError : true }})
         } else {
             res.status(200).json({ user: document });
         }
@@ -95,14 +96,14 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
     const newProgress = new Progress(req.body);
     newProgress.save(error => {
         if (error) {
-            res.status(500).json({ message: 'Error during post progress data (1)', error: error })
+            res.status(500).json({ message: 'Add progress data failed - save new post', error: error })
         } else {
-            req.user.progress.push(newProgress);
+            req.user.progress.push(req.body.unitId);
             req.user.save(error2 => {
                 if (error2) {
-                    res.status(500).json({ message: 'Error during post progress data (2)', error: error2 })
+                    res.status(500).json({ message: 'Add progress data failed - save edited user (progress array)', error: error2 })
                 } else {
-                    res.status(200).json({ message: 'Successfully posted progress', progress: newProgress })
+                    res.status(200).json({ message: 'Successfully added progress', progress: newProgress })
                 }
             });
         }
@@ -111,14 +112,15 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
 
 // userRouter.get('/max-progress', passport.authenticate('jwt', { session: false }), async (req, res) => {
 userRouter.get('/max-progress', async (req, res) => {
-    const posts = [];
     try {
-        posts.push(await Posts.find().map(function(user) {
-            const arr = [];
+        const arr = [];
+        await Posts.find().map(function(user) {
             user.forEach(el => arr.push(el._id));
-            return arr;
-        }));
-        res.status(200).json(posts);
+        });
+        await Quizzes.find().map(function(quiz) {
+            quiz.forEach(el => arr.push(el._id));
+        });
+        res.status(200).json(arr);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get full progress data', error: error });
     }
