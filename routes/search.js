@@ -28,7 +28,7 @@ router.get('/:text', async (req, res) => {
                     subjects.find(subject => {
                         subject.topics.find(topic => {
                             topic.links.find(subjectPost => {
-                                if (subjectPost.url === post.url && !foundPosts.includes(post)) {
+                                if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
                                     subjectPost.subject = subject.subject;
                                     foundPosts.push(subjectPost);
                                 }
