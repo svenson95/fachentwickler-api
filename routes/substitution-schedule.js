@@ -52,10 +52,12 @@ router.post('/upload', async (req, res) => {
 
     try {
         await subSchedule.save();
+        const schedules = await SubstitutionSchedule.find();
+        if (schedules.length > 10) {
+            const firstObj = schedules[0];
+            await SubstitutionSchedule.remove({ "_id": firstObj._id });
+        }
         res.json({ message: "Successfully added substitution schedule", substitutionSchedule: subSchedule });
-        const subSchedule = await SubstitutionSchedule.find();
-        const firstObj = subSchedule[0];
-        await SubstitutionSchedule.remove({ "url": firstObj.url });
     } catch (error) {
         res.json({ message: error, error: true });
     }
