@@ -16,7 +16,8 @@ const signToken = userId => {
 };
 
 userRouter.post('/register', (req, res) => {
-   const { name, password, role, email } = req.body;
+   const { password, role, email } = req.body;
+   const name = req.body.name.toLowerCase();
    User.findOne({ name }, (error, nameData) => {
        if (error) {
            res.status(500).json({message: {msgBody: "Error has occured", error: error }});
@@ -29,7 +30,7 @@ userRouter.post('/register', (req, res) => {
                } else if (emailData) {
                    res.status(409).json({ message: "E-Mail is already taken", error: error });
                } else {
-                   const newUser = new User({ name, password, role, email: req.body.email });
+                   const newUser = new User({ name, password, role, email });
                    newUser.save((err, newUser) => {
                        if (err) {
                            res.status(500).json({message: "Registration process failed", error: err });
@@ -44,10 +45,10 @@ userRouter.post('/register', (req, res) => {
 });
 
 userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const { name } = req.body;
+    const name = req.body.name.toLowerCase();
     User.findOne({ name }, async (err, user) => {
         if (user) {
-            user.name = req.body.name;
+            user.name = req.body.name.toLowerCase();
             user.password = req.body.password;
             user.email = req.body.email;
             user.save(err => {
