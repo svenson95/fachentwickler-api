@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const progressSchema = new mongoose.Schema({
     userId: { type: String },
-    unitId: { type: String }
+    postId: { type: String },
 });
 
 const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLUSERS, {

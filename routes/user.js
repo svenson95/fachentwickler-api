@@ -5,8 +5,7 @@ const passportConfig = require('../middleware/passport');
 const JWT = require('jsonwebtoken');
 const User = require('../models/user/User');
 const Progress = require('../models/user/Progress');
-const Posts = require('../models/posts/Posts');
-const Quizzes = require('../models/quiz/Quiz');
+const Subject = require('../models/subject/Subject');
 
 const signToken = userId => {
     return JWT.sign({
@@ -99,7 +98,7 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
         if (error) {
             res.status(500).json({ message: 'Add progress data failed - save new post', error: error })
         } else {
-            req.user.progress.push(req.body.unitId);
+            req.user.progress.push(req.body.postId);
             req.user.save(error2 => {
                 if (error2) {
                     res.status(500).json({ message: 'Add progress data failed - save edited user (progress array)', error: error2 })
@@ -111,15 +110,18 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
     });
 });
 
-// userRouter.get('/max-progress', passport.authenticate('jwt', { session: false }), async (req, res) => {
-userRouter.get('/max-progress', async (req, res) => {
+userRouter.get('/all-lessons', async (req, res) => {
     try {
         const arr = [];
-        await Posts.find().map(function(user) {
-            user.forEach(el => arr.push(el._id));
-        });
-        await Quizzes.find().map(function(quiz) {
-            quiz.forEach(el => arr.push(el._id));
+        await Subject.find().map(function(subjects) {
+            subjects.forEach(subject => {
+                subject.topics.forEach(topic => topic.links.forEach(post => {
+                    if (post.url !== "-") arr.push(post.postId);
+                }));
+                subject.tests.forEach(test => {
+                    if (test.url !== "-") arr.push(test.postId);
+                })
+            });
         });
         res.status(200).json(arr);
     } catch(error) {

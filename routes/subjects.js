@@ -25,7 +25,7 @@ router.get('/:subject', async (req, res) => {
                             title: link.title,
                             description: link.description,
                             url: link.url,
-                            topic: link.topic,
+                            postId: link.postId
                         }
                     })
                 }
@@ -35,6 +35,7 @@ router.get('/:subject', async (req, res) => {
                     description: test.description,
                     title: test.title,
                     url: test.url,
+                    postId: test.postId
                 }
             })
         });
