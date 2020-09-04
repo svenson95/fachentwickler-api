@@ -10,7 +10,7 @@ router.get('/:subject/:topic/:quiz/quiz', async (req, res) => {
         const subject = await Subjects.findOne({ subject: req.params.subject });
         const topic = subject.topics?.find(topic => topic.links?.find(link => link.url === quizUrl));
         const quizDetails = topic?.links.find(el => el.url === quizUrl);
-        const urlString = "/" + req.params.subject + "/" + req.params.topic + "/" + req.params.quiz + "/quiz";
+        const urlString = req.params.topic + "/" + req.params.quiz + "/quiz";
         const quiz = await Quiz.findOne({ "url": urlString });
         return res.json({ content: quiz, details: quizDetails });
     } catch (error) {
@@ -23,7 +23,8 @@ router.post('/new', async (req, res) => {
 
     const quiz = new Quiz({
         url: req.body.url,
-        questions: req.body.questions
+        questions: req.body.questions,
+        subject: req.body.subject
     });
 
     try {
@@ -57,7 +58,8 @@ router.patch('/:subject/:quiz/edit', async (req, res) => {
             { "url": urlString },                   // get the post
             { $set: {                               // set the changed post
                 url: req.body.url,
-                questions: req.body.questions
+                questions: req.body.questions,
+                subject: req.body.subject
             }}
         );
         return res.json(updatedQuiz);
