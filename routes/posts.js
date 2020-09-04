@@ -62,6 +62,17 @@ router.get('/:subject/:topic/:post', async (req, res) => {
     }
 });
 
+// Get latest 5 post urls
+router.get('/last-lessons', async (req, res) => {
+    try {
+        const posts = await Posts.find();
+        const lastLessons = posts.slice(Math.max(posts.length - 5, 0));
+        res.status(200).json(lastLessons.map(el => el._id));
+    } catch(error) {
+        res.status(500).json({ message: 'Error has occured while get last lessons', error: error });
+    }
+});
+
 // Submit new post
 router.post('/:subject/:topic/new', async (req, res) => {
 
