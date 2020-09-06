@@ -24,7 +24,8 @@ router.get('/:text', async (req, res) => {
         const posts = await Posts.find();
         posts.find(post => {
             post.elements.find(element => {
-                if (element.content.includes(searchText)) {
+                if (element.type === "image") return;
+                if (element.content.toLowerCase().includes(searchText)) {
                     subjects.find(subject => {
                         subject.topics.find(topic => {
                             topic.links.find(subjectPost => {
@@ -35,7 +36,22 @@ router.get('/:text', async (req, res) => {
                             })
                         })
                     })
-
+                }
+                if (element.content.list) {
+                    element.content.list.find(el => {
+                        if (el.toLowerCase().includes(searchText)) {
+                            subjects.find(subject => {
+                                subject.topics.find(topic => {
+                                    topic.links.find(subjectPost => {
+                                        if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
+                                            subjectPost.subject = subject.subject;
+                                            foundPosts.push(subjectPost);
+                                        }
+                                    })
+                                })
+                            })
+                        }
+                    })
                 }
             })
         });
