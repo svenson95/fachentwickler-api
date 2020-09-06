@@ -44,17 +44,22 @@ userRouter.post('/register', (req, res) => {
 });
 
 userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const name = req.body.name.toLowerCase();
+    const name = req.body.name;
     User.findOne({ name }, async (err, user) => {
         if (user) {
-            user.name = req.body.name.toLowerCase();
-            user.password = req.body.password;
-            user.email = req.body.email;
+            if (req.body.name && req.body.email && req.body.password) {
+                user.name = req.body.newName;
+                user.password = req.body.password;
+                user.email = req.body.email;
+            }
+            if (req.body.theme) {
+                user.theme = req.body.theme;
+            }
             user.save(err => {
                 if (err) {
-                    res.status(500).json({ message: "Error has occured while changing password", error: err });
+                    res.status(500).json({ message: "Error has occured while changing user", error: err });
                 } else {
-                    res.status(201).json({ message: "Password successfully changed", user: user });
+                    res.status(201).json({ message: "User successfully changed", user: user });
                 }
             });
         } else if (err) {

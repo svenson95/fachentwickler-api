@@ -22,7 +22,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }]
+    progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }],
+    theme: {
+        type: String,
+        default: 'dark'
+    }
 });
 
 // function(next) as arrow function not work, no access to 'this'
