@@ -117,8 +117,27 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
 
 userRouter.get('/all-lessons', async (req, res) => {
     try {
+        const menuOrder = [
+            "lf-1",
+            "lf-2",
+            "lf-3",
+            "lf-4-1",
+            "lf-4-2",
+            "lf-5",
+            "lf-6",
+            "lf-7",
+            "lf-8",
+            "lf-9",
+            "wp",
+            "wiso",
+            "englisch",
+            "deutsch"
+        ];
         const arr = [];
         await Subject.find().map(function(subjects) {
+            subjects.sort(function(a, b) {
+                return menuOrder.indexOf(a.subject) - menuOrder.indexOf(b.subject);
+            });
             subjects.forEach(subject => {
                 subject.topics.forEach(topic => topic.links.forEach(post => {
                     if (post.url !== "-") arr.push(post.postId);
