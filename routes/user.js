@@ -47,21 +47,49 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
     const name = req.body.name;
     User.findOne({ name }, async (err, user) => {
         if (user) {
+
             if (req.body.name && req.body.email && req.body.password) {
-                user.name = req.body.newName;
+                user.name = req.body.name;
                 user.password = req.body.password;
                 user.email = req.body.email;
             }
+
+            if (req.body.newName) {
+                user.name = req.body.newName;
+            }
+
             if (req.body.theme) {
                 user.theme = req.body.theme;
             }
-            user.save(err => {
-                if (err) {
-                    res.status(500).json({ message: "Error has occured while changing user", error: err });
+
+            const newName = req.body.newName;
+            const newEmail = req.body.email;
+
+            User.findOne({ "name": newName }, async (err2, user2) => {
+                if (user2) {
+                    return res.status(409).json({ message: "Username is already taken" });
+                } else if (err2) {
+                    return res.status(500).json({ message: "Error has occured while changing user (4)", error: err2 });
                 } else {
-                    res.status(201).json({ message: "User successfully changed", user: user });
+
+                    User.findOne({ "email": newEmail}, async (err3, user3) => {
+                        if (user3) {
+                            return res.status(409).json({ message: "E-Mail is already taken" });
+                        } else if (err3) {
+                            return res.status(500).json({ message: "Error has occured while changing user (2)", error: err3 });
+                        } else {
+                            user.save(err4 => {
+                                if (err4) {
+                                    res.status(500).json({ message: "Error has occured while changing user (5)", error: err4 });
+                                } else {
+                                    res.status(201).json({ message: "User successfully changed", user: user });
+                                }
+                            });
+                        }
+                    });
                 }
             });
+
         } else if (err) {
             res.status(500).json({message: {msgBody: "User not found | " + err, msgError: true }});
         }
@@ -77,7 +105,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
         });
         res.status(200).json({ isAuthenticated: true, user: req.user, token: token });
     } else {
-        res.status(409).json({message: "Wrong password", error: error });
+        res.status(409).json({message: "Wrong password", response: res });
     }
 });
 
