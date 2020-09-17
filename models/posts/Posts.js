@@ -9,6 +9,8 @@ const Posts = connection.model('subjects-posts', new mongoose.Schema({
     url: { type: String, required: true },
     topic: { type: String, required: true },
     subject: { type: String, required: true },
+    lessonDate: { type: String, required: true },
+    lastUpdate: { type: String, required: true },
     elements: {
         type: Array,
         default: [{

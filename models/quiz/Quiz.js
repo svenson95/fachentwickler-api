@@ -7,6 +7,8 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
 
 const Quiz = connection.model('quizzes', new mongoose.Schema({
     url:        { type: String, required: true },
+    lessonDate: { type: String, required: true },
+    lastUpdate: { type: String, required: true },
     questions:  { type: Array, default: [
         {
             question: { type: String, required: true },

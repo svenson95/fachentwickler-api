@@ -28,6 +28,8 @@ router.get('/:subject/:topic/test', async (req, res) => {
             description: testDetails?.description,
             topic: post.topic,
             subject: post.subject,
+            lessonDate: post.lessonDate,
+            lastUpdate: post.lastUpdate,
             url: post.url,
             elements: post.elements,
             _id: post._id
@@ -53,6 +55,8 @@ router.get('/:subject/:topic/:post', async (req, res) => {
             description: postDetails.description,
             topic: post.topic,
             subject: post.subject,
+            lessonDate: post.lessonDate,
+            lastUpdate: post.lastUpdate,
             url: post.url,
             elements: post.elements,
             _id: post._id
@@ -62,11 +66,16 @@ router.get('/:subject/:topic/:post', async (req, res) => {
     }
 });
 
-// Get latest 5 post urls
+// Get latest 10 post urls
 router.get('/last-lessons', async (req, res) => {
     try {
         const posts = await Posts.find();
-        const lastLessons = posts.slice(Math.max(posts.length - 5, 0));
+        posts.sort(function(a, b) {
+            if (a.lessonDate < b.lessonDate) { return -1; }
+            if (a.lessonDate > b.lessonDate) { return 1; }
+            return 0;
+        });
+        const lastLessons = posts.slice(Math.max(posts.length - 10, 0));
         res.status(200).json(lastLessons.map(el => el._id));
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get last lessons', error: error });
@@ -80,6 +89,8 @@ router.post('/:subject/:topic/new', async (req, res) => {
         url: req.body.url,
         topic: req.body.topic,
         subject: req.body.subject,
+        lessonDate: req.body.lessonDate,
+        lastUpdate: req.body.lastUpdate,
         elements: req.body.elements
     });
 
@@ -92,10 +103,7 @@ router.post('/:subject/:topic/new', async (req, res) => {
         res.json({
             title: postDetails.title,
             description: postDetails.description,
-            topic: req.body.topic,
-            subject: req.body.subject,
-            url: req.body.url,
-            elements: req.body.elements
+            post: post
         });
     } catch (error) {
         res.json({ message: error });
@@ -123,6 +131,8 @@ router.patch('/:subject/:topic/:post/edit', async (req, res) => {
                 url: req.body.url,
                 topic: req.body.topic,
                 subject: req.body.subject,
+                lessonDate: req.body.lessonDate,
+                lastUpdate: req.body.lastUpdate,
                 elements: req.body.elements,
             }}
         );

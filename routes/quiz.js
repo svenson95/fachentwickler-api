@@ -58,6 +58,8 @@ router.patch('/:subject/:quiz/edit', async (req, res) => {
             { "url": urlString },                   // get the post
             { $set: {                               // set the changed post
                 url: req.body.url,
+                lessonDate: req.body.lessonDate,
+                lastUpdate: req.body.lastUpdate,
                 questions: req.body.questions,
                 subject: req.body.subject
             }}
