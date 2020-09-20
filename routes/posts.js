@@ -3,6 +3,22 @@ const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
 
+function currentDate() {
+    const today = new Date();
+    let yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1;     // 0-11
+    let dd = today.getDate();
+
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    return yyyy + "-" + mm + "-" + dd;
+}
+
 // Get all the posts
 router.get('/', async (req, res) => {
     try {
@@ -90,7 +106,7 @@ router.post('/:subject/:topic/new', async (req, res) => {
         topic: req.body.topic,
         subject: req.body.subject,
         lessonDate: req.body.lessonDate,
-        lastUpdate: req.body.lastUpdate,
+        lastUpdate: currentDate(),
         elements: req.body.elements
     });
 
@@ -132,7 +148,7 @@ router.patch('/:subject/:topic/:post/edit', async (req, res) => {
                 topic: req.body.topic,
                 subject: req.body.subject,
                 lessonDate: req.body.lessonDate,
-                lastUpdate: req.body.lastUpdate,
+                lastUpdate: currentDate(),
                 elements: req.body.elements,
             }}
         );
