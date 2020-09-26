@@ -82,7 +82,22 @@ router.get('/:subject/:topic/:post', async (req, res) => {
     }
 });
 
-// Get latest 10 post urls
+// Get all post ids (sorted in ascending lessonDate order)
+router.get('/all-lessons', async (req, res) => {
+    try {
+        const posts = await Posts.find();
+        posts.sort(function(a, b) {
+            if (a.lessonDate < b.lessonDate) { return -1; }
+            if (a.lessonDate > b.lessonDate) { return 1; }
+            return 0;
+        });
+        res.status(200).json(posts.map(el => el._id));
+    } catch(error) {
+        res.status(500).json({ message: 'Error has occured while get all lessons', error: error });
+    }
+});
+
+// Get latest 10 post ids
 router.get('/last-lessons', async (req, res) => {
     try {
         const posts = await Posts.find();

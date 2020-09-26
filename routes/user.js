@@ -143,44 +143,6 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
     });
 });
 
-userRouter.get('/all-lessons', async (req, res) => {
-    try {
-        const menuOrder = [
-            "lf-1",
-            "lf-2",
-            "lf-3",
-            "lf-4-1",
-            "lf-4-2",
-            "lf-5",
-            "lf-6",
-            "lf-7",
-            "lf-8",
-            "lf-9",
-            "wp",
-            "wiso",
-            "englisch",
-            "deutsch"
-        ];
-        const arr = [];
-        await Subject.find().map(function(subjects) {
-            subjects.sort(function(a, b) {
-                return menuOrder.indexOf(a.subject) - menuOrder.indexOf(b.subject);
-            });
-            subjects.forEach(subject => {
-                subject.topics.forEach(topic => topic.links.forEach(post => {
-                    if (post.url !== "-") arr.push(post.postId);
-                }));
-                subject.tests.forEach(test => {
-                    if (test.url !== "-") arr.push(test.postId);
-                })
-            });
-        });
-        res.status(200).json(arr);
-    } catch(error) {
-        res.status(500).json({ message: 'Error has occured while get full progress data', error: error });
-    }
-});
-
 userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.user.role === 'admin') {
         res.status(200).json({ message: { body: 'Admin logged in', error: false }});
