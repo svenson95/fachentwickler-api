@@ -62,6 +62,10 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
                 user.theme = req.body.theme;
             }
 
+            if (req.body.progress) {
+                user.progress = req.body.progress;
+            }
+
             const newName = req.body.newName;
             const newEmail = req.body.email;
 
