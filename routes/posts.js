@@ -97,19 +97,37 @@ router.get('/all-lessons', async (req, res) => {
     }
 });
 
-// Get latest 10 post ids
-router.get('/last-lessons', async (req, res) => {
+// Get latest 3 school weeks posts
+router.get('/last-school-weeks', async (req, res) => {
     try {
         const posts = await Posts.find();
-        posts.sort(function(a, b) {
-            if (a.lessonDate < b.lessonDate) { return -1; }
-            if (a.lessonDate > b.lessonDate) { return 1; }
+        const weeksArray = [];
+        posts.forEach(post => {
+            if (post.schoolWeek > 0) {
+                const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
+                if (weekObj) {
+                    weekObj.posts.push({ id: post._id, schoolWeek: post.schoolWeek, lessonDate: post.lessonDate });
+                } else {
+                    weeksArray.push({ schoolWeek: post.schoolWeek, posts: [{ id: post._id, schoolWeek: post.schoolWeek, lessonDate: post.lessonDate }] })
+                }
+            }
+        });
+        weeksArray.sort(function(a, b) {
+            if (Number(a.schoolWeek) < Number(b.schoolWeek)) { return 1; }
+            if (Number(a.schoolWeek) > Number(b.schoolWeek)) { return -1; }
             return 0;
         });
-        const lastLessons = posts.slice(Math.max(posts.length - 10, 0));
-        res.status(200).json(lastLessons.map(el => el._id));
+        const lastWeeks = weeksArray.slice(0, 3);
+        for (let i = 0; i < weeksArray.length; i++) {
+            weeksArray[i].posts.sort(function(a, b) {
+                if (a.lessonDate < b.lessonDate) { return 1; }
+                if (a.lessonDate > b.lessonDate) { return -1; }
+                return 0;
+            });
+        }
+        res.status(200).json(lastWeeks);
     } catch(error) {
-        res.status(500).json({ message: 'Error has occured while get last lessons', error: error });
+        res.status(500).json({ message: 'Error has occured while get last school-weeks (posts)', error: error });
     }
 });
 
