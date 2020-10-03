@@ -53,6 +53,24 @@ router.get('/:text', async (req, res) => {
                         }
                     })
                 }
+                if (element.rows) {
+                    element.rows.find(row => {
+                        row.columns.find(column => {
+                            if (column.content.toLowerCase().includes(searchText)) {
+                                subjects.find(subject => {
+                                    subject.topics.find(topic => {
+                                        topic.links.find(subjectPost => {
+                                            if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
+                                                subjectPost.subject = subject.subject;
+                                                foundPosts.push(subjectPost);
+                                            }
+                                        })
+                                    })
+                                })
+                            }
+                        })
+                    })
+                }
             })
         });
         res.json(foundPosts);
