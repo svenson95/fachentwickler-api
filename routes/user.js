@@ -95,7 +95,7 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
             });
 
         } else if (err) {
-            res.status(500).json({message: {msgBody: "User not found | " + err, msgError: true }});
+            res.status(500).json({ message: "User not found", error: err });
         }
     });
 });
