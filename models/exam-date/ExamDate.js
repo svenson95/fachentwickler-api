@@ -6,7 +6,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
 });
 
 const ExamDate = connection.model('exam-dates', new mongoose.Schema({
-    date: { type: Date, required: true },
+    date: { type: String, required: true },
     subject: { type: String, required: true },
     title: { type: String, required: true }
 }));
