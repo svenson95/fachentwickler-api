@@ -3,6 +3,19 @@ const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
 
+function pushToResults(_subjects, _post, _foundPosts) {
+    _subjects.find(subject => {
+        subject.topics.find(topic => {
+            topic.links.find(subjectPost => {
+                if (subjectPost.url === _post.url && !_foundPosts.includes(subjectPost)) {
+                    subjectPost.subject = subject.subject;
+                    _foundPosts.push(subjectPost);
+                }
+            })
+        })
+    })
+}
+
 // Search all posts for specific text
 router.get('/:text', async (req, res) => {
     try {
@@ -25,57 +38,43 @@ router.get('/:text', async (req, res) => {
         posts.find(post => {
             post.elements.find(element => {
                 if (element.type === "image") return;
-                if (element.content.toLowerCase().includes(searchText)) {
-                    subjects.find(subject => {
-                        subject.topics.find(topic => {
-                            topic.links.find(subjectPost => {
-                                if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
-                                    subjectPost.subject = subject.subject;
-                                    foundPosts.push(subjectPost);
+                if (element.type === "list") {
+                    if (element.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
+                        pushToResults(subjects, post, foundPosts);
+                    }
+
+                    if (element.list) {
+                        // element.list.find(listItem => {
+                        //     if (
+                        //         (listItem?.content.toLowerCase().includes(searchText) || listItem?.toLowerCase().includes(searchText))
+                        //         &&
+                        //         !foundPosts.includes(post)
+                        //     ) {
+                        //         pushToResults(subjects, post, foundPosts);
+                        //     }
+                        // })
+                    }
+
+                } else if (element.type === 'table') {
+                    if (element.rows) {
+                        element.rows.find(row => {
+                            row.columns.find(column => {
+                                if (column.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
+                                    pushToResults(subjects, post, foundPosts);
                                 }
                             })
                         })
-                    })
+                    }
                 }
-                if (element.content.list) {
-                    element.content.list.find(el => {
-                        if (el.toLowerCase().includes(searchText)) {
-                            subjects.find(subject => {
-                                subject.topics.find(topic => {
-                                    topic.links.find(subjectPost => {
-                                        if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
-                                            subjectPost.subject = subject.subject;
-                                            foundPosts.push(subjectPost);
-                                        }
-                                    })
-                                })
-                            })
-                        }
-                    })
-                }
-                if (element.rows) {
-                    element.rows.find(row => {
-                        row.columns.find(column => {
-                            if (column.content.toLowerCase().includes(searchText)) {
-                                subjects.find(subject => {
-                                    subject.topics.find(topic => {
-                                        topic.links.find(subjectPost => {
-                                            if (subjectPost.url === post.url && !foundPosts.includes(subjectPost)) {
-                                                subjectPost.subject = subject.subject;
-                                                foundPosts.push(subjectPost);
-                                            }
-                                        })
-                                    })
-                                })
-                            }
-                        })
-                    })
+
+                if (element.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
+                    pushToResults(subjects, post, foundPosts);
                 }
             })
         });
         res.json(foundPosts);
     } catch (error) {
-        res.json({ error: true, message: "No posts found" + error });
+        res.json({ error: true, message: error });
     }
 });
 
