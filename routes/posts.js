@@ -106,9 +106,22 @@ router.get('/last-school-weeks', async (req, res) => {
             if (post.schoolWeek > 0) {
                 const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
                 if (weekObj) {
-                    weekObj.posts.push({ id: post._id, schoolWeek: post.schoolWeek, lessonDate: post.lessonDate });
+                    weekObj.posts.push({
+                        id: post._id,
+                        schoolWeek: post.schoolWeek,
+                        lessonDate: post.lessonDate,
+                        subject: post.subject
+                    });
                 } else {
-                    weeksArray.push({ schoolWeek: post.schoolWeek, posts: [{ id: post._id, schoolWeek: post.schoolWeek, lessonDate: post.lessonDate }] })
+                    weeksArray.push({
+                        schoolWeek: post.schoolWeek,
+                        posts: [{
+                            id: post._id,
+                            schoolWeek: post.schoolWeek,
+                            lessonDate: post.lessonDate,
+                            subject: post.subject
+                        }]
+                    })
                 }
             }
         });
@@ -172,20 +185,37 @@ router.delete('/:subject/:topic/:post*', async (req, res) => {
 
 // Update a post
 router.patch('/:subject/:topic/:post/edit', async (req, res) => {
+    const reqString = req.params.subject + "/" + req.params.topic + "/" + req.params.post;
     const urlString = req.params.topic + "/" + req.params.post;
+    const testString = req.params.topic + "/test"; // subject -> topic in this case, since subject is
     try {
-        const updatedPost = await Posts.updateOne(
-            { "url": urlString },                   // get the post
-            { $set: {                               // set the changed post
-                url: req.body.url,
-                topic: req.body.topic,
-                subject: req.body.subject,
-                lessonDate: req.body.lessonDate,
-                lastUpdate: currentDate(),
-                elements: req.body.elements,
-            }}
-        );
-        res.json(updatedPost);
+        if (reqString.endsWith('/test')) {
+            const updatedTest = await Posts.updateOne(
+                { "url": testString },                  // get the test
+                { $set: {                               // set the changed test
+                        url: req.body.url,
+                        topic: req.body.topic,
+                        subject: req.body.subject,
+                        lessonDate: req.body.lessonDate,
+                        lastUpdate: currentDate(),
+                        elements: req.body.elements,
+                    }}
+            );
+            res.json(updatedTest);
+        } else {
+            const updatedPost = await Posts.updateOne(
+                { "url": urlString },                   // get the post
+                { $set: {                               // set the changed post
+                        url: req.body.url,
+                        topic: req.body.topic,
+                        subject: req.body.subject,
+                        lessonDate: req.body.lessonDate,
+                        lastUpdate: currentDate(),
+                        elements: req.body.elements,
+                    }}
+            );
+            res.json(updatedPost);
+        }
     } catch (error) {
         res.json({ message: error });
     }

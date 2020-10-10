@@ -17,18 +17,15 @@ const Posts = connection.model('subjects-posts', new mongoose.Schema({
         default: [{
             type: {
                 type: String,
-                required: true
             },
             content: {
                 type: String,
-                required: true
             },
             list: {
                 type: Array,
-                required: false,
                 default: [
                     {
-                        type: String,
+                        type: String || Object,
                         required: true
                     }
                 ]
