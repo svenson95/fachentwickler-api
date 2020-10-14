@@ -114,7 +114,7 @@ router.get('/last-school-weeks', async (req, res) => {
                     if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
                     weekObj.posts.push({
                         id: post._id,
-                        subPost: subPost,
+                        details: subPost,
                         schoolWeek: post.schoolWeek,
                         lessonDate: post.lessonDate,
                         subject: post.subject
@@ -129,7 +129,7 @@ router.get('/last-school-weeks', async (req, res) => {
                         schoolWeek: post.schoolWeek,
                         posts: [{
                             id: post._id,
-                            subPost: subPost,
+                            details: subPost,
                             schoolWeek: post.schoolWeek,
                             lessonDate: post.lessonDate,
                             subject: post.subject
