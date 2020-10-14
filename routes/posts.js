@@ -101,22 +101,35 @@ router.get('/all-lessons', async (req, res) => {
 router.get('/last-school-weeks', async (req, res) => {
     try {
         const posts = await Posts.find();
+        const subjects = await Subjects.find();
         const weeksArray = [];
         posts.forEach(post => {
             if (post.schoolWeek > 0) {
                 const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
                 if (weekObj) {
+                    const subject = subjects.find(sub => sub.subject === post.subject);
+                    const _postId = String(post._id);
+                    const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
+                    let subPost = topic?.links.find(link => link.postId === _postId);
+                    if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
                     weekObj.posts.push({
                         id: post._id,
+                        subPost: subPost,
                         schoolWeek: post.schoolWeek,
                         lessonDate: post.lessonDate,
                         subject: post.subject
                     });
                 } else {
+                    const subject = subjects.find(sub => sub.subject === post.subject);
+                    const _postId = String(post._id);
+                    const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
+                    let subPost = topic?.links.find(link => link.postId === _postId);
+                    if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
                     weeksArray.push({
                         schoolWeek: post.schoolWeek,
                         posts: [{
                             id: post._id,
+                            subPost: subPost,
                             schoolWeek: post.schoolWeek,
                             lessonDate: post.lessonDate,
                             subject: post.subject
