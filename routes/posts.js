@@ -157,6 +157,65 @@ router.get('/last-school-weeks', async (req, res) => {
     }
 });
 
+// Get all school weeks (history)
+router.get('/all-school-weeks', async (req, res) => {
+    try {
+        const posts = await Posts.find();
+        const subjects = await Subjects.find();
+        const weeksArray = [];
+        posts.forEach(post => {
+            if (post.schoolWeek > 0) {
+                const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
+                if (weekObj) {
+                    const subject = subjects.find(sub => sub.subject === post.subject);
+                    const _postId = String(post._id);
+                    const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
+                    let subPost = topic?.links.find(link => link.postId === _postId);
+                    if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
+                    weekObj.posts.push({
+                        id: post._id,
+                        details: subPost,
+                        schoolWeek: post.schoolWeek,
+                        lessonDate: post.lessonDate,
+                        subject: post.subject
+                    });
+                } else {
+                    const subject = subjects.find(sub => sub.subject === post.subject);
+                    const _postId = String(post._id);
+                    const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
+                    let subPost = topic?.links.find(link => link.postId === _postId);
+                    if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
+                    weeksArray.push({
+                        schoolWeek: post.schoolWeek,
+                        posts: [{
+                            id: post._id,
+                            details: subPost,
+                            schoolWeek: post.schoolWeek,
+                            lessonDate: post.lessonDate,
+                            subject: post.subject
+                        }]
+                    })
+                }
+            }
+        });
+        weeksArray.sort(function(a, b) {
+            if (Number(a.schoolWeek) > Number(b.schoolWeek)) { return 1; }
+            if (Number(a.schoolWeek) < Number(b.schoolWeek)) { return -1; }
+            return 0;
+        });
+        for (let i = 0; i < weeksArray.length; i++) {
+            weeksArray[i].posts.sort(function(a, b) {
+                if (a.lessonDate < b.lessonDate) { return 1; }
+                if (a.lessonDate > b.lessonDate) { return -1; }
+                return 0;
+            });
+        }
+        res.status(200).json(weeksArray);
+    } catch(error) {
+        res.status(500).json({ message: 'Error has occured while get all school-weeks (posts)', error: error });
+    }
+});
+
 // Submit new post
 router.post('/:subject/:topic/new', async (req, res) => {
 
