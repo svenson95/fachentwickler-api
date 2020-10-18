@@ -17,30 +17,7 @@ router.get('/', async (req, res) => {
 router.get('/:subject', async (req, res) => {
     try {
         const subject = await Subjects.findOne({ subject: req.params.subject });
-        res.json({
-            subject: subject.subject,
-            topics: subject.topics.map(el => {
-                return {
-                    title: el.title,
-                    links: el.links.map(link => {
-                        return {
-                            title: link.title,
-                            description: link.description,
-                            url: link.url,
-                            postId: link.postId
-                        }
-                    })
-                }
-            }),
-            tests: subject.tests.map(test => {
-                return {
-                    description: test.description,
-                    title: test.title,
-                    url: test.url,
-                    postId: test.postId
-                }
-            })
-        });
+        res.json(subject);
     } catch (error) {
         res.json({ message: error });
     }
