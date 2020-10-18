@@ -205,8 +205,8 @@ router.get('/all-school-weeks', async (req, res) => {
         });
         for (let i = 0; i < weeksArray.length; i++) {
             weeksArray[i].posts.sort(function(a, b) {
-                if (a.lessonDate < b.lessonDate) { return 1; }
-                if (a.lessonDate > b.lessonDate) { return -1; }
+                if (a.lessonDate > b.lessonDate) { return 1; }
+                if (a.lessonDate < b.lessonDate) { return -1; }
                 return 0;
             });
         }
