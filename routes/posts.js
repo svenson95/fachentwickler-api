@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
+const Quizzes = require('../models/quiz/Quiz');
 
 function currentDate() {
     const today = new Date();
@@ -57,11 +58,11 @@ router.get('/:subject/:topic/test', async (req, res) => {
 
 // Get specific post
 router.get('/:subject/:topic/:post', async (req, res) => {
-    const subjectWithPost = await Subjects.findOne({ subject: req.params.subject });
-    const subjectTopics = subjectWithPost.topics.flatMap(el => el.links);
+    const postSubject = await Subjects.findOne({ subject: req.params.subject });
+    const subjectTopics = postSubject.topics.flatMap(el => el.links);
     const postDetails = await subjectTopics.find(el => el.url === req.params.topic + "/" + req.params.post || el.url === req.params.topic + "/test");
     if (postDetails === undefined) {
-        subjectWithPost.tests.find(el => el.url === req.params.topic + "/test")
+        postSubject.tests.find(el => el.url === req.params.topic + "/test")
     }
     try {
         const urlString = req.params.topic + "/" + req.params.post;
@@ -161,9 +162,11 @@ router.get('/last-school-weeks', async (req, res) => {
 router.get('/all-school-weeks', async (req, res) => {
     try {
         const posts = await Posts.find();
+        const quizzes = await Quizzes.find();
+        const objects = [...posts, ...quizzes];
         const subjects = await Subjects.find();
         const weeksArray = [];
-        posts.forEach(post => {
+        objects.forEach(post => {
             if (post.schoolWeek > 0) {
                 const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
                 if (weekObj) {
@@ -203,13 +206,13 @@ router.get('/all-school-weeks', async (req, res) => {
             if (Number(a.schoolWeek) < Number(b.schoolWeek)) { return -1; }
             return 0;
         });
-        for (let i = 0; i < weeksArray.length; i++) {
-            weeksArray[i].posts.sort(function(a, b) {
+        await weeksArray.forEach(week => {
+            week.posts.sort(function(a, b) {
                 if (a.lessonDate > b.lessonDate) { return 1; }
                 if (a.lessonDate < b.lessonDate) { return -1; }
                 return 0;
             });
-        }
+        })
         res.status(200).json(weeksArray);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get all school-weeks (posts)', error: error });
