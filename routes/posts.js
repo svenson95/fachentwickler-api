@@ -3,6 +3,7 @@ const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
 const Quizzes = require('../models/quiz/Quiz');
+const IndexCards = require('../models/index-cards/IndexCards');
 
 function currentDate() {
     const today = new Date();
@@ -87,7 +88,10 @@ router.get('/:subject/:topic/:post', async (req, res) => {
 router.get('/all-lessons', async (req, res) => {
     try {
         const posts = await Posts.find();
-        posts.sort(function(a, b) {
+        const quizzes = await Quizzes.find();
+        const indexCards = await IndexCards.find();
+        const objects = [...posts, ...quizzes, ...indexCards];
+        objects.sort(function(a, b) {
             if (a.lessonDate < b.lessonDate) { return -1; }
             if (a.lessonDate > b.lessonDate) { return 1; }
             return 0;
@@ -102,9 +106,12 @@ router.get('/all-lessons', async (req, res) => {
 router.get('/last-school-weeks', async (req, res) => {
     try {
         const posts = await Posts.find();
+        const quizzes = await Quizzes.find();
+        const indexCards = await IndexCards.find();
+        const objects = [...posts, ...quizzes, ...indexCards];
         const subjects = await Subjects.find();
         const weeksArray = [];
-        posts.forEach(post => {
+        objects.forEach(post => {
             if (post.schoolWeek > 0) {
                 const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
                 if (weekObj) {
@@ -163,7 +170,8 @@ router.get('/all-school-weeks', async (req, res) => {
     try {
         const posts = await Posts.find();
         const quizzes = await Quizzes.find();
-        const objects = [...posts, ...quizzes];
+        const indexCards = await IndexCards.find();
+        const objects = [...posts, ...quizzes, ...indexCards];
         const subjects = await Subjects.find();
         const weeksArray = [];
         objects.forEach(post => {
