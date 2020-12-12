@@ -128,6 +128,11 @@ router.get('/school-week/:number', async (req, res) => {
                 });
             }
         });
+        week.posts.sort(function(a, b) {
+            if (a.lessonDate < b.lessonDate) { return 1; }
+            if (a.lessonDate > b.lessonDate) { return -1; }
+            return 0;
+        });
         res.status(200).json(week);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get specific school-week (posts)', error: error });
