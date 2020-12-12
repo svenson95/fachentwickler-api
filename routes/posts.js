@@ -96,9 +96,41 @@ router.get('/all-lessons', async (req, res) => {
             if (a.lessonDate > b.lessonDate) { return 1; }
             return 0;
         });
-        res.status(200).json(posts.map(el => el._id));
+        const ids = objects.map(el => el._id);
+        res.status(200).json(ids);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get all lessons', error: error });
+    }
+});
+
+// Get specific school week - by number
+router.get('/school-week/:number', async (req, res) => {
+    try {
+        const posts = await Posts.find();
+        const quizzes = await Quizzes.find();
+        const indexCards = await IndexCards.find();
+        const objects = [...posts, ...quizzes, ...indexCards];
+        const subjects = await Subjects.find();
+        let week = { schoolWeek: req.params.number, posts: [] };
+        objects.forEach(post => {
+            if (req.params.number === post.schoolWeek) {
+                const subject = subjects.find(sub => sub.subject === post.subject);
+                const _postId = String(post._id);
+                const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
+                let subPost = topic?.links.find(link => link.postId === _postId);
+                if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
+                week.posts.push({
+                    id: post._id,
+                    details: subPost,
+                    schoolWeek: post.schoolWeek,
+                    lessonDate: post.lessonDate,
+                    subject: post.subject
+                });
+            }
+        });
+        res.status(200).json(week);
+    } catch(error) {
+        res.status(500).json({ message: 'Error has occured while get specific school-week (posts)', error: error });
     }
 });
 
