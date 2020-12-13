@@ -120,11 +120,14 @@ router.get('/school-week/:number', async (req, res) => {
                 let subPost = topic?.links.find(link => link.postId === _postId);
                 if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
                 week.posts.push({
-                    id: post._id,
-                    details: subPost,
+                    postId: post._id,
                     schoolWeek: post.schoolWeek,
                     lessonDate: post.lessonDate,
-                    subject: post.subject
+                    subject: post.subject,
+                    url: post.url,
+                    type: subPost.type,
+                    title: subPost.title,
+                    description: subPost.description
                 });
             }
         });
