@@ -6,7 +6,7 @@ const User = require('../models/user/User');
 const cookieExtractor = req => {
     let token = null;
     if (req && req.cookies) {
-        token = req.cookies['devedu_token'];
+        token = req.cookies['fiappy_token'];
     }
     return token;
 };
