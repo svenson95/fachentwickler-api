@@ -15,6 +15,7 @@ const Subject = connection.model('school-subjects', new mongoose.Schema({
             links: Array, default: [{
                 title: String,
                 description: String,
+                lessonDate: String,
                 url: String,
                 type: String,
                 postId: String
