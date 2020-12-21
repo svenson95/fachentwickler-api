@@ -132,8 +132,8 @@ router.get('/school-week/:number', async (req, res) => {
             }
         });
         week.posts.sort(function(a, b) {
-            if (a.lessonDate < b.lessonDate) { return 1; }
-            if (a.lessonDate > b.lessonDate) { return -1; }
+            if (a.lessonDate > b.lessonDate) { return 1; }
+            if (a.lessonDate < b.lessonDate) { return -1; }
             return 0;
         });
         res.status(200).json(week);
@@ -224,11 +224,14 @@ router.get('/all-school-weeks', async (req, res) => {
                     let subPost = topic?.links.find(link => link.postId === _postId);
                     if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
                     weekObj.posts.push({
-                        id: post._id,
-                        details: subPost,
+                        postId: post._id,
                         schoolWeek: post.schoolWeek,
                         lessonDate: post.lessonDate,
-                        subject: post.subject
+                        subject: post.subject,
+                        url: post.url,
+                        type: subPost.type,
+                        title: subPost.title,
+                        description: subPost.description
                     });
                 } else {
                     const subject = subjects.find(sub => sub.subject === post.subject);
@@ -239,11 +242,14 @@ router.get('/all-school-weeks', async (req, res) => {
                     weeksArray.push({
                         schoolWeek: post.schoolWeek,
                         posts: [{
-                            id: post._id,
-                            details: subPost,
+                            postId: post._id,
                             schoolWeek: post.schoolWeek,
                             lessonDate: post.lessonDate,
-                            subject: post.subject
+                            subject: post.subject,
+                            url: post.url,
+                            type: subPost.type,
+                            title: subPost.title,
+                            description: subPost.description
                         }]
                     })
                 }
@@ -276,18 +282,18 @@ router.post('/:subject/:topic/new', async (req, res) => {
         subject: req.body.subject,
         lessonDate: req.body.lessonDate,
         lastUpdate: currentDate(),
+        schoolWeek: req.body.schoolWeek,
         elements: req.body.elements
     });
 
     const subjectWithPost = await Subjects.findOne({ subject: req.params.subject });
-    const subjectLinks = subjectWithPost.topics.flatMap(el => el.links) || subjectWithPost.tests;
+    const subjectLinks = subjectWithPost.topics.flatMap(el => el.links).concat(subjectWithPost.tests);
     const postDetails = await subjectLinks.find(el => el.url === req.body.url);
 
     try {
         await post.save();
         res.json({
-            title: postDetails.title,
-            description: postDetails.description,
+            details: postDetails,
             post: post
         });
     } catch (error) {

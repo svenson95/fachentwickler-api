@@ -54,7 +54,7 @@ userRouter.post('/register', (req, res) => {
                                error: err
                            });
                        } else {
-                           const token = signToken(req.user._id);
+                           const token = signToken(newUser._id);
                            res.status(201).json({
                                success: true,
                                message: "Account successfully created",
@@ -176,7 +176,6 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
 });
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
-    // req.logout();
     res.clearCookie('fiappy_token');
     res.json({
         success: true,
@@ -223,7 +222,8 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
                     res.status(200).json({
                         success: true,
                         message: 'Successfully added progress',
-                        progress: newProgress
+                        progress: newProgress,
+                        user: req.user
                     })
                 }
             });

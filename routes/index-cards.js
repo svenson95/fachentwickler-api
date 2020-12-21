@@ -52,7 +52,7 @@ router.delete('/:url', async (req, res) => {
 
 // Update index-cards
 router.patch('/:subject/:topic/:title/edit', async (req, res) => {
-    const urlString = "/" + req.params.topic + "/" + req.params.title + '/index-cards';
+    const urlString = req.params.topic + "/" + req.params.title + '/index-cards';
     try {
         const updatedIndexCards = await IndexCards.updateOne(
             { "url": urlString },                   // get the post
@@ -60,8 +60,10 @@ router.patch('/:subject/:topic/:title/edit', async (req, res) => {
                 url: req.body.url,
                 lessonDate: req.body.lessonDate,
                 lastUpdate: req.body.lastUpdate,
+                schoolWeek: req.body.schoolWeek,
                 questions: req.body.questions,
-                subject: req.body.subject
+                subject: req.body.subject,
+                topic: req.body.topic
             }}
         );
         return res.json(updatedIndexCards);
