@@ -30,31 +30,22 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get specific post
-router.get('/:topic/:post', async (req, res) => {
-    try {
-        const urlString = req.params.topic + "/" + req.params.post;
-        const post = await Posts.findOne({ "url": urlString }, {type: 0, schoolWeek: 0});
-        res.json(post);
-    } catch (error) {
-        res.json({
-            message: 'Post not found',
-            error: error
-        });
-    }
-});
+// Get mulitple posts by id array
+router.get('/multiple/(:arr)*', async (req, res) => {
+    const posts = await Posts.find({}, {elements: 0});
+    const quizzes = await Quizzes.find({}, {questions: 0});
+    const indexCards = await IndexCards.find({}, {questions: 0});
+    const elements = [...posts, ...quizzes, ...indexCards];
+    let postsArray = [];
+    const postIds = req.params[0].split(',');
 
-// Get specific post by id
-router.get('/:postId', async (req, res) => {
-    try {
-        const post = await Posts.findOne({ "_id": req.params.postId });
-        res.json(post);
-    } catch (error) {
-        res.json({
-            message: 'Post not found (by id)',
-            error: error
-        });
+    for (let i = 0; i < postIds.length; i++) {
+        const _postId = postIds[i];
+        let post = elements.find(post => String(post._id) === _postId);
+        postsArray.push(post);
     }
+
+    res.json(postsArray);
 });
 
 // Get all post ids (sorted by lessonDate in ascending order)
@@ -99,6 +90,33 @@ router.post('/new', async (req, res) => {
     } catch (error) {
         res.json({
             message: 'Create post failed. Try again',
+            error: error
+        });
+    }
+});
+
+// Get specific post
+router.get('/:topic/:post', async (req, res) => {
+    try {
+        const urlString = req.params.topic + "/" + req.params.post;
+        const post = await Posts.findOne({ "url": urlString }, {type: 0, schoolWeek: 0});
+        res.json(post);
+    } catch (error) {
+        res.json({
+            message: 'Post not found',
+            error: error
+        });
+    }
+});
+
+// Get specific post by id
+router.get('/:postId', async (req, res) => {
+    try {
+        const post = await Posts.findOne({ "_id": req.params.postId });
+        res.json(post);
+    } catch (error) {
+        res.json({
+            message: 'Post not found (by id)',
             error: error
         });
     }

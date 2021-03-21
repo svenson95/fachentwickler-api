@@ -55,31 +55,6 @@ router.get('/post/:postId', async (req, res) => {
     res.json(subPost);
 });
 
-// Get mulitple subject-posts by post _id array
-router.get('/posts/(:arr)*', async (req, res) => {
-    const posts = await Posts.find();
-    const subjects = await Subjects.find();
-    const quizzes = await Quizzes.find();
-    const indexCards = await IndexCards.find();
-    let subPostsArray = [];
-    const postIds = req.params[0].split(',');
-
-    for (let i = 0; i < postIds.length; i++) {
-        const _postId = postIds[i];
-        let post = posts.find(post => String(post._id) === _postId);
-        if (!post) post = quizzes.find(quiz => String(quiz._id) === _postId);
-        if (!post) post = indexCards.find(indexCards => String(indexCards._id) === _postId);
-        const subject = subjects.find(sub => sub.subject === post.subject);
-        const topic = subject.topics.find(topic => topic.links.find(link => link.postId === _postId));
-        let subPost = topic?.links.find(el => el.postId === _postId);
-        if (!subPost) subPost = subject.tests.find(test => test.postId === _postId);
-        subPost.subject = subject.subject;
-        subPostsArray.push(subPost);
-    }
-
-    res.json(subPostsArray);
-});
-
 // Delete specific subject
 router.delete('/:subject', async (req, res) => {
     try {
