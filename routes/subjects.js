@@ -4,6 +4,7 @@ const Subjects = require('../models/subject/Subject');
 const Posts = require('../models/posts/Posts');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
+const Topics = require('../models/topics/Topics');
 
 router.get('/', async (req, res) => {
     try {
@@ -14,11 +15,27 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get specific subject
+// Get subject
 router.get('/:subject', async (req, res) => {
     try {
         const subject = await Subjects.findOne({ subject: req.params.subject });
         res.json(subject);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
+// Get populated subject
+router.get('/:subject/populated', async (req, res) => {
+    try {
+        const subject = await Subjects.findOne({ subject: req.params.subject }).populate('tests', {elements: 0, subject: 0});
+        const sub = subject.toObject();
+        await Topics.find({ subject: req.params.subject }, {subject: 0})
+            .populate('links', {elements: 0, lastUpdate: 0, schoolWeek: 0, subject: 0})
+            .exec((err, posts) => {
+                sub.topics = posts;
+                res.json(sub);
+            });
     } catch (error) {
         res.json({ message: error });
     }

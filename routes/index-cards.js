@@ -1,74 +1,72 @@
 const express = require('express');
 const router = express.Router();
 const IndexCards = require('../models/index-cards/IndexCards');
-const Subjects = require('../models/subject/Subject');
 
 // Get specific index-cards
-router.get('/:subject/:topic/:title/index-cards', async (req, res) => {
+router.get('/:topic/:title', async (req, res) => {
     try {
-        const indexCardsUrl = req.params.topic + "/" + req.params.title + "/index-cards";
-        const subject = await Subjects.findOne({ subject: req.params.subject });
-        const topic = subject.topics?.find(topic => topic.links?.find(link => link.url === indexCardsUrl));
-        const indexCardsDetails = topic?.links.find(el => el.url === indexCardsUrl);
-        const urlString = req.params.topic + "/" + req.params.title + "/index-cards";
+        const urlString = req.params.topic + "/" + req.params.title;
         const indexCards = await IndexCards.findOne({ "url": urlString });
-        return res.json({ content: indexCards, details: indexCardsDetails });
+        return res.status(200).json(indexCards);
     } catch (error) {
-        res.json({ message: 'Failed get index-cards', error: error })
+        res.status(500).json({
+            message: 'Get index-cards failed. Try again',
+            error: error
+        })
     }
 });
 
 // Submit new index-cards
-router.post('/new', async (req, res) => {
+router.post('/create', async (req, res) => {
 
-    const indexCards = new IndexCards({
-        url: req.body.url,
-        questions: req.body.questions,
-        subject: req.body.subject
+    const indexCards = new IndexCards(req.body);
+    await indexCards.save(err => {
+        if (err) {
+            res.status(500).json({
+                message: 'Post new index-cards failed. Try again',
+                error: err
+            })
+        } else {
+            res.status(200).json({
+                message: 'New index-cards successfully created',
+                content: indexCards
+            })
+        }
     });
-
-    try {
-        await indexCards.save(err => {
-            if (err) {
-                res.status(500).json({ message: 'Error has occured while post new index-cards', error: err })
-            } else {
-                res.status(200).json({ message: 'Successfully posted index-cards', content: indexCards })
-            }
-        });
-    } catch (error) {
-        return res.json({ message: 'Save new index-cards failed', error: error });
-    }
 });
 
 // Delete specific index-cards
-router.delete('/:url', async (req, res) => {
+router.delete('/:cardsId/delete', async (req, res) => {
     try {
-        const removedIndexCards = await IndexCards.remove({ url: req.params.url });
-        return res.json(removedIndexCards);
+        const removedIndexCards = await IndexCards.remove({ "_id": req.params.cardsId });
+        return res.status(200).json({
+            message: 'Index-cards successfully removed',
+            content: removedIndexCards
+        });
     } catch (error) {
-        return res.json({ message: error });
+        return res.status(500).json({
+            message: 'Delete index-cards failed. Try again',
+            error: error
+        });
     }
 });
 
 // Update index-cards
-router.patch('/:subject/:topic/:title/edit', async (req, res) => {
-    const urlString = req.params.topic + "/" + req.params.title + '/index-cards';
+router.patch('/:cardsId/edit', async (req, res) => {
     try {
         const updatedIndexCards = await IndexCards.updateOne(
-            { "url": urlString },                   // get the post
-            { $set: {                               // set the changed post
-                url: req.body.url,
-                lessonDate: req.body.lessonDate,
-                lastUpdate: req.body.lastUpdate,
-                schoolWeek: req.body.schoolWeek,
-                questions: req.body.questions,
-                subject: req.body.subject,
-                topic: req.body.topic
-            }}
+            { "_id": req.params.cardsId },
+            { $set: req.body }
         );
-        return res.json(updatedIndexCards);
+        return res.json({
+            message: 'Index-cards successfully updated',
+            content: updatedIndexCards
+        });
     } catch (error) {
-        return res.json({ message: 'Update index-cards failed', error: error });
+        return res.json({
+            message: 'Update index-cards failed. Try again',
+            error: error
+        });
     }
 });
 

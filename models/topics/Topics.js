@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Topic = require('../topics/Topics');
 const Post = require('../posts/Posts');
 
 const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBASE, {
@@ -7,10 +6,10 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
     useNewUrlParser: true
 });
 
-const Subject = connection.model('school-subjects', new mongoose.Schema({
+const Topics = connection.model('topics', new mongoose.Schema({
+    title: { type: String, required: true },
     subject: { type: String, required: true },
-    topics: [{ type: mongoose.Schema.Types.ObjectId, ref: Topic }],
-    tests: [{ type: mongoose.Schema.Types.ObjectId, ref: Post }]
+    links: [{ type: mongoose.Schema.Types.ObjectId, ref: Post }]
 }));
 
-module.exports = Subject;
+module.exports = Topics;

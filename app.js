@@ -17,11 +17,13 @@ app.use('/quiz', require('./routes/quiz'));
 app.use('/posts', require('./routes/posts'));
 app.use('/index-cards', require('./routes/index-cards'));
 app.use('/search', require('./routes/search'));
+app.use('/topics', require('./routes/topics'));
 app.use('/subjects', require('./routes/subjects'));
 app.use('/images', require('./routes/images'));
 app.use('/user', require('./routes/user'));
 app.use('/exam-dates', require('./routes/exam-date'));
 app.use('/substitution-schedule', require('./routes/substitution-schedule'));
+app.use('/school-week', require('./routes/school-week'));
 app.use('/news', require('./routes/news'));
 
 // Routes

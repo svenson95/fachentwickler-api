@@ -1,38 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/quiz/Quiz');
-const Subjects = require('../models/subject/Subject');
 
 // Get specific quiz
-router.get('/:subject/:topic/:quiz/quiz', async (req, res) => {
+router.get('/:topic/:quiz', async (req, res) => {
     try {
-        const quizUrl = req.params.topic + "/" + req.params.quiz + "/quiz";
-        const subject = await Subjects.findOne({ subject: req.params.subject });
-        const topic = subject.topics?.find(topic => topic.links?.find(link => link.url === quizUrl));
-        const quizDetails = topic?.links.find(el => el.url === quizUrl);
-        const urlString = req.params.topic + "/" + req.params.quiz + "/quiz";
+        const urlString = req.params.topic + "/" + req.params.quiz;
         const quiz = await Quiz.findOne({ "url": urlString });
-        return res.json({ content: quiz, details: quizDetails });
+        res.status(200).json(quiz);
     } catch (error) {
-        res.json({ message: 'Failed get quiz', error: error })
+        res.status(500).json({
+            message: 'Get quiz failed. Try again',
+            error: error
+        })
     }
 });
 
 // Submit new quiz
 router.post('/new', async (req, res) => {
 
-    const quiz = new Quiz({
-        url: req.body.url,
-        questions: req.body.questions,
-        subject: req.body.subject
-    });
+    const quiz = new Quiz(req.body);
 
     try {
         await quiz.save(err => {
             if (err) {
-                res.status(500).json({ message: { msgBody: 'Error has occured while post new quiz', msgError: true }})
+                res.status(500).json({
+                    message: 'Post new quiz failed. Try again',
+                    error: err
+                })
             } else {
-                res.status(200).json({ message: { msgBody: 'Successfully posted quiz', msgError : false }})
+                res.status(200).json({
+                    message: 'Quiz successfully created',
+                    quiz: quiz
+                })
             }
         });
     } catch (error) {
@@ -44,29 +44,25 @@ router.post('/new', async (req, res) => {
 router.delete('/:url', async (req, res) => {
     try {
         const removedQuiz = await Quiz.remove({ url: req.params.url });
-        return res.json(removedQuiz);
+        res.status(200).json(removedQuiz);
     } catch (error) {
-        return res.json({ message: error });
+        res.status(500).json({
+            message: 'Delete quiz failed. Try again',
+            error: error
+        });
     }
 });
 
 // Update a quiz
-router.patch('/:subject/:quiz/edit', async (req, res) => {
-    const urlString = "/" + req.params.subject + "/" + req.params.quiz;
+router.patch('/:quizId/edit', async (req, res) => {
     try {
         const updatedQuiz = await Quiz.updateOne(
-            { "url": urlString },                   // get the post
-            { $set: {                               // set the changed post
-                url: req.body.url,
-                lessonDate: req.body.lessonDate,
-                lastUpdate: req.body.lastUpdate,
-                questions: req.body.questions,
-                subject: req.body.subject
-            }}
+            { "_id": req.params.quizId },
+            { $set: req.body }
         );
-        return res.json(updatedQuiz);
+        res.status(200).json(updatedQuiz);
     } catch (error) {
-        return res.json({ message: error });
+        res.status(500).json({ message: error });
     }
 });
 
