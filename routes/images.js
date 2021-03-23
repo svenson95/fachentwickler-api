@@ -21,6 +21,18 @@ db.once("open", () => {
 
 router.get("/", homeController.getHome);
 
+// Get all images
+router.get('/all', async (req, res) => {
+    try {
+        // keep increasing the page_number in the successive call by client
+        let { page_number } = req.query;
+        const data = await PhotoChunks.find().skip(page_number * 15).limit(15)
+        res.json(data);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
 // Get specific post - by id
 router.get('/:id', async (req, res) => {
     try {
