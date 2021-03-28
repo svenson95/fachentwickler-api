@@ -1,46 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
-const Subjects = require('../models/subject/Subject');
-
-function pushToResults(_subjects, _post, _foundPosts) {
-    _subjects.find(subject => {
-        subject.topics.find(topic => {
-            topic.links.find(subjectPost => {
-                if (subjectPost.url === _post.url && !_foundPosts.includes(subjectPost)) {
-                    subjectPost.subject = subject.subject;
-                    _foundPosts.push(subjectPost);
-                }
-            })
-        })
-    })
-}
+const Quizzes = require('../models/quiz/Quiz');
+const IndexCards = require('../models/index-cards/IndexCards');
 
 // Search all posts for specific text
-router.get('/:text', async (req, res) => {
+router.get('/', async (req, res) => {
+    const { query } = req.query;
     try {
-        if (req.params.text === "") return [];
-        const subjects = await Subjects.find();
-        const foundPosts = [];
-        const searchText = req.params.text.toLowerCase();
-        subjects.find(subject => {
-            subject.topics.find(topic => {
-                topic.links.find(post => {
-                    const postTitle = post.title.toLowerCase();
-                    if (postTitle.includes(searchText) && !foundPosts.includes(post)) {
-                        post.subject = subject.subject;
-                        foundPosts.push(post);
-                    }
-                })
-            })
-        });
+        // Search for post-titles
+        if (query === "") return [];
         const posts = await Posts.find();
+        const foundPosts = [];
+        const searchText = query.toLowerCase();
+
         posts.find(post => {
+            const postTitle = post.title.toLowerCase();
+            if (postTitle.includes(searchText) && !foundPosts.includes(post)) {
+                foundPosts.push(post);
+            }
+
             post.elements.find(element => {
                 if (element.type === "image") return;
                 if (element.type === "list") {
                     if (element.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
-                        pushToResults(subjects, post, foundPosts);
+                        foundPosts.push(post);
+                        // pushToResults(subjects, post, foundPosts);
                     }
 
                     if (element.list) {
@@ -60,7 +45,8 @@ router.get('/:text', async (req, res) => {
                         element.rows.find(row => {
                             row.columns.find(column => {
                                 if (column.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
-                                    pushToResults(subjects, post, foundPosts);
+                                    foundPosts.push(post);
+                                    // pushToResults(subjects, post, foundPosts);
                                 }
                             })
                         })
@@ -68,13 +54,28 @@ router.get('/:text', async (req, res) => {
                 }
 
                 if (element.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
-                    pushToResults(subjects, post, foundPosts);
+                    foundPosts.push(post);
+                    // pushToResults(subjects, post, foundPosts);
                 }
             })
         });
+
+        const quizzes = await Quizzes.find();
+        const indexCards = await IndexCards.find();
+        const elements = [...quizzes, ...indexCards];
+        elements.find(article => {
+            const postTitle = article.title.toLowerCase();
+            if (postTitle.includes(searchText) && !foundPosts.includes(article)) {
+                foundPosts.push(article);
+            }
+        });
+
         res.json(foundPosts);
     } catch (error) {
-        res.json({ error: true, message: error });
+        res.json({
+            message: 'Search for post failed. Try again',
+            error: error
+        });
     }
 });
 
