@@ -3,9 +3,9 @@ const router = express.Router();
 const Quiz = require('../models/quiz/Quiz');
 
 // Get specific quiz
-router.get('/:topic/:quiz', async (req, res) => {
+router.get('/:topic/:title/quiz', async (req, res) => {
     try {
-        const urlString = req.params.topic + "/" + req.params.quiz;
+        const urlString = req.params.topic + "/" + req.params.title + "/quiz";
         const quiz = await Quiz.findOne({ "url": urlString });
         res.status(200).json(quiz);
     } catch (error) {

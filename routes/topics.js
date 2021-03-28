@@ -83,10 +83,10 @@ router.delete('/:topicId', async (req, res) => {
 });
 
 // Update a topic
-router.patch('/:topicId/edit', async (req, res) => {
+router.patch('/edit', async (req, res) => {
     try {
         const topicToUpdate = await Topics.updateOne(
-            { _id: req.params.topicId },
+            { subject: req.body.subject, title: req.body.title },
             { $set: req.body }
             // { $set: {
             //         subject: req.body.subject,
@@ -95,7 +95,10 @@ router.patch('/:topicId/edit', async (req, res) => {
             //     }
             // }
         );
-        res.json(topicToUpdate);
+        res.json({
+            message: 'Topic successfully updated',
+            result: topicToUpdate
+        });
     } catch (error) {
         res.json({ message: error });
     }

@@ -3,9 +3,9 @@ const router = express.Router();
 const IndexCards = require('../models/index-cards/IndexCards');
 
 // Get specific index-cards
-router.get('/:topic/:title', async (req, res) => {
+router.get('/:topic/:title/karteikarten', async (req, res) => {
     try {
-        const urlString = req.params.topic + "/" + req.params.title;
+        const urlString = req.params.topic + "/" + req.params.title + "/karteikarten";
         const indexCards = await IndexCards.findOne({ "url": urlString });
         return res.status(200).json(indexCards);
     } catch (error) {
