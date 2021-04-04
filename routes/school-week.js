@@ -3,16 +3,22 @@ const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
+const Matching = require('../models/matching/Matching');
+
+const allArticles = async () => {
+    const posts = await Posts.find({}, {elements: 0});
+    const quizzes = await Quizzes.find({}, {questions: 0});
+    const indexCards = await IndexCards.find({}, {questions: 0});
+    const matchings = await Matching.find({}, {pairs: 0});
+    return [...posts, ...quizzes, ...indexCards, ...matchings];
+}
 
 // Get specific school week by number
 router.get('/number/:number', async (req, res) => {
     try {
-        const posts = await Posts.find({}, {elements: 0});
-        const quizzes = await Quizzes.find({}, {questions: 0});
-        const indexCards = await IndexCards.find({}, {questions: 0});
-        const objects = [...posts, ...quizzes, ...indexCards];
+        const objects = await allArticles();
         let week = { schoolWeek: req.params.number, posts: [] };
-        await objects.forEach(post => {
+        objects.forEach(post => {
             if (req.params.number === post.schoolWeek) {
                 week.posts.push(post);
             }
@@ -34,10 +40,7 @@ router.get('/number/:number', async (req, res) => {
 // Get all school weeks (history)
 router.get('/all', async (req, res) => {
     try {
-        const posts = await Posts.find({}, {elements: 0});
-        const quizzes = await Quizzes.find({}, {questions: 0});
-        const indexCards = await IndexCards.find({}, {questions: 0});
-        const objects = [...posts, ...quizzes, ...indexCards];
+        const objects = await allArticles();
         const weeksArray = [];
         objects.forEach(post => {
             if (post.schoolWeek > 0) {
@@ -57,7 +60,7 @@ router.get('/all', async (req, res) => {
             if (Number(a.schoolWeek) < Number(b.schoolWeek)) { return -1; }
             return 0;
         });
-        await weeksArray.forEach(week => {
+        weeksArray.forEach(week => {
             week.posts.sort(function(a, b) {
                 if (a.lessonDate > b.lessonDate) { return 1; }
                 if (a.lessonDate < b.lessonDate) { return -1; }

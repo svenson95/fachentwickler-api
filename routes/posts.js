@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
+const Topics = require('../models/posts/Topics');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
+const Matching = require('../models/matching/Matching');
 
 function currentDate() {
     const today = new Date();
@@ -20,6 +22,14 @@ function currentDate() {
     return yyyy + "-" + mm + "-" + dd;
 }
 
+const allArticles = async () => {
+    const posts = await Posts.find({}, {elements: 0});
+    const quizzes = await Quizzes.find({}, {questions: 0});
+    const indexCards = await IndexCards.find({}, {questions: 0});
+    const matchings = await Matching.find({}, {pairs: 0});
+    return [...posts, ...quizzes, ...indexCards, ...matchings];
+}
+
 // Get all the posts
 router.get('/', async (req, res) => {
     try {
@@ -32,10 +42,7 @@ router.get('/', async (req, res) => {
 
 // Get mulitple posts by id array
 router.get('/multiple/(:arr)*', async (req, res) => {
-    const posts = await Posts.find({}, {elements: 0});
-    const quizzes = await Quizzes.find({}, {questions: 0});
-    const indexCards = await IndexCards.find({}, {questions: 0});
-    const elements = [...posts, ...quizzes, ...indexCards];
+    const elements = await allArticles();
     let postsArray = [];
     const postIds = req.params[0].split(',');
 
@@ -51,10 +58,7 @@ router.get('/multiple/(:arr)*', async (req, res) => {
 // Get all post ids (sorted by lessonDate in ascending order)
 router.get('/all-lessons', async (req, res) => {
     try {
-        const posts = await Posts.find();
-        const quizzes = await Quizzes.find();
-        const indexCards = await IndexCards.find();
-        const objects = [...posts, ...quizzes, ...indexCards];
+        const objects = await allArticles();
         objects.sort(function(a, b) {
             if (a.lessonDate < b.lessonDate) { return -1; }
             if (a.lessonDate > b.lessonDate) { return 1; }
@@ -69,30 +73,28 @@ router.get('/all-lessons', async (req, res) => {
 
 // Submit new post
 router.post('/new', async (req, res) => {
+    const post = new Posts({
+        url: req.body.url,
+        title: req.body.title,
+        description: req.body.description,
+        subject: req.body.subject,
+        type: req.body.type,
+        lessonDate: req.body.lessonDate,
+        lastUpdate: currentDate(),
+        schoolWeek: req.body.schoolWeek,
+        elements: req.body.elements,
+        topicId: req.body.topicId   // we send the topicId to update the related topic object in database
+    });
+    await post.save();
 
-    try {
-        const post = new Posts({
-            url: req.body.url,
-            title: req.body.title,
-            description: req.body.description,
-            subject: req.body.subject,
-            type: req.body.type,
-            lessonDate: req.body.lessonDate,
-            lastUpdate: currentDate(),
-            schoolWeek: req.body.schoolWeek,
-            elements: req.body.elements
-        });
-        await post.save();
-        res.json({
-            message: 'Post successfully created',
-            post: post
-        });
-    } catch (error) {
-        res.json({
-            message: 'Create post failed. Try again',
-            error: error
-        });
-    }
+    const topic = await Topics.findOne({ "_id": req.body.topicId });
+    const topicObject = topic.toObject();
+    topicObject.links.push(post._id);
+    res.json({
+        message: 'Post successfully created',
+        post: post,
+        updatedTopic: topicToUpdate
+    });
 });
 
 // Get specific post
@@ -123,10 +125,9 @@ router.get('/:postId', async (req, res) => {
 });
 
 // Delete specific post
-router.delete('/:subject/:topic/:post*', async (req, res) => {
-    const urlString = req.params.topic + "/" + req.params.post;
+router.delete('/:postId', async (req, res) => {
     try {
-        const removedPost = await Posts.remove({ "url": urlString });
+        const removedPost = await Posts.remove({ "_id": req.params.postId });
         res.json({
             message: "Post successfully removed",
             post: removedPost

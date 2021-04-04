@@ -4,6 +4,7 @@ const Subjects = require('../models/subject/Subject');
 const Posts = require('../models/posts/Posts');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
+const Matchings = require('../models/matching/Matching');
 const Topics = require('../models/topics/Topics');
 
 router.get('/', async (req, res) => {
@@ -61,6 +62,19 @@ router.get('/:subject/populated', async (req, res) => {
                     })
                 }
 
+                if (sub.matchings.length !== 0) {
+                    const matchings = await Matchings.find({ subject: req.params.subject }, {subject: 0, pairs: 0});
+                    matchings.forEach(match => {
+                        const relatedTopic = sub.topics.find(tp => String(tp._id) === String(match.toObject().topicId))
+                        relatedTopic.links.push(match);
+                        relatedTopic.links.sort(function(a, b) {
+                            if (a.lessonDate < b.lessonDate) { return -1; }
+                            if (a.lessonDate > b.lessonDate) { return 1; }
+                            return 0;
+                        });
+                    })
+                }
+
                 res.json(sub);
             });
     } catch (error) {
@@ -73,6 +87,7 @@ router.get('/post/:postId', async (req, res) => {
     let post = await Posts.findOne({ "_id": req.params.postId });
     if (post === null) post = await Quizzes.findOne({ "_id": req.params.postId });
     if (post === null) post = await IndexCards.findOne({ "_id": req.params.postId });
+    if (post === null) post = await Matchings.findOne({ "_id": req.params.postId });
     const subject = await Subjects.findOne({ subject: post.subject });
     const topic = subject.topics.find(topic => topic.links.find(link => link.postId === req.params.postId));
     let subPost = topic?.links.find(el => el.postId === req.params.postId);
