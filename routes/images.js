@@ -24,10 +24,28 @@ router.get("/", homeController.getHome);
 // Get all images
 router.get('/all', async (req, res) => {
     try {
-        // keep increasing the page_number in the successive call by client
-        let { page_number } = req.query;
-        const data = await PhotoChunks.find().skip(page_number * 15).limit(15)
-        res.json(data);
+        let { page, size } = req.query;
+        const files = await PhotoFiles.find()
+            .sort({$natural:-1})
+            .skip(page * Number(size))
+            .limit(Number(size));
+        const chunks = await PhotoChunks.find({ files_id : { $in : files.map(el => el._id) } });
+        const images = [];
+        files.forEach(file => {
+            const _chunks = chunks.filter(el => String(el.files_id) === String(file._id));
+            images.push({ file: file, chunks: _chunks });
+        })
+        res.json(images);
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
+// Get images count
+router.get('/count', async (req, res) => {
+    try {
+        const files = await PhotoFiles.find();
+        res.json(files.length);
     } catch (error) {
         res.json({ message: error });
     }
