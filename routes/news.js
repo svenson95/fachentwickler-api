@@ -5,8 +5,12 @@ const News = require('../models/news/News');
 // Get news list
 router.get('/', async (req, res) => {
     try {
-        const news = await News.find();
-        delete news.content;    // dont show unnecessarily content of every news article
+        const news = await News.find({}, {content: 0});
+        news.sort(function(a, b) {
+            if (a.date > b.date) { return -1; }
+            if (a.date < b.date) { return 1; }
+            return 0;
+        });
         res.json(news);
     } catch (error) {
         res.json({ error: error, message: 'Error occured while get news list' });
