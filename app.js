@@ -5,11 +5,22 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv/config');
 
-// Middleware - enabled CORS from every origin
+// Middleware
 app.use(cookieParser());
 app.use(bodyParser.json());
+let whitelist = ['http://159.65.105.150', 'http://localhost:4200']
 app.use(cors({
-    credentials: true, origin: true
+    origin: function(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
+    },
+    methods: ['GET', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    optionsSuccessStatus: 200,  // some legacy browsers (IE11, various SmartTVs) choke on 204
+    credentials: true,  // credentials are cookies, authorization headers or TLS client certificates.,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
 }));
 
 // Import routes

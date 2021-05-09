@@ -74,10 +74,12 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
     User.findOne({ name }, async (err, user) => {
         if (user) {
 
-            if (req.body.name && req.body.email && req.body.password) {
-                user.name = req.body.name;
-                user.password = req.body.password;
+            if (req.body.email) {
                 user.email = req.body.email;
+            }
+
+            if (req.body.password) {
+                user.password = req.body.password;
             }
 
             if (req.body.newName) {
@@ -93,8 +95,6 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
             }
 
             const newName = req.body.newName;
-            const newEmail = req.body.email;
-
             User.findOne({ "name": newName }, async (err2, user2) => {
                 if (user2) {
                     return res.status(409).json({
@@ -108,7 +108,7 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
                         error: err2
                     });
                 } else {
-
+                    const newEmail = req.body.email;
                     User.findOne({ "email": newEmail}, async (err3, user3) => {
                         if (user3) {
                             return res.status(409).json({
@@ -157,7 +157,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
         const token = signToken(req.user._id);
         res.cookie('fiappy_token', token, {
             maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
-            httpOnly: true, // The cookie only accessible by the web server
+            // httpOnly: true, // The cookie only accessible by the web server
         });
         res.status(200).json({
             isAuthenticated: true,
@@ -230,25 +230,6 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
         }
     });
 });
-
-// userRouter.get('/admin', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     if (req.user.role === 'admin') {
-//         const token = signToken(req.user._id);
-//         res.status(200).json({ message: {
-//             isAdmin: true,
-//             message: 'User is admin',
-//             user: req.user,
-//             token: token
-//         }});
-//     } else {
-//         res.status(403).json({
-//             isAdmin: false,
-//             message: 'You are not an admin',
-//             response: res,
-//             request: req
-//         })
-//     }
-// });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.isAuthenticated()) {

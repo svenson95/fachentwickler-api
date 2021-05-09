@@ -51,7 +51,7 @@ router.post('/create', async (req, res) => {
     });
 });
 
-// Delete specific index-cards
+// Delete specific matching
 router.delete('/:matchingId/delete', async (req, res) => {
     try {
         const removedMatchings = await Matching.remove({ "_id": req.params.matchingId });
@@ -67,7 +67,7 @@ router.delete('/:matchingId/delete', async (req, res) => {
     }
 });
 
-// Update matchings
+// Update matching
 router.patch('/:matchingId/edit', async (req, res) => {
     try {
         const updatedMatchings = await Matching.updateOne(

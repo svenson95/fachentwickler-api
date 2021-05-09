@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
-const Topics = require('../models/posts/Topics');
+const Topics = require('../models/topics/Topics');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
 const Matching = require('../models/matching/Matching');
@@ -40,31 +40,30 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get mulitple posts by id array
+// Get mulitple articles (exam-lessons) by id array - e. g. "id1,id2,id3"
 router.get('/multiple/(:arr)*', async (req, res) => {
-    const elements = await allArticles();
-    let postsArray = [];
-    const postIds = req.params[0].split(',');
+    let articleArray = [];
+    const articles = await allArticles();
+    const articleIds = req.params[0].split(',');
 
-    for (let i = 0; i < postIds.length; i++) {
-        const _postId = postIds[i];
-        let post = elements.find(post => String(post._id) === _postId);
-        postsArray.push(post);
+    for (let i = 0; i < articleIds.length; i++) {
+        let post = articles.find(post => String(post._id) === articleIds[i]);
+        articleArray.push(post);
     }
 
-    res.json(postsArray);
+    res.json(articleArray);
 });
 
-// Get all post ids (sorted by lessonDate in ascending order)
+// Get all article ids (sorted by lessonDate in ascending order)
 router.get('/all-lessons', async (req, res) => {
     try {
-        const objects = await allArticles();
-        objects.sort(function(a, b) {
+        const articles = await allArticles();
+        articles.sort(function(a, b) {
             if (a.lessonDate < b.lessonDate) { return -1; }
             if (a.lessonDate > b.lessonDate) { return 1; }
             return 0;
         });
-        const ids = objects.map(el => el._id);
+        const ids = articles.map(el => el._id);
         res.status(200).json(ids);
     } catch(error) {
         res.status(500).json({ message: 'Error has occured while get all lessons', error: error });
@@ -90,6 +89,11 @@ router.post('/new', async (req, res) => {
     const topic = await Topics.findOne({ "_id": req.body.topicId });
     const topicObject = topic.toObject();
     topicObject.links.push(post._id);
+    const topicToUpdate = await Topics.updateOne(
+        { subject: req.body.subject, title: req.body.title },
+        { $set: topicObject }
+    )
+
     res.json({
         message: 'Post successfully created',
         post: post,
@@ -101,7 +105,7 @@ router.post('/new', async (req, res) => {
 router.get('/:topic/:post', async (req, res) => {
     try {
         const urlString = req.params.topic + "/" + req.params.post;
-        const post = await Posts.findOne({ "url": urlString }, {type: 0, schoolWeek: 0});
+        const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0});
         res.json(post);
     } catch (error) {
         res.json({
@@ -111,11 +115,12 @@ router.get('/:topic/:post', async (req, res) => {
     }
 });
 
-// Get specific post by id
+// Get specific article by id
 router.get('/:postId', async (req, res) => {
     try {
-        const post = await Posts.findOne({ "_id": req.params.postId });
-        res.json(post);
+        const articles = await allArticles();
+        const article = articles.find(el => String(el._id) === req.params.postId);
+        res.json(article);
     } catch (error) {
         res.json({
             message: 'Post not found (by id)',
