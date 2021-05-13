@@ -158,7 +158,9 @@ router.patch('/:postId/edit', async (req, res) => {
                 type: req.body.type,
                 lessonDate: req.body.lessonDate,
                 lastUpdate: currentDate(),
+                schoolWeek: req.body.schoolWeek,
                 elements: req.body.elements,
+                topicId: req.body.topicId   // we send the topicId to update the related topic object in database
             }}
         );
         res.json(updatedPost);
