@@ -54,12 +54,20 @@ router.get('/count', async (req, res) => {
 // Get specific post - by id
 router.get('/:id', async (req, res) => {
     try {
-        await PhotoChunks.find({ files_id: req.params.id }, (err, files) => {
-            if (err) {
-                res.json(err);
-            } else {
-                res.json(files);
-            }
+        await PhotoFiles.find({ _id: req.params.id }, async (err, file) => {
+            await PhotoChunks.find({ files_id: req.params.id }, (err, chunks) => {
+                if (err) {
+                    res.status(500).json({
+                        message: 'Get image failed. Try again',
+                        error: err
+                    })
+                } else {
+                    res.status(200).json({
+                        file: file,
+                        chunks: chunks
+                    });
+                }
+            });
         });
     } catch (error) {
         res.json({ message: error });

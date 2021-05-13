@@ -4,9 +4,8 @@ const uploadFile = async (req, res) => {
     try {
         await upload(req, res);
 
-        console.log("req: ", req);
-        if (req.file == undefined) {
-            return res.send(`You must select a file.`);
+        if (req.file === undefined) {
+            return res.status(400).send(`You must select a file.`);
         }
 
         return res.send(`File has been uploaded: ${JSON.stringify(req.file)}`);
