@@ -1,7 +1,7 @@
 {
-  "name": "devedu_api",
+  "name": "fiappy_api",
   "version": "1.0.0",
-  "description": "API for DevEdu React App",
+  "description": "Rest API for fiappy app",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js"
