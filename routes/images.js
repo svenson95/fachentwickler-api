@@ -1,23 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const homeController = require("../controllers/home");
+const homeController = require("../controllers/images-home");
 const uploadController = require("../controllers/upload");
-const mongoose = require('mongoose');
-const mongo = require('mongodb');
 const PhotoChunks = require('../models/photos/Photos.chunks');
-
-var Grid = require('gridfs-stream');
-var gfs;
-
-let db = mongoose.connection;
-db = mongoose.createConnection(process.env.DB_CONNECTION_POSTIMAGES, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-});
-db.once("open", () => {
-    console.log("Connection successful!");
-    gfs = Grid(db, mongo);
-});
+const PhotoFiles = require('../models/photos/Photos.files');
 
 router.get("/", homeController.getHome);
 
@@ -51,10 +37,10 @@ router.get('/count', async (req, res) => {
     }
 });
 
-// Get specific post - by id
+// Get specific image by id
 router.get('/:id', async (req, res) => {
     try {
-        await PhotoFiles.find({ _id: req.params.id }, async (err, file) => {
+        await PhotoFiles.findOne({ _id: req.params.id }, async (err, file) => {
             await PhotoChunks.find({ files_id: req.params.id }, (err, chunks) => {
                 if (err) {
                     res.status(500).json({
@@ -76,5 +62,16 @@ router.get('/:id', async (req, res) => {
 
 // Upload image
 router.post("/upload", uploadController.uploadFile);
+
+// Delete specific image by id
+router.delete('/:id/delete', async (req, res) => {
+    try {
+        const removedImageChunks = await PhotoChunks.remove({ "files_id": req.params.id });
+        const removedImageFiles = await PhotoFiles.remove({ "_id": req.params.id });
+        res.json({ message: 'Successfully removed image', chunks: removedImageChunks, files: removedImageFiles });
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
 
 module.exports = router;

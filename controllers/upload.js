@@ -4,14 +4,13 @@ const uploadFile = async (req, res) => {
     try {
         await upload(req, res);
 
-        if (req.file === undefined) {
+        if (req.file == undefined) {
             return res.status(400).send(`You must select a file.`);
         }
-
-        return res.send(`File has been uploaded: ${JSON.stringify(req.file)}`);
+        return res.json({ message: 'Image successfully uplaoded', file: req.file });
+        // return res.send(`File has been uploaded: ${JSON.stringify(req.file)}`);
     } catch (error) {
-        console.log(error);
-        return res.send(`Error when trying upload image: ${error}`);
+        return res.json({ message: `Error when trying upload image: ${error}`});
     }
 };
 

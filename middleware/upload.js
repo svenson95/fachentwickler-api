@@ -3,20 +3,35 @@ const multer = require("multer");
 const GridFsStorage = require("multer-gridfs-storage");
 
 var storage = new GridFsStorage({
-    url: process.env.DB_CONNECTION_POSTIMAGES,
+    url: process.env.DB_CONNECTION_SCHOOLFILES,
     options: { useNewUrlParser: true, useUnifiedTopology: true },
     file: (req, file) => {
-        const match = ["image/png", "image/jpeg"];
+        const images = ["image/png", "image/jpeg", "image/gif",];
+        const files = [
+            "application/pdf", "image/jpeg",
+            "application/vnd.oasis.opendocument.text",
+            "application/gzip",
+            "application/zip"
+        ];
 
-        if (match.indexOf(file.mimetype) === -1) {
-            const filename = `${Date.now()}-devedu-${file.originalname}`;
-            return filename;
+        if (images.indexOf(file.mimetype) !== -1) {
+            return {
+                bucketName: "photos",
+                filename: file.originalname
+            };
+        } else if (files.indexOf(file.mimetype) !== -1) {
+            return {
+                bucketName: "file-elements",
+                filename: file.originalname
+            };
+        } else {
+            if (files.indexOf(file.mimetype) === -1) {
+                return {
+                    bucketName: file.mimetype,
+                    filename: file.originalname
+                };
+            }
         }
-
-        return {
-            bucketName: "photos",
-            filename: `${Date.now()}-devedu-${file.originalname}`
-        };
     }
 });
 
