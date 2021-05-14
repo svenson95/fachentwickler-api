@@ -89,8 +89,15 @@ router.post('/new', async (req, res) => {
     const topic = await Topics.findOne({ "_id": req.body.topicId });
     const topicObject = topic.toObject();
     topicObject.links.push(post._id);
+
+    topicObject.links.sort(function(a, b) {
+        if (a.lessonDate < b.lessonDate) { return -1; }
+        if (a.lessonDate > b.lessonDate) { return 1; }
+        return 0;
+    });
+
     const topicToUpdate = await Topics.updateOne(
-        { subject: req.body.subject, title: req.body.title },
+        { _id: req.body.topicId },
         { $set: topicObject }
     )
 
@@ -130,12 +137,31 @@ router.get('/:postId', async (req, res) => {
 });
 
 // Delete specific post
-router.delete('/:postId', async (req, res) => {
+router.delete('/:postId/delete', async (req, res) => {
     try {
-        const removedPost = await Posts.remove({ "_id": req.params.postId });
+        const removedPost = await Posts.findOneAndDelete({ _id: req.params.postId });
+        const topic = await Topics.findOne({ _id: removedPost.topicId });
+        const topicObject = topic.toObject();
+        const index = topic.links.indexOf(removedPost._id);
+        if (index > -1) {
+            topicObject.links.splice(index, 1);
+        }
+
+        topicObject.links.sort(function(a, b) {
+            if (a.lessonDate < b.lessonDate) { return -1; }
+            if (a.lessonDate > b.lessonDate) { return 1; }
+            return 0;
+        });
+
+        const topicToUpdate = await Topics.updateOne(
+            { _id: removedPost.topicId },
+            { $set: topicObject }
+        )
+
         res.json({
             message: "Post successfully removed",
-            post: removedPost
+            removedPost: removedPost,
+            updatedTopic: topicToUpdate
         });
     } catch (error) {
         res.json({
