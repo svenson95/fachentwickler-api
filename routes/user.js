@@ -15,7 +15,7 @@ const signToken = userId => {
 };
 
 userRouter.post('/register', (req, res) => {
-   const { password, role, email } = req.body;
+   const { password, role, email, theme } = req.body;
    const name = req.body.name.toLowerCase();
    User.findOne({ name }, (error, nameData) => {
        if (error) {
@@ -45,7 +45,7 @@ userRouter.post('/register', (req, res) => {
                        error: error
                    });
                } else {
-                   const newUser = new User({ name, password, role, email });
+                   const newUser = new User({ name, password, role, email, theme });
                    newUser.save((err, newUser) => {
                        if (err) {
                            res.status(500).json({

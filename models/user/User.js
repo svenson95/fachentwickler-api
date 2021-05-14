@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
     progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }],
     theme: {
         type: String,
-        default: 'dark'
+        default: 'light'
     }
 });
 
