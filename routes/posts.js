@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
+const Subjects = require('../models/subject/Subject');
 const Topics = require('../models/topics/Topics');
 const Quizzes = require('../models/quiz/Quiz');
 const IndexCards = require('../models/index-cards/IndexCards');
@@ -30,7 +31,7 @@ const allArticles = async () => {
     return [...posts, ...quizzes, ...indexCards, ...matchings];
 }
 
-// Get all the posts
+// Get all posts
 router.get('/', async (req, res) => {
     try {
         const posts = await Posts.find();
@@ -86,33 +87,55 @@ router.post('/new', async (req, res) => {
     });
     await post.save();
 
-    const topic = await Topics.findOne({ "_id": req.body.topicId });
-    const topicObject = topic.toObject();
-    topicObject.links.push(post._id);
+    if (req.body.type === "test") {
+        const subject = await Subjects.findOne({ "subject": req.body.subject });
+        const subjectObject = subject.toObject();
+        subjectObject.tests.push(post._id);
+        console.log(subjectObject);
 
-    topicObject.links.sort(function(a, b) {
-        if (a.lessonDate < b.lessonDate) { return -1; }
-        if (a.lessonDate > b.lessonDate) { return 1; }
-        return 0;
-    });
+        // subjectObject.tests.sort(function(a, b) {
+        //     if (a.lessonDate < b.lessonDate) { return -1; }
+        //     if (a.lessonDate > b.lessonDate) { return 1; }
+        //     return 0;
+        // });
 
-    const topicToUpdate = await Topics.updateOne(
-        { _id: req.body.topicId },
-        { $set: topicObject }
-    )
+        const subjectToUpdate = await Subjects.updateOne(
+            { "subject": req.body.subject },
+            { $set: subjectObject }
+        )
+        res.json({
+            message: 'Post successfully created',
+            post: post,
+            updatedSubject: subjectToUpdate
+        });
+    } else {
+        const topic = await Topics.findOne({ "_id": req.body.topicId });
+        const topicObject = topic.toObject();
+        topicObject.links.push(post._id);
 
-    res.json({
-        message: 'Post successfully created',
-        post: post,
-        updatedTopic: topicToUpdate
-    });
+        topicObject.links.sort(function(a, b) {
+            if (a.lessonDate < b.lessonDate) { return -1; }
+            if (a.lessonDate > b.lessonDate) { return 1; }
+            return 0;
+        });
+
+        const topicToUpdate = await Topics.updateOne(
+            { _id: req.body.topicId },
+            { $set: topicObject }
+        )
+        res.json({
+            message: 'Post successfully created',
+            post: post,
+            updatedTopic: topicToUpdate
+        });
+    }
 });
 
 // Get specific post
-router.get('/:topic/:post', async (req, res) => {
+router.get('/:topic/:postUrl', async (req, res) => {
     try {
-        const urlString = req.params.topic + "/" + req.params.post;
-        const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0});
+        const urlString = req.params.topic + "/" + req.params.postUrl;
+        const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0}).populate('topicId', {links: 0});
         res.json(post);
     } catch (error) {
         res.json({
@@ -125,9 +148,9 @@ router.get('/:topic/:post', async (req, res) => {
 // Get specific article by id
 router.get('/:postId', async (req, res) => {
     try {
-        const articles = await allArticles();
-        const article = articles.find(el => String(el._id) === req.params.postId);
-        res.json(article);
+        const posts = await allArticles();
+        const post = posts.find(el => String(el._id) === req.params.postId);
+        res.json(post);
     } catch (error) {
         res.json({
             message: 'Post not found (by id)',
