@@ -12,16 +12,10 @@ const Matching = connection.model('matching', new mongoose.Schema({
     description: { type: String, required: true },
     subject: { type: String, required: true },
     type: { type: String, required: true },
-    schoolWeek: { type: String, required: true },
     lessonDate: { type: String, required: true },
     lastUpdate: { type: String, required: true },
-    pairs: { type: Array, default: [
-        {
-            leftpart: { type: String, required: true },
-            rightpart: { type: String, required: true },
-            pairNumber: { type: Number, required: true }
-        }
-    ]}
+    schoolWeek: { type: String, required: true },
+    pairs: { type: Array }
 }));
 
 module.exports = Matching;
