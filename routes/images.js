@@ -7,20 +7,24 @@ const PhotoFiles = require('../models/photos/Photos.files');
 
 router.get("/", homeController.getHome);
 
-// Get all images
+// Get all images with pagination params
 router.get('/all', async (req, res) => {
     try {
-        let { page, size } = req.query;
+        let { page, size, sort } = req.query;
+
         const files = await PhotoFiles.find()
-            .sort({$natural:-1})
+            .sort({$natural: sort === 'ascending' ? 1 : -1})
             .skip(page * Number(size))
             .limit(Number(size));
+
         const chunks = await PhotoChunks.find({ files_id : { $in : files.map(el => el._id) } });
         const images = [];
+
         files.forEach(file => {
             const _chunks = chunks.filter(el => String(el.files_id) === String(file._id));
             images.push({ file: file, chunks: _chunks });
         })
+
         res.json(images);
     } catch (error) {
         res.json({ message: error });
