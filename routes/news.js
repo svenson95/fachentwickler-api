@@ -3,9 +3,14 @@ const router = express.Router();
 const News = require('../models/news/News');
 
 // Get news list
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
-        const news = await News.find({}, {content: 0});
+        let { page, size } = req.query;
+
+        const news = await News.find({}, {content: 0})
+            .sort({date: -1})
+            .skip(page * Number(size))
+            .limit(Number(size));
         news.sort(function(a, b) {
             if (a.date > b.date) { return -1; }
             if (a.date < b.date) { return 1; }
@@ -14,6 +19,16 @@ router.get('/', async (req, res) => {
         res.json(news);
     } catch (error) {
         res.json({ error: error, message: 'Error occured while get news list' });
+    }
+});
+
+// Get news count
+router.get('/count', async (req, res) => {
+    try {
+        const news = await News.find();
+        res.json(news.length);
+    } catch (error) {
+        res.json({ message: error });
     }
 });
 
