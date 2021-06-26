@@ -6,7 +6,7 @@ const User = require('../models/user/User');
 const cookieExtractor = req => {
     let token = null;
     if (req && req.cookies) {
-        token = req.cookies['fiappy_token'];
+        token = req.cookies['fachentwickler_auth'];
     }
     return token;
 };

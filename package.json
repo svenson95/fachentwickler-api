@@ -1,7 +1,7 @@
 {
-  "name": "fiappy_api",
+  "name": "fachentwickler-api",
   "version": "1.0.0",
-  "description": "Rest API for fiappy app",
+  "description": "Rest APIs for fachentwickler app",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js"

@@ -155,7 +155,7 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
         const token = signToken(req.user._id);
-        res.cookie('fiappy_token', token, {
+        res.cookie('fachentwickler_auth', token, {
             maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
             // httpOnly: true, // The cookie only accessible by the web server
         });
@@ -176,7 +176,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
 });
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.clearCookie('fiappy_token');
+    res.clearCookie('fachentwickler_auth');
     res.json({
         success: true,
         message: 'Successfully logged out'
