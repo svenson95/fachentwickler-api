@@ -86,14 +86,8 @@ router.delete('/:topicId', async (req, res) => {
 router.patch('/edit', async (req, res) => {
     try {
         const topicToUpdate = await Topics.updateOne(
-            { subject: req.body.subject, title: req.body.title },
+            { _id: req.body._id },
             { $set: req.body }
-            // { $set: {
-            //         subject: req.body.subject,
-            //         tests: req.body.tests,
-            //         topics: req.body.topics,
-            //     }
-            // }
         );
         res.json({
             message: 'Topic successfully updated',

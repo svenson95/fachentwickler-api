@@ -12,7 +12,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
 
 const Subject = connection.model('school-subjects', new mongoose.Schema({
     subject: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: Array, required: true },
     topics: [{ type: mongoose.Schema.Types.ObjectId, ref: Topic }],
     quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: Quiz }],
     indexcards: [{ type: mongoose.Schema.Types.ObjectId, ref: IndexCard }],
