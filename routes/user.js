@@ -14,7 +14,7 @@ const signToken = userId => {
     return JWT.sign({
         iss: 'fachentwickler-95-secret',
         sub: userId
-    }, 'devedu-95-secret', { expiresIn: '30d' })
+    }, 'fachentwickler-95-secret', { expiresIn: '30d' })
 };
 
 function sendVerificationEmail(newUser, req, res) {

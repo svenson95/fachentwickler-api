@@ -14,7 +14,7 @@ const cookieExtractor = req => {
 // authenticated local strategy using username and password
 passport.use(new JwtStrategy({
     jwtFromRequest: cookieExtractor,
-    secretOrKey: 'devedu-95-secret'
+    secretOrKey: 'fachentwickler-95-secret'
 }, (payload, done) => {
     User.findById({ _id: payload.sub }, (err, user) => {
         if (err)
