@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    active: {
+        type: Boolean,
+        default: false
+    },
     progress: [{ type: mongoose.Schema.Types.ObjectId, ref: Progress }],
     theme: {
         type: String,
