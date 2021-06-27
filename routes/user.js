@@ -9,6 +9,7 @@ const VerificationToken = require('../models/user/VerificationToken');
 
 const tokenService = require('../services/token-service');
 const mailService = require('../services/mail-service');
+const verificationMail = require('../views/verification-email');
 
 const signToken = userId => {
     return JWT.sign({
@@ -23,7 +24,8 @@ function sendVerificationEmail(newUser, req, res) {
             from: 'no-reply@example.com',
             to: newUser.email,
             subject: 'Ihre Anmeldung auf fachentwickler',
-            text: 'Hallo ' + req.body.name + ',\n\n' + 'Bitte verifiziere deine E-Mail Adresse um die Registrierung abzuschließen. \nhttp:\/\/' + req.headers.host + '\/user/confirmation\/' + newUser.email + '\/' + token.code + '\n\nfachentwickler\nhttp:\/\/' + req.headers.host
+            text: 'xxx',
+            html: verificationMail.html(newUser, token, req)
         };
 
         mailService.sendMail(mailOptions, res,(response) => {
@@ -88,6 +90,7 @@ userRouter.post('/register', (req, res) => {
                const token = signToken(newUser._id);
                res.cookie('fachentwickler_auth', token, {
                    maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
+                   sameSite: 'strict'
                    // httpOnly: true, // The cookie only accessible by the web server
                });
 
@@ -259,6 +262,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
         const token = signToken(req.user._id);
         res.cookie('fachentwickler_auth', token, {
             maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
+            sameSite: 'strict'
             // httpOnly: true, // The cookie only accessible by the web server
         });
         res.status(200).json({
