@@ -3,6 +3,7 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const helmet = require("helmet");
 require('dotenv/config');
 
 // Middleware
@@ -22,6 +23,7 @@ app.use(cors({
     credentials: true,  // credentials are cookies, authorization headers or TLS client certificates.,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
 }));
+app.use(helmet())
 
 // Import routes
 app.use('/quiz', require('./routes/quiz'));
