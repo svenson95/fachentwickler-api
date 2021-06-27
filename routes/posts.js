@@ -83,51 +83,58 @@ router.post('/new', async (req, res) => {
         lastUpdate: currentDate(),
         schoolWeek: req.body.schoolWeek,
         elements: req.body.elements,
-        topicId: req.body.topicId   // we send the topicId to update the related topic object in database
+        topicId: req.body.topicId
     });
     await post.save();
 
     if (req.body.type === "test") {
-        const subject = await Subjects.findOne({ "subject": req.body.subject });
-        const subjectObject = subject.toObject();
-        subjectObject.tests.push(post._id);
-        console.log(subjectObject);
+        await Subjects.findOne({ "subject": req.body.subject })
+            .populate('tests', {elements: 0, lastUpdate: 0, schoolWeek: 0})
+            .exec(async (err, subject) => {
+                const subjectObject = subject.toObject();
+                subjectObject.tests.push(post);
 
-        // subjectObject.tests.sort(function(a, b) {
-        //     if (a.lessonDate < b.lessonDate) { return -1; }
-        //     if (a.lessonDate > b.lessonDate) { return 1; }
-        //     return 0;
-        // });
+                subjectObject.tests.sort(function(a, b) {
+                    if (a.lessonDate < b.lessonDate) { return -1; }
+                    if (a.lessonDate > b.lessonDate) { return 1; }
+                    return 0;
+                });
+                subjectObject.tests = subjectObject.tests.map(el => el._id);
 
-        const subjectToUpdate = await Subjects.updateOne(
-            { "subject": req.body.subject },
-            { $set: subjectObject }
-        )
-        res.json({
-            message: 'Post successfully created',
-            post: post,
-            updatedSubject: subjectToUpdate
-        });
+                const subjectToUpdate = await Subjects.updateOne(
+                    { "subject": req.body.subject },
+                    { $set: subjectObject }
+                )
+                res.json({
+                    message: 'Post successfully created',
+                    post: post,
+                    updatedSubject: subjectToUpdate
+                });
+            });
     } else {
-        const topic = await Topics.findOne({ "_id": req.body.topicId });
-        const topicObject = topic.toObject();
-        topicObject.links.push(post._id);
+        await Topics.findOne({ "_id": req.body.topicId })
+            .populate('links', {elements: 0, lastUpdate: 0, schoolWeek: 0})
+            .exec(async (err, topic) => {
+                const topicObject = topic.toObject();
+                topicObject.links.push(post);
 
-        topicObject.links.sort(function(a, b) {
-            if (a.lessonDate < b.lessonDate) { return -1; }
-            if (a.lessonDate > b.lessonDate) { return 1; }
-            return 0;
-        });
+                topicObject.links.sort(function(a, b) {
+                    if (a.lessonDate < b.lessonDate) { return -1; }
+                    if (a.lessonDate > b.lessonDate) { return 1; }
+                    return 0;
+                });
+                topicObject.links = topicObject.links.map(el => el._id);
 
-        const topicToUpdate = await Topics.updateOne(
-            { _id: req.body.topicId },
-            { $set: topicObject }
-        )
-        res.json({
-            message: 'Post successfully created',
-            post: post,
-            updatedTopic: topicToUpdate
-        });
+                const topicToUpdate = await Topics.updateOne(
+                    { _id: req.body.topicId },
+                    { $set: topicObject }
+                )
+                res.json({
+                    message: 'Post successfully created',
+                    post: post,
+                    updatedTopic: topicToUpdate
+                });
+            });
     }
 });
 

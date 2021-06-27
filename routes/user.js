@@ -23,7 +23,7 @@ function sendVerificationEmail(newUser, req, res) {
             from: 'no-reply@example.com',
             to: newUser.email,
             subject: 'Ihre Anmeldung auf fachentwickler',
-            text: 'Hallo ' + req.body.name + ',\n\n' + 'Bitte verifiziere deine E-Mail Adresse um die Registrierung abzuschließen. \nhttp:\/\/' + req.headers.host + '\/user/confirmation\/' + newUser.email + '\/' + token.code + '\n\nfachentwickler\nhttp:\\/\\/\' + req.headers.host'
+            text: 'Hallo ' + req.body.name + ',\n\n' + 'Bitte verifiziere deine E-Mail Adresse um die Registrierung abzuschließen. \nhttp:\/\/' + req.headers.host + '\/user/confirmation\/' + newUser.email + '\/' + token.code + '\n\nfachentwickler\nhttp:\/\/' + req.headers.host
         };
 
         mailService.sendMail(mailOptions, res,(response) => {

@@ -10,6 +10,7 @@ const connection = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOLBAS
 
 const Topics = connection.model('topics', new mongoose.Schema({
     title: { type: String, required: true },
+    url: { type: String, required: true },
     subject: { type: String, required: true },
     links: [
         { type: mongoose.Schema.Types.ObjectId, ref: Post },
