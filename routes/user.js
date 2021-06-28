@@ -30,10 +30,13 @@ function sendVerificationEmail(newUser, req, res) {
         };
 
         mailService.sendMail(mailOptions, res,(response) => {
+            const jwtToken = signToken(newUser._id);
+
             return res.status(201).json({
                 success: true,
                 message: 'A verification link has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
                 user: newUser,
+                token: jwtToken,
                 response: response
             });
         });
@@ -158,12 +161,19 @@ userRouter.post('/resend-verification-link', (req, res) => {
             return res.status(200).send({
                 success: false,
                 message: 'User is already verified.',
-                user: user,
                 error: err
             });
-        } else {
-            sendVerificationEmail(user, req, res);
         }
+        VerificationToken.remove({ _userId: user._id }, (err, token) => {
+            if (err) {
+                return res.status(400).send({
+                    success: false,
+                    message: 'Delete exisiting user tokens failed.',
+                    error: err
+                });
+            }
+        })
+        sendVerificationEmail(user, req, res);
     });
 });
 
