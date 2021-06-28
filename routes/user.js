@@ -1,6 +1,7 @@
 const express = require('express');
 const userRouter = express.Router();
 const passport = require('passport');
+const passportConfig = require('../middleware/passport');
 const JWT = require('jsonwebtoken');
 
 const User = require('../models/user/User');
@@ -85,14 +86,6 @@ userRouter.post('/register', (req, res) => {
                        error: err
                    });
                }
-
-               // create jwt token for created user
-               const token = signToken(newUser._id);
-               res.cookie('fachentwickler_auth', token, {
-                   maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
-                   sameSite: 'strict'
-                   // httpOnly: true, // The cookie only accessible by the web server
-               });
 
                sendVerificationEmail(newUser, req, res);
            });
@@ -260,11 +253,6 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
         const token = signToken(req.user._id);
-        res.cookie('fachentwickler_auth', token, {
-            maxAge: 1000 * 3600 * 24 * 30, // would expire after 30 days
-            sameSite: 'strict'
-            // httpOnly: true, // The cookie only accessible by the web server
-        });
         res.status(200).json({
             isAuthenticated: true,
             message: "Valid user data",
@@ -282,7 +270,6 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
 });
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.clearCookie('fachentwickler_auth');
     res.json({
         success: true,
         message: 'Successfully logged out'

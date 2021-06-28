@@ -6,13 +6,14 @@ const User = require('../models/user/User');
 const cookieExtractor = req => {
     let token = null;
     if (req && req.cookies) {
-        token = req.cookies['fachentwickler_auth'];
+        token = req.headers.authorization; // get token from http header Authorization
+        // token = req.cookies['fachentwickler_auth'];
     }
     return token;
 };
 
-// authenticated local strategy using username and password
-passport.use(new JwtStrategy({
+// strategy using jwt token
+passport.use('jwt', new JwtStrategy({
     jwtFromRequest: cookieExtractor,
     secretOrKey: 'fachentwickler-95-secret'
 }, (payload, done) => {
@@ -26,8 +27,8 @@ passport.use(new JwtStrategy({
     })
 }));
 
-// authorization
-passport.use(new LocalStrategy((name, password, done) => {
+// strategy using username and password
+passport.use('local', new LocalStrategy((name, password, done) => {
     User.findOne({name}, (err, user) => {
         if (err)    // something went wrong with database
             return done(err);
