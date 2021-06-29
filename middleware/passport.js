@@ -15,7 +15,7 @@ const cookieExtractor = req => {
 // strategy using jwt token
 passport.use('jwt', new JwtStrategy({
     jwtFromRequest: cookieExtractor,
-    secretOrKey: 'fachentwickler-95-secret'
+    secretOrKey: process.env.JWT_SECRET
 }, (payload, done) => {
     User.findById({ _id: payload.sub }, (err, user) => {
         if (err)

@@ -14,9 +14,9 @@ const verificationMail = require('../views/verification-email');
 
 const signToken = userId => {
     return JWT.sign({
-        iss: 'fachentwickler-95-secret',
+        iss: process.env.JWT_SECRET,
         sub: userId
-    }, 'fachentwickler-95-secret', { expiresIn: '30d' })
+    }, process.env.JWT_SECRET, { expiresIn: '30d' })
 };
 
 function sendVerificationEmail(newUser, req, res) {
