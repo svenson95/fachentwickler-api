@@ -26,14 +26,18 @@ module.exports = {
             callback(verificationToken);
         });
     },
-    signToken: function(userId) {
+
+    signToken: function(user) {
         return JWT.sign({
-            iss: process.env.JWT_SECRET,
-            sub: userId
+            sub: user._id,
+            role: user.role,
+            iss: 'http://159.65.105.150',
+            directory: __dirname
         }, process.env.JWT_SECRET, { expiresIn: '30d' })
     },
-    deleteToken: async function(code, res, callback) {
-        await VerificationToken.remove({ code: code }, (err, response) => {
+
+    deleteToken: async function(key, value, res, callback) {
+        await VerificationToken.remove({ [key]: value }, (err, response) => {
             if (err) {
                 return res.status(500).send({
                     success: false,

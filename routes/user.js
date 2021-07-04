@@ -4,8 +4,6 @@ const passport = require('passport');
 const passportConfig = require('../middleware/passport');
 
 const Progress = require('../models/user/Progress');
-const VerificationToken = require('../models/user/VerificationToken');
-
 const tokenService = require('../services/token-service');
 const userService = require('../services/user-service');
 
@@ -37,17 +35,9 @@ userRouter.post('/resend-verification-link', (req, res) => {
             });
         }
 
-        await VerificationToken.remove({ _userId: user._id }, (err, token) => {
-            if (err) {
-                return res.status(400).send({
-                    success: false,
-                    code: "DeleteVerificationTokenException",
-                    message: 'Delete exisiting user tokens failed.',
-                    error: err
-                });
-            }
+        await tokenService.deleteToken('_userId', user._id, res, (response) => {
+            userService.sendVerificationEmail(userByEmail, res);
         });
-        userService.sendVerificationEmail(userByEmail, res);
     });
 });
 
@@ -58,7 +48,7 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
     } else {
         res.status(401).json({
             isAuthenticated: false,
-            code: "NotAuthenticatedException",
+            code: "UnauthorizedException",
             message: "Not authenticated, token may have expired.",
             response: res,
             request: req
@@ -68,17 +58,18 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
 
 userRouter.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
-        const token = tokenService.signToken(req.user._id);
+        const token = tokenService.signToken(req.user);
         res.status(200).json({
             isAuthenticated: true,
-            message: "Valid user data",
+            message: "Login successful.",
             user: req.user,
             token: token
         });
     } else {
         res.status(401).json({
             isAuthenticated: false,
-            message: "Wrong password",
+            code: "InvalidCredentialsException",
+            message: "Invalid username or password.",
             response: res,
             request: req
         });
@@ -110,51 +101,64 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req
 // });
 
 userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const newProgress = new Progress(req.body);
-    newProgress.save(error => {
-        if (error) {
-            res.status(500).json({
+    userService.findUser('_id', req.body.userId, res, (user) => {
+
+        if (user.progress.contains(req.body.postId)) {
+            return res.status(409).json({
                 success: false,
-                code: "AddUserProgressException",
-                message: 'Add progress data failed',
-                error: error
+                code: "AlreadyReadException",
+                message: 'Lesson is already marked as read.',
+                progress: user.progress
             })
-        } else {
-            req.user.progress.push(req.body.postId);
-            req.user.save(error2 => {
-                if (error2) {
-                    res.status(500).json({
-                        success: false,
-                        code: "SaveUserProgressException",
-                        message: 'Add progress data failed - save edited user (progress array)',
-                        error: error2
-                    })
-                } else {
-                    res.status(200).json({
-                        success: true,
-                        message: 'Successfully added progress',
-                        progress: newProgress,
-                        user: req.user
-                    })
-                }
-            });
         }
+
+        const newProgress = new Progress(req.body);
+        newProgress.save(progressError => {
+            if (progressError) {
+                res.status(500).json({
+                    success: false,
+                    code: "SaveNewProgressException",
+                    message: 'Save new progress failed.',
+                    error: progressError
+                })
+            } else {
+                req.user.progress.push(req.body.postId);
+                req.user.save(userError => {
+                    if (userError) {
+                        res.status(500).json({
+                            success: false,
+                            code: "EditUserProgressException",
+                            message: 'Save edited user progress failed.',
+                            error: userError
+                        })
+                    } else {
+                        res.status(200).json({
+                            success: true,
+                            message: 'Added user progress successfully.',
+                            progress: newProgress,
+                            user: req.user
+                        })
+                    }
+                });
+            }
+        });
     });
 });
 
 userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.isAuthenticated()) {
-        const token = tokenService.signToken(req.user._id);
+        const token = tokenService.signToken(req.user);
         res.status(200).json({
             isAuthenticated: true,
-            message: 'User authenticated',
+            message: 'Authentication successful.',
             user: req.user,
             token: token
         });
     } else {
         res.status(401).json({
             isAuthenticated: false,
-            message: 'You are not logged in',
+            code: 'UnauthorizedException',
+            message: 'Logout due to authentication fail.',
             response: res,
             request: req
         })

@@ -1,5 +1,5 @@
 module.exports = {
-    html: function(user, token, req) {
+    html: function(user, token) {
         return `
 <!doctype html>
 <html>
@@ -115,12 +115,13 @@ module.exports = {
                                 <tr>
                                     <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
-                                            Hallo ${req.body.name},
+                                            Hallo ${user.name},
                                         </p>
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
-                                            Bitte bestätige deine E-Mail Adresse mit dem Verifizierungscode um die Registrierung abzuschließen.
+                                            Bitte bestätige deine E-Mail Adresse mit dem Verifizierungscode um die Registrierung abzuschließen. 
+                                            Gib den Verifizierungscode auf fachentwickler ein oder klicke auf den unten stehenden Link. 
                                         </p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
                                             ${token.code}
                                         </p>
                                         <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">

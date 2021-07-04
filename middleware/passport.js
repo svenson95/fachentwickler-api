@@ -3,18 +3,21 @@ const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const User = require('../models/user/User');
 
-const cookieExtractor = req => {
+const tokenExtractor = req => {
     let token = null;
-    if (req && req.cookies) {
-        token = req.headers.authorization; // get token from http header Authorization
-        // token = req.cookies['fachentwickler_auth'];
-    }
+    // get token from http header Authorization
+    token = req.headers.authorization;
+
+    // get token from request cookies
+    // if (req && req.cookies) {
+    //     token = req.cookies['fachentwickler_auth'];
+    // }
     return token;
 };
 
 // strategy using jwt token
 passport.use('jwt', new JwtStrategy({
-    jwtFromRequest: cookieExtractor,
+    jwtFromRequest: tokenExtractor,
     secretOrKey: process.env.JWT_SECRET
 }, (payload, done) => {
     User.findById({ _id: payload.sub }, (err, user) => {

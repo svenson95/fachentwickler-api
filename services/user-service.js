@@ -159,7 +159,7 @@ module.exports = {
             };
 
             mailService.sendMail(mailOptions, res,(response) => {
-                const jwtToken = tokenService.signToken(newUser._id);
+                const jwtToken = tokenService.signToken(newUser);
 
                 return res.status(201).json({
                     success: true,
@@ -195,11 +195,12 @@ module.exports = {
                             });
                         }
 
-                        await tokenService.deleteToken(code, res, (response) => {
+                        await tokenService.deleteToken('code', token.code, res, (response) => {
                             return res.status(200).send({
                                 success: true,
-                                message: 'User e-mail changed successfully.',
-                                response: response
+                                message: 'User E-Mail changed successfully.',
+                                response: response,
+                                user: savedUser
                             });
                         });
                     });
@@ -222,7 +223,7 @@ module.exports = {
                             });
                         }
 
-                        await tokenService.deleteToken(code, res, (response) => {
+                        await tokenService.deleteToken('code', token.code, res, (response) => {
                             return res.status(200).send({
                                 success: true,
                                 message: 'User verified successfully.',
