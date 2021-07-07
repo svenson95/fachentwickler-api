@@ -11,6 +11,10 @@ userRouter.post('/register', (req, res) => {
    userService.createUser(req.body, res);
 });
 
+userRouter.post('/forgot-password', (req, res) => {
+    userService.forgotPassword(req.body.email, res);
+});
+
 userRouter.get('/confirmation/:email/:code', (req, res) => {
     const { code, email } = req.params;
 

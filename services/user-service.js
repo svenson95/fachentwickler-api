@@ -59,6 +59,12 @@ module.exports = {
         });
     },
 
+    forgotPassword(email, res) {
+        this.findUser('email', email, res, (userByEmail) => {
+            this.sendVerificationEmail(userByEmail, res);
+        })
+    },
+
     editUser(user, res) {
         this.findUser('_id', user._id, res, (userById) => {
 
