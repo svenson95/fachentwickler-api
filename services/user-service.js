@@ -5,6 +5,7 @@ const tokenService = require('../services/token-service');
 const mailService = require('../services/mail-service');
 const verificationMail = require('../views/verification-email');
 const changeEmail = require('../views/change-email');
+const changePassword = require('../views/change-password');
 
 module.exports = {
 
@@ -73,9 +74,9 @@ module.exports = {
                 const mailOptions = {
                     from: 'no-reply@example.com',
                     to: userByEmail.email,
-                    subject: 'E-Mail Adresse ändern',
+                    subject: 'Passwort ändern',
                     text: 'xxx',
-                    html: changeEmail.html(userByEmail, token)
+                    html: changePassword.html(userByEmail, token)
                 };
 
                 mailService.sendMail(mailOptions, res,(response) => {
@@ -136,7 +137,7 @@ module.exports = {
                         });
                     }
 
-                    this.sendVerificationCode(userById, res);
+                    this.sendChangeEmailVerificationCode(userById, res);
                 });
             }
 
@@ -190,6 +191,30 @@ module.exports = {
                 subject: 'Ihre Anmeldung auf fachentwickler',
                 text: 'xxx',
                 html: verificationMail.html(newUser, token)
+            };
+
+            mailService.sendMail(mailOptions, res,(response) => {
+                const jwtToken = tokenService.signToken(newUser);
+
+                return res.status(201).json({
+                    success: true,
+                    message: 'A verification link has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
+                    user: newUser,
+                    token: jwtToken,
+                    response: response
+                });
+            });
+        });
+    },
+
+    sendChangeEmailVerificationCode(newUser, res) {
+        tokenService.generateVerificationToken(newUser, res, (token) => {
+            const mailOptions = {
+                from: 'no-reply@example.com',
+                to: newUser.email,
+                subject: 'E-Mail Adresse ändern',
+                text: 'xxx',
+                html: changeEmail.html(newUser, token)
             };
 
             mailService.sendMail(mailOptions, res,(response) => {

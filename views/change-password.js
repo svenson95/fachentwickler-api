@@ -117,7 +117,7 @@ module.exports = {
                                             Hallo ${user.name},
                                         </p>
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
-                                            Um die Änderung deiner E-Mail Adresse abzuschließen musst du dich erstmal verifizieren. 
+                                            Um die Änderung deines Passworts abzuschließen musst du dich verifizieren. 
                                         </p>
                                         <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
                                             ${token.code}
