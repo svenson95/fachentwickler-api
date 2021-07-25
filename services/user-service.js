@@ -4,6 +4,7 @@ const User = require('../models/user/User');
 const tokenService = require('../services/token-service');
 const mailService = require('../services/mail-service');
 const verificationMail = require('../views/verification-email');
+const changeEmail = require('../views/change-email');
 
 module.exports = {
 
@@ -61,7 +62,34 @@ module.exports = {
 
     forgotPassword(email, res) {
         this.findUser('email', email, res, (userByEmail) => {
-            this.sendVerificationEmail(userByEmail, res);
+            if (!userByEmail) {
+                return res.status(200).json({
+                    success: true,
+                    message: 'User with e-mail ' + email + ' not found'
+                });
+            }
+
+            tokenService.generateVerificationToken(userByEmail, res, (token) => {
+                const mailOptions = {
+                    from: 'no-reply@example.com',
+                    to: userByEmail.email,
+                    subject: 'E-Mail Adresse ändern',
+                    text: 'xxx',
+                    html: changeEmail.html(userByEmail, token)
+                };
+
+                mailService.sendMail(mailOptions, res,(response) => {
+                    const jwtToken = tokenService.signToken(userByEmail);
+
+                    return res.status(201).json({
+                        success: true,
+                        message: 'A verification link has been sent to ' + userByEmail.email + '. It will be expire after 24 hours.',
+                        user: userByEmail,
+                        token: jwtToken,
+                        response: response
+                    });
+                });
+            });
         })
     },
 
@@ -238,6 +266,41 @@ module.exports = {
                         });
                     });
                 }
+            });
+        });
+    },
+
+    changePassword(code, newPassword, res) {
+        VerificationToken.findOne({ code: code }, (err, token) => {
+            if (!token) {
+                return res.status(400).send({
+                    success: false,
+                    code: "TokenNotFoundException",
+                    message: 'Verification Token not found or may have expired.'
+                });
+            }
+
+            this.findUser('_id', token._userId, res, async (userById) => {
+                userById.password = newPassword;
+                userById.save((saveError, savedUser) => {
+                    if (saveError) {
+                        res.status(500).json({
+                            success: false,
+                            code: "SaveNewPasswordException",
+                            message: "Save changed user password failed.",
+                            error: saveError
+                        });
+                    }
+
+                    tokenService.deleteToken('code', token.code, res, (response) => {
+                        return res.status(200).send({
+                            success: true,
+                            message: 'User password changed successfully.',
+                            response: response,
+                            user: savedUser
+                        });
+                    });
+                });
             });
         });
     }

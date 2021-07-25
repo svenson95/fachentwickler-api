@@ -45,6 +45,12 @@ userRouter.post('/resend-verification-link', (req, res) => {
     });
 });
 
+userRouter.post('/change-password', (req, res) => {
+    const { code, newPassword } = req.body;
+
+    userService.changePassword(code, newPassword, res);
+});
+
 userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }), (req, res) => {
     if (req.isAuthenticated()) {
         const user = req.body;
