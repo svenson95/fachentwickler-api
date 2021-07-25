@@ -27,7 +27,7 @@ userRouter.get('/confirmation/:email/:code/:newEmail', (req, res) => {
     userService.confirmUser(code, email, res, newEmail);
 });
 
-userRouter.post('/resend-verification-link', (req, res) => {
+userRouter.post('/resend-verification-code', (req, res) => {
     const { email } = req.body;
 
     userService.findUser('email', email, res, async (userByEmail) => {
@@ -40,7 +40,7 @@ userRouter.post('/resend-verification-link', (req, res) => {
         }
 
         await tokenService.deleteToken('_userId', user._id, res, (response) => {
-            userService.sendVerificationEmail(userByEmail, res);
+            userService.sendVerificationCode(userByEmail, res);
         });
     });
 });
