@@ -40,7 +40,7 @@ userRouter.post('/resend-verification-code', (req, res) => {
         }
 
         await tokenService.deleteToken('_userId', user._id, res, (response) => {
-            userService.sendVerificationCode(userByEmail, res);
+            userService.sendRegisterVerificationCode(userByEmail, res);
         });
     });
 });

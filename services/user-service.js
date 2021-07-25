@@ -55,7 +55,7 @@ module.exports = {
                         });
                     }
 
-                    this.sendVerificationCode(createdUser, res);
+                    this.sendRegisterVerificationCode(createdUser, res);
                 });
             })
         });
@@ -183,7 +183,7 @@ module.exports = {
         });
     },
 
-    sendVerificationCode(newUser, res) {
+    sendRegisterVerificationCode(newUser, res) {
         tokenService.generateVerificationToken(newUser, res, (token) => {
             const mailOptions = {
                 from: 'no-reply@example.com',
