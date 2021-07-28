@@ -266,11 +266,31 @@ module.exports = {
             }
 
             this.findUser('_id', token._userId, res, async (userById) => {
-                if (userById.active === true && newEmail !== null) {
+                if (userById.active !== true) {
+                    userById.active = true;
+                    userById.save(async (saveError, savedUser) => {
+                        if (saveError) {
+                            return res.status(500).send({
+                                success: false,
+                                code: "SaveVerifiedUserException",
+                                message: 'Save verified user failed.',
+                                error: saveError
+                            });
+                        }
+
+                        await tokenService.deleteToken('code', token.code, res, (response) => {
+                            return res.status(200).send({
+                                success: true,
+                                message: 'User verified successfully.',
+                                user: savedUser
+                            });
+                        });
+                    });
+                } else if (userById.active === true && newEmail !== null) {
                     userById.email = newEmail;
                     userById.save(async (saveError, savedUser) => {
                         if (saveError) {
-                            res.status(500).json({
+                            return res.status(500).json({
                                 success: false,
                                 code: "SaveUserEmailException",
                                 message: "Save changed user e-mail failed.",
@@ -294,26 +314,6 @@ module.exports = {
                         error: err
                     });
                 }
-
-                userById.active = true;
-                userById.save(async (saveError, savedUser) => {
-                    if (saveError) {
-                        return res.status(500).send({
-                            success: false,
-                            code: "SaveVerifiedUserException",
-                            message: 'Save verified user failed.',
-                            error: saveError
-                        });
-                    }
-
-                    await tokenService.deleteToken('code', token.code, res, (response) => {
-                        return res.status(200).send({
-                            success: true,
-                            message: 'User verified successfully.',
-                            user: savedUser
-                        });
-                    });
-                });
             });
         });
     },
