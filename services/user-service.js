@@ -18,6 +18,12 @@ module.exports = {
                     message: "Find user by '" + key + "' failed.",
                     error: error
                 });
+            } else if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    code: "UserNotFoundException",
+                    message: "User with " + key + ": '" + value + "' not found."
+                });
             }
 
             callback(user);
@@ -47,7 +53,7 @@ module.exports = {
                 const newUser = new User({ name, password, role, email, theme });
                 newUser.save((err, createdUser) => {
                     if (err) {
-                        return res.status(500).json({
+                        return res.status(400).json({
                             success: false,
                             code: "SaveNewUserException",
                             message: "Save new user failed.",
@@ -64,9 +70,10 @@ module.exports = {
     forgotPassword(email, res) {
         this.findUser('email', email, res, (userByEmail) => {
             if (!userByEmail) {
-                return res.status(200).json({
-                    success: true,
-                    message: 'User with e-mail ' + email + ' not found'
+                return res.status(400).json({
+                    success: false,
+                    code: 'UserNotFoundException',
+                    message: 'User with e-mail \'' + email + '\' not found'
                 });
             }
 
@@ -86,8 +93,7 @@ module.exports = {
                         success: true,
                         message: 'A verification link has been sent to ' + userByEmail.email + '. It will be expire after 24 hours.',
                         user: userByEmail,
-                        token: jwtToken,
-                        response: response
+                        token: jwtToken
                     });
                 });
             });
@@ -198,10 +204,9 @@ module.exports = {
 
                 return res.status(201).json({
                     success: true,
-                    message: 'A verification link has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
+                    message: 'Verification code has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
                     user: newUser,
-                    token: jwtToken,
-                    response: response
+                    token: jwtToken
                 });
             });
         });
@@ -224,8 +229,7 @@ module.exports = {
                     success: true,
                     message: 'A verification link has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
                     user: newUser,
-                    token: jwtToken,
-                    response: response
+                    token: jwtToken
                 });
             });
         });
@@ -258,7 +262,6 @@ module.exports = {
                             return res.status(200).send({
                                 success: true,
                                 message: 'User E-Mail changed successfully.',
-                                response: response,
                                 user: savedUser
                             });
                         });
@@ -270,27 +273,27 @@ module.exports = {
                         message: 'User is already verified.',
                         error: err
                     });
-                } else {
-                    userById.active = true;
-                    userById.save(async (saveError, savedUser) => {
-                        if (saveError) {
-                            return res.status(500).send({
-                                success: false,
-                                code: "SaveVerifiedUserException",
-                                message: 'Save verified user failed.',
-                                error: saveError
-                            });
-                        }
+                }
 
-                        await tokenService.deleteToken('code', token.code, res, (response) => {
-                            return res.status(200).send({
-                                success: true,
-                                message: 'User verified successfully.',
-                                response: response
-                            });
+                userById.active = true;
+                userById.save(async (saveError, savedUser) => {
+                    if (saveError) {
+                        return res.status(500).send({
+                            success: false,
+                            code: "SaveVerifiedUserException",
+                            message: 'Save verified user failed.',
+                            error: saveError
+                        });
+                    }
+
+                    await tokenService.deleteToken('code', token.code, res, (response) => {
+                        return res.status(200).send({
+                            success: true,
+                            message: 'User verified successfully.',
+                            user: savedUser
                         });
                     });
-                }
+                });
             });
         });
     },
@@ -302,6 +305,13 @@ module.exports = {
                     success: false,
                     code: "TokenNotFoundException",
                     message: 'Verification Token not found or may have expired.'
+                });
+            } else if (err) {
+                return res.status(500).send({
+                    success: false,
+                    code: "FindTokenException",
+                    message: 'Error occured while find verification token.',
+                    error: err
                 });
             }
 
@@ -321,7 +331,6 @@ module.exports = {
                         return res.status(200).send({
                             success: true,
                             message: 'User password changed successfully.',
-                            response: response,
                             user: savedUser
                         });
                     });

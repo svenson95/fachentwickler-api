@@ -57,11 +57,9 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }),
         userService.editUser(user, res);
     } else {
         res.status(401).json({
-            isAuthenticated: false,
+            success: false,
             code: "UnauthorizedException",
             message: "Not authenticated, token may have expired.",
-            response: res,
-            request: req
         });
     }
 });
@@ -70,18 +68,16 @@ userRouter.post('/login', passport.authenticate('local', { session: false }), (r
     if (req.isAuthenticated()) {
         const token = tokenService.signToken(req.user);
         res.status(200).json({
-            isAuthenticated: true,
-            message: "Login successful.",
+            success: true,
+            message: "Logged in successfully",
             user: req.user,
             token: token
         });
     } else {
         res.status(401).json({
-            isAuthenticated: false,
+            success: false,
             code: "InvalidCredentialsException",
             message: "Invalid username or password.",
-            response: res,
-            request: req
         });
     }
 });
@@ -169,8 +165,6 @@ userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }
             isAuthenticated: false,
             code: 'UnauthorizedException',
             message: 'Logout due to authentication fail.',
-            response: res,
-            request: req
         })
     }
 });
