@@ -186,6 +186,26 @@ module.exports = {
                     });
                 });
             }
+
+            if (user.theme) {
+                userById.theme = user.theme;
+                userById.save((saveError, savedUser) => {
+                    if (saveError) {
+                        return res.status(500).json({
+                            success: false,
+                            code: "SaveUserProgressException",
+                            message: "Save changed user theme failed.",
+                            error: saveError
+                        });
+                    }
+
+                    return res.status(201).json({
+                        success: true,
+                        message: "User theme changed successfully",
+                        user: savedUser
+                    });
+                });
+            }
         });
     },
 
