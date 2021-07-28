@@ -18,12 +18,6 @@ module.exports = {
                     message: "Find user by '" + key + "' failed.",
                     error: error
                 });
-            } else if (!user) {
-                return res.status(400).json({
-                    success: false,
-                    code: "UserNotFoundException",
-                    message: "User with " + key + ": '" + value + "' not found."
-                });
             }
 
             callback(user);

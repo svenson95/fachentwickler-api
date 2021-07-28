@@ -109,7 +109,7 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }), (req
 userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }), (req, res) => {
     userService.findUser('_id', req.body.userId, res, (user) => {
 
-        if (user.progress.contains(req.body.postId)) {
+        if (user.progress.includes(req.body.postId)) {
             return res.status(409).json({
                 success: false,
                 code: "AlreadyReadException",
