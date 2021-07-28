@@ -155,16 +155,17 @@ userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }
     if (req.isAuthenticated()) {
         const token = tokenService.signToken(req.user);
         res.status(200).json({
-            isAuthenticated: true,
+            success: true,
             message: 'Authentication successful.',
             user: req.user,
             token: token
         });
     } else {
         res.status(401).json({
-            isAuthenticated: false,
+            success: false,
             code: 'UnauthorizedException',
-            message: 'Logout due to authentication fail.',
+            message: 'Not Authorized.',
+            error: res.error()
         })
     }
 });
