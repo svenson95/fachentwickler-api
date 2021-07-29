@@ -131,15 +131,24 @@ router.post('/new', async (req, res) => {
     }
 });
 
-// Get specific post
+// Get post article
+router.get('/:topic/:title', async (req, res) => {
+    try {
+        let urlString = req.params.topic + "/" + req.params.title;
+        const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0}).populate('topicId', {links: 0});
+        res.json(post);
+    } catch (error) {
+        res.json({
+            message: 'Post not found',
+            error: error
+        });
+    }
+});
+
+// Get post quiz, index-cards or matching
 router.get('/:topic/:title/:type', async (req, res) => {
     try {
-        let urlString;
-        if (req.params.type !== undefined) {
-            urlString = req.params.topic + "/" + req.params.title + "/" + req.params.type;
-        } else {
-            urlString = req.params.topic + "/" + req.params.title;
-        }
+        let urlString = req.params.topic + "/" + req.params.title + "/" + req.params.type;
         const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0}).populate('topicId', {links: 0});
         res.json(post);
     } catch (error) {
