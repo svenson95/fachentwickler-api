@@ -1,16 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
-const Quizzes = require('../models/quiz/Quiz');
-const IndexCards = require('../models/index-cards/IndexCards');
-const Matching = require('../models/matching/Matching');
 
 const allArticles = async () => {
-    const posts = await Posts.find({}, {elements: 0});
-    const quizzes = await Quizzes.find({}, {questions: 0});
-    const indexCards = await IndexCards.find({}, {questions: 0});
-    const matchings = await Matching.find({}, {pairs: 0});
-    return [...posts, ...quizzes, ...indexCards, ...matchings];
+    return await Posts.find({}, {elements: 0});
 }
 
 // Get specific school week by number

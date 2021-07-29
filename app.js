@@ -28,14 +28,12 @@ app.use(cors({
 app.use(helmet())
 
 /* Routes */
-app.use('/quiz', require('./routes/quiz'));
-app.use('/matching', require('./routes/matching'));
 app.use('/posts', require('./routes/posts'));
-app.use('/index-cards', require('./routes/index-cards'));
-app.use('/search', require('./routes/search'));
 app.use('/topics', require('./routes/topics'));
 app.use('/subjects', require('./routes/subjects'));
 app.use('/images', require('./routes/images'));
+app.use('/files', require('./routes/files'));
+app.use('/search', require('./routes/search'));
 app.use('/user', require('./routes/user'));
 app.use('/exam-dates', require('./routes/exam-date'));
 app.use('/school-week', require('./routes/school-week'));

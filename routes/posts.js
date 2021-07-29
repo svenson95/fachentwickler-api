@@ -3,9 +3,6 @@ const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
 const Topics = require('../models/topics/Topics');
-const Quizzes = require('../models/quiz/Quiz');
-const IndexCards = require('../models/index-cards/IndexCards');
-const Matching = require('../models/matching/Matching');
 
 function currentDate() {
     const today = new Date();
@@ -24,11 +21,7 @@ function currentDate() {
 }
 
 const allArticles = async () => {
-    const posts = await Posts.find({}, {elements: 0});
-    const quizzes = await Quizzes.find({}, {questions: 0});
-    const indexCards = await IndexCards.find({}, {questions: 0});
-    const matchings = await Matching.find({}, {pairs: 0});
-    return [...posts, ...quizzes, ...indexCards, ...matchings];
+    return await Posts.find({}, {elements: 0});
 }
 
 // Get all posts
@@ -139,9 +132,14 @@ router.post('/new', async (req, res) => {
 });
 
 // Get specific post
-router.get('/:topic/:postUrl', async (req, res) => {
+router.get('/:topic/:title/:type', async (req, res) => {
     try {
-        const urlString = req.params.topic + "/" + req.params.postUrl;
+        let urlString;
+        if (req.params.type !== undefined) {
+            urlString = req.params.topic + "/" + req.params.title + "/" + req.params.type;
+        } else {
+            urlString = req.params.topic + "/" + req.params.title;
+        }
         const post = await Posts.findOne({ "url": urlString }, {schoolWeek: 0}).populate('topicId', {links: 0});
         res.json(post);
     } catch (error) {

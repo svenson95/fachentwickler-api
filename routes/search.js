@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
-const Quizzes = require('../models/quiz/Quiz');
-const IndexCards = require('../models/index-cards/IndexCards');
 
 // Search all posts for specific text
 router.get('/', async (req, res) => {
@@ -58,16 +56,6 @@ router.get('/', async (req, res) => {
                 // pushToResults(subjects, post, foundPosts);
             }
         })
-    });
-
-    const quizzes = await Quizzes.find();
-    const indexCards = await IndexCards.find();
-    const elements = [...quizzes, ...indexCards];
-    elements.find(article => {
-        const postTitle = article.title.toLowerCase();
-        if (postTitle.includes(searchText) && !foundPosts.includes(article)) {
-            foundPosts.push(article);
-        }
     });
 
     res.json(foundPosts);

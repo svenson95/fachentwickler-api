@@ -15,8 +15,7 @@ const Posts = connection.model('subjects-posts', new mongoose.Schema({
     lessonDate: { type: String, required: true },
     lastUpdate: { type: String, required: true },
     schoolWeek: { type: String, required: true },
-    elements: { type: Array, default: undefined },
-    questions: { type: Array, default: undefined }
+    elements: { type: Array, default: undefined }
 }));
 
 module.exports = Posts;
