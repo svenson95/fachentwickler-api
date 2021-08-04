@@ -17,15 +17,7 @@ router.get('/all', async (req, res) => {
             .skip(page * Number(size))
             .limit(Number(size));
 
-        const chunks = await PhotoChunks.find({ files_id : { $in : files.map(el => el._id) } });
-        const images = [];
-
-        files.forEach(file => {
-            const _chunks = chunks.filter(el => String(el.files_id) === String(file._id));
-            images.push({ file: file, chunks: _chunks });
-        })
-
-        res.json(images);
+        res.json(files);
     } catch (error) {
         res.json({ message: error });
     }
