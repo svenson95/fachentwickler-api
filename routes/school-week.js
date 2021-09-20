@@ -10,7 +10,7 @@ const allArticles = async () => {
 router.get('/number/:number', async (req, res) => {
     try {
         const objects = await allArticles();
-        let week = { schoolWeek: req.params.number, posts: [] };
+        let week = { schoolWeek: Number(req.params.number), posts: [] };
         objects.forEach(post => {
             if (req.params.number === post.schoolWeek) {
                 week.posts.push(post);
@@ -37,12 +37,12 @@ router.get('/all', async (req, res) => {
         const weeksArray = [];
         objects.forEach(post => {
             if (post.schoolWeek > 0) {
-                const weekObj = weeksArray.find(week => week.schoolWeek === post.schoolWeek);
+                const weekObj = weeksArray.find(week => week.schoolWeek === Number(post.schoolWeek));
                 if (weekObj) {
                     weekObj.posts.push(post);
                 } else {
                     weeksArray.push({
-                        schoolWeek: post.schoolWeek,
+                        schoolWeek: Number(post.schoolWeek),
                         posts: [post]
                     })
                 }
