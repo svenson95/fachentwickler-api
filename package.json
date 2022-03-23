@@ -2,7 +2,7 @@
   "name": "fachentwickler-api",
   "version": "1.0.0",
   "description": "Rest APIs for fachentwickler app",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon app.js"
   },
@@ -11,8 +11,8 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "console": "^0.7.2",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "gridfs-stream": "^1.1.1",
