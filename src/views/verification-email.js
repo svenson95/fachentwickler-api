@@ -1,6 +1,6 @@
 module.exports = {
-    html: function(user, token) {
-        return `
+  html: function (user, token) {
+    return `
 <!doctype html>
 <html>
 <head>
@@ -178,6 +178,6 @@ module.exports = {
 </table>
 </body>
 </html>
-`
-    }
+`;
+  },
 };

@@ -3,41 +3,48 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const User = require('../models/user/User');
 const passport = require('passport');
 
-const tokenExtractor = req => {
-    let token = null;
-    // get token from http header Authorization
-    token = req.headers.authorization;
+const tokenExtractor = (req) => {
+  let token = null;
+  // get token from http header Authorization
+  token = req.headers.authorization;
 
-    // get token from request cookies
-    // if (req && req.cookies) {
-    //     token = req.cookies['fachentwickler_auth'];
-    // }
-    return token;
+  // get token from request cookies
+  // if (req && req.cookies) {
+  //     token = req.cookies['fachentwickler_auth'];
+  // }
+  return token;
 };
 
 // // strategy using jwt token
-passport.use('jwt', new JwtStrategy({
-    jwtFromRequest: tokenExtractor,
-    secretOrKey: process.env.JWT_SECRET
-}, (payload, done) => {
-    User.findById({ _id: payload.sub }, (err, user) => {
-        if (err)
-            return done(err, false);
-        if (user)
-            return done(null, user);
-        else
-            return done(null, false);
-    })
-}));
+passport.use(
+  'jwt',
+  new JwtStrategy(
+    {
+      jwtFromRequest: tokenExtractor,
+      secretOrKey: process.env.JWT_SECRET,
+    },
+    (payload, done) => {
+      User.findById({ _id: payload.sub }, (err, user) => {
+        if (err) return done(err, false);
+        if (user) return done(null, user);
+        else return done(null, false);
+      });
+    },
+  ),
+);
 
 // strategy using username and password
-passport.use('local', new LocalStrategy((name, password, done) => {
+passport.use(
+  'local',
+  new LocalStrategy((name, password, done) => {
     User.findOne({ name }, (err, user) => {
-        if (err)    // something went wrong with database
-            return done(err);
-        if (!user)  // if no user exist
-            return done(null, false);
-        user.comparePassword(password, done);   // check if password is correct
-
-    })
-}));
+      if (err)
+        // something went wrong with database
+        return done(err);
+      if (!user)
+        // if no user exist
+        return done(null, false);
+      user.comparePassword(password, done); // check if password is correct
+    });
+  }),
+);

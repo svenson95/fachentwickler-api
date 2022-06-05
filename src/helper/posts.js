@@ -1,4 +1,4 @@
-const Posts = require("../models/posts/Posts");
+const Posts = require('../models/posts/Posts');
 
 async function changePostTypeValues() {
   const posts = await Posts.find();
@@ -7,18 +7,18 @@ async function changePostTypeValues() {
     const updatedElements = post.elements;
 
     updatedElements.forEach(function (element, index) {
-      if (element.type === "title") this[index].type = "TITLE";
-      if (element.type === "subtitle") this[index].type = "SUBTITLE";
-      if (element.type === "text") this[index].type = "TEXT";
-      if (element.type === "image") this[index].type = "IMAGE";
-      if (element.type === "line") this[index].type = "LINE";
-      if (element.type === "list") this[index].type = "LIST";
-      if (element.type === "table") this[index].type = "TABLE";
-      if (element.type === "code") this[index].type = "CODE";
-      if (element.type === "file") this[index].type = "FILE";
-      if (element.type === "hint") this[index].type = "HINT";
-      if (element.type === "answer-group") this[index].type = "ANSWER_GROUP";
-      if (element.type === "table-group") this[index].type = "TABLE_GROUP";
+      if (element.type === 'title') this[index].type = 'TITLE';
+      if (element.type === 'subtitle') this[index].type = 'SUBTITLE';
+      if (element.type === 'text') this[index].type = 'TEXT';
+      if (element.type === 'image') this[index].type = 'IMAGE';
+      if (element.type === 'line') this[index].type = 'LINE';
+      if (element.type === 'list') this[index].type = 'LIST';
+      if (element.type === 'table') this[index].type = 'TABLE';
+      if (element.type === 'code') this[index].type = 'CODE';
+      if (element.type === 'file') this[index].type = 'FILE';
+      if (element.type === 'hint') this[index].type = 'HINT';
+      if (element.type === 'answer-group') this[index].type = 'ANSWER_GROUP';
+      if (element.type === 'table-group') this[index].type = 'TABLE_GROUP';
     }, updatedElements);
 
     console.log(post._id);
@@ -33,7 +33,7 @@ async function changePostTypeValues() {
     // );
   });
 
-  console.log("finished");
+  console.log('finished');
 }
 
 async function changePostImageURLs() {
@@ -43,11 +43,8 @@ async function changePostImageURLs() {
     const updatedElements = post.elements;
 
     updatedElements.forEach(function (element) {
-      if (element.type === "IMAGE") {
-        element.content = element.content.substring(
-          element.content.lastIndexOf("/") + 1,
-          element.content.length
-        );
+      if (element.type === 'IMAGE') {
+        element.content = element.content.substring(element.content.lastIndexOf('/') + 1, element.content.length);
       }
     }, updatedElements);
 
@@ -61,7 +58,7 @@ async function changePostImageURLs() {
     // );
   });
 
-  console.log("finished");
+  console.log('finished');
 }
 
 async function changePostSchoolWeekProp() {
@@ -78,5 +75,5 @@ async function changePostSchoolWeekProp() {
     // );
   });
 
-  console.log("finished");
+  console.log('finished');
 }
