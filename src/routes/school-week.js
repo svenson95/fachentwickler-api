@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Posts = require('../models/posts/Posts');
 
-const allArticles = async () => {
-    return await Posts.find({}, {elements: 0});
-}
+const { allArticles } = require('../helper/utils.js');
 
 // Get specific school week by number
 router.get('/number/:number', async (req, res) => {

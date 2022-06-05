@@ -6,7 +6,15 @@ const path = require('path');
 const mongoose = require('./src/middleware/mongoose');
 require('dotenv/config');
 
-const whitelist = ['http://206.189.53.246', 'http://localhost:4200']
+// const {
+//   changePostTypeValues,
+//   changePostImageURLs,
+//   changePostSchoolWeekProp,
+// } = require("./src/helper/posts");
+// const { changeSubjectDescription } = require("./src/helper/subjects");
+// const { changeNewsTypeValues } = require("./src/helper/news");
+
+const whitelist = ['http://206.189.53.246', 'http://localhost:4200'];
 
 async function start() {
     console.info('Start service...');

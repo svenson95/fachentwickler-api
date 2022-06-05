@@ -1,7 +1,7 @@
 const express = require('express');
 const userRouter = express.Router();
 const passport = require('passport');
-const passportConfig = require('../middleware/passport');
+require('../middleware/passport');
 
 const Progress = require('../models/user/Progress');
 const tokenService = require('../services/token-service');
