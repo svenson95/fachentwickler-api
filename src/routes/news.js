@@ -2,6 +2,27 @@ const express = require('express');
 const router = express.Router();
 const News = require('../models/news/News');
 
+// Get latest news
+router.get('/latest', async (req, res) => {
+  try {
+    const news = await News.find({}, { content: 0 }).sort({ date: -1 }).limit(1);
+
+    news.sort(function (a, b) {
+      if (a.date > b.date) {
+        return -1;
+      }
+      if (a.date < b.date) {
+        return 1;
+      }
+      return 0;
+    });
+
+    res.json(news);
+  } catch (error) {
+    res.json({ error: error, message: 'Error occured while get latest news' });
+  }
+});
+
 // Get news list
 router.get('/all', async (req, res) => {
   try {
