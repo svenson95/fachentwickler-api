@@ -4,9 +4,9 @@ const User = require('../models/user/User');
 const tokenService = require('./token-service');
 const mailService = require('./mail-service');
 
-const verificationMail = require('../views/verification-email');
-const changeEmail = require('../views/change-email');
-const changePassword = require('../views/change-password');
+const verificationMailView = require('../views/verification-email');
+const changeEmailView = require('../views/change-email');
+const changePasswordView = require('../views/change-password');
 
 const {
   okResponse,
@@ -17,30 +17,33 @@ const {
   internalErrorResponse,
 } = require('../helper/utils.js');
 
-module.exports = {
-  findUser(key, value, res, callback) {
-    User.findOne({ [key]: value }, (error, user) => {
-      if (error) {
-        internalErrorResponse('Find user failed. Internal server error.', error, res);
-      } else if (!user) {
-        notFoundResponse('Find user failed. User not found.', res);
-      } else {
-        callback(user);
-      }
-    });
-  },
+function findUser(key, value, res, callback) {
+  User.findOne({ [key]: value }, (error, user) => {
+    if (error) {
+      internalErrorResponse('Find user failed. Internal server error.', error, res);
+    } else if (!user) {
+      notFoundResponse('Find user failed. User not found.', res);
+    } else {
+      callback(user);
+    }
+  });
+}
 
-  saveUser(user, res, callback) {
-    User.save({ _id: user._id }, (error, user) => {
-      if (error) {
-        internalErrorResponse('Save user failed. Internal server error.', error, res);
-      } else if (!user) {
-        notFoundResponse('Save user failed. User not found.', res);
-      } else {
-        callback(user);
-      }
-    });
-  },
+function saveUser(user, res, callback) {
+  User.save({ _id: user._id }, (error, user) => {
+    if (error) {
+      internalErrorResponse('Save user failed. Internal server error.', error, res);
+    } else if (!user) {
+      notFoundResponse('Save user failed. User not found.', res);
+    } else {
+      callback(user);
+    }
+  });
+}
+
+module.exports = {
+  findUser: findUser,
+  saveUser: saveUser,
 
   createUser(_user, res, callback) {
     User.findOne({ name: _user.name }, (nameError, userByName) => {
@@ -71,14 +74,14 @@ module.exports = {
   },
 
   forgotPassword(email, res, callback) {
-    this.findUser('email', email, res, (userByEmail) => {
+    findUser('email', email, res, (userByEmail) => {
       tokenService.generateVerificationToken(userByEmail, res, (token) => {
         const mailOptions = {
           from: 'no-reply@example.com',
           to: userByEmail.email,
           subject: 'Passwort ändern',
           text: 'xxx',
-          html: changePassword.html(userByEmail, token),
+          html: changePasswordView.html(userByEmail, token),
         };
 
         mailService.sendMail(mailOptions, res, () => {
@@ -89,7 +92,7 @@ module.exports = {
   },
 
   editUser(user, res) {
-    this.findUser('_id', user._id, res, (userById) => {
+    findUser('_id', user._id, res, (userById) => {
       if (user.newName) {
         User.findOne({ name: user.newName }, (nameError, userByName) => {
           if (nameError) {
@@ -98,7 +101,7 @@ module.exports = {
             conflictResponse('Edit user name failed. Name is already taken.', res);
           } else {
             userById.name = user.newName;
-            this.saveUser(userById, res, (savedUser) => {
+            saveUser(userById, res, (savedUser) => {
               okResponse('Edit user name successful.', { user: savedUser }, res);
             });
           }
@@ -113,7 +116,7 @@ module.exports = {
             conflictResponse('Edit user email failed. Name is already taken.', res);
           } else {
             userById.name = user.newName;
-            this.saveUser(userById, res, (savedUser) => {
+            saveUser(userById, res, (savedUser) => {
               okResponse('Edit user email successful.', { user: savedUser }, res);
             });
           }
@@ -122,21 +125,21 @@ module.exports = {
 
       if (user.password) {
         userById.password = user.password;
-        this.saveUser(userById, res, (savedUser) => {
+        saveUser(userById, res, (savedUser) => {
           okResponse('Edit user password successful.', { user: savedUser }, res);
         });
       }
 
       if (user.progress) {
         userById.progress = user.progress;
-        this.saveUser(userById, res, (savedUser) => {
+        saveUser(userById, res, (savedUser) => {
           okResponse('Edit user progress successful.', { user: savedUser }, res);
         });
       }
 
       if (user.theme) {
         userById.theme = user.theme;
-        this.saveUser(userById, res, (savedUser) => {
+        saveUser(userById, res, (savedUser) => {
           okResponse('Edit user theme successful.', { user: savedUser }, res);
         });
       }
@@ -150,7 +153,7 @@ module.exports = {
         to: newUser.email,
         subject: 'Ihre Anmeldung auf fachentwickler',
         text: 'xxx',
-        html: verificationMail.html(newUser, token),
+        html: verificationMailView.html(newUser, token),
       };
 
       mailService.sendMail(mailOptions, res, () => {
@@ -166,7 +169,7 @@ module.exports = {
         to: newUser.email,
         subject: 'E-Mail Adresse ändern',
         text: 'xxx',
-        html: changeEmail.html(newUser, token),
+        html: changeEmailView.html(newUser, token),
       };
 
       mailService.sendMail(mailOptions, res, () => {
@@ -181,17 +184,17 @@ module.exports = {
       if (!token) {
         unauthorizedResponse('Verify user failed. Matching verification code not found.', res);
       } else {
-        this.findUser('_id', token._userId, res, async (userById) => {
+        findUser('_id', token._userId, res, async (userById) => {
           if (userById.active !== true) {
             userById.active = true;
-            this.saveUser(userById, res, (savedUser) => {
+            saveUser(userById, res, (savedUser) => {
               tokenService.deleteToken('code', token.code, res, () => {
                 okResponse('Verify user successful.', { user: savedUser }, res);
               });
             });
           } else if (userById.active === true && newEmail !== null) {
             userById.email = newEmail;
-            this.saveUser(userById, res, (savedUser) => {
+            saveUser(userById, res, (savedUser) => {
               tokenService.deleteToken('code', token.code, res, () => {
                 okResponse('Verify new user email successful.', { user: savedUser }, res);
               });
@@ -211,9 +214,9 @@ module.exports = {
       } else if (!token) {
         unauthorizedResponse('Change user password failed. Matching verification code not found.', res);
       } else {
-        this.findUser('_id', token._userId, res, (userById) => {
+        findUser('_id', token._userId, res, (userById) => {
           userById.password = newPassword;
-          this.saveUser(userById, res, (savedUser) => {
+          saveUser(userById, res, (savedUser) => {
             tokenService.deleteToken('code', token.code, res, () => {
               okResponse('Change user password successful.', { user: savedUser }, res);
             });
