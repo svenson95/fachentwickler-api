@@ -100,7 +100,7 @@ module.exports = {
           } else {
             userById.name = user.newName;
             this.saveUser(userById, res, (savedUser) => {
-              okResponse('Edit user name successful.', savedUser, res);
+              okResponse('Edit user name successful.', { user: savedUser }, res);
             });
           }
         });
@@ -115,7 +115,7 @@ module.exports = {
           } else {
             userById.name = user.newName;
             this.saveUser(userById, res, (savedUser) => {
-              okResponse('Edit user email successful.', savedUser, res);
+              okResponse('Edit user email successful.', { user: savedUser }, res);
             });
           }
         });
@@ -124,21 +124,21 @@ module.exports = {
       if (user.password) {
         userById.password = user.password;
         this.saveUser(userById, res, (savedUser) => {
-          okResponse('Edit user password successful.', savedUser, res);
+          okResponse('Edit user password successful.', { user: savedUser }, res);
         });
       }
 
       if (user.progress) {
         userById.progress = user.progress;
         this.saveUser(userById, res, (savedUser) => {
-          okResponse('Edit user progress successful.', savedUser, res);
+          okResponse('Edit user progress successful.', { user: savedUser }, res);
         });
       }
 
       if (user.theme) {
         userById.theme = user.theme;
         this.saveUser(userById, res, (savedUser) => {
-          okResponse('Edit user theme successful.', savedUser, res);
+          okResponse('Edit user theme successful.', { user: savedUser }, res);
         });
       }
     });
@@ -187,14 +187,14 @@ module.exports = {
             userById.active = true;
             this.saveUser(userById, res, (savedUser) => {
               tokenService.deleteToken('code', token.code, res, () => {
-                okResponse('Verify user successful.', savedUser, res);
+                okResponse('Verify user successful.', { user: savedUser }, res);
               });
             });
           } else if (userById.active === true && newEmail !== null) {
             userById.email = newEmail;
             this.saveUser(userById, res, (savedUser) => {
               tokenService.deleteToken('code', token.code, res, () => {
-                okResponse('Verify new user email successful.', savedUser, res);
+                okResponse('Verify new user email successful.', { user: savedUser }, res);
               });
             });
           } else if (userById.active === true) {
@@ -216,7 +216,7 @@ module.exports = {
           userById.password = newPassword;
           this.saveUser(userById, res, (savedUser) => {
             tokenService.deleteToken('code', token.code, res, () => {
-              okResponse('Change user password successful.', savedUser, res);
+              okResponse('Change user password successful.', { user: savedUser }, res);
             });
           });
         });
