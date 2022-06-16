@@ -3,88 +3,75 @@ const User = require('../models/user/User');
 
 const tokenService = require('./token-service');
 const mailService = require('./mail-service');
+
 const verificationMail = require('../views/verification-email');
 const changeEmail = require('../views/change-email');
 const changePassword = require('../views/change-password');
+
+const {
+  okResponse,
+  createdResponse,
+  unauthorizedResponse,
+  notFoundResponse,
+  conflictResponse,
+  internalErrorResponse,
+} = require('../helper/utils.js');
 
 module.exports = {
   findUser(key, value, res, callback) {
     User.findOne({ [key]: value }, (error, user) => {
       if (error) {
-        return res.status(500).json({
-          success: false,
-          code: 'UserNotFoundException',
-          message: "Find user by '" + key + ': ' + value + "' failed.",
-          error: error,
-        });
+        internalErrorResponse('Find user failed. Internal server error.', error, res);
+      } else if (!user) {
+        notFoundResponse('Find user failed. User not found.', res);
+      } else {
+        callback(user);
       }
-
-      callback(user);
     });
   },
 
   saveUser(user, res, callback) {
     User.save({ _id: user._id }, (error, user) => {
       if (error) {
-        return res.status(500).json({
-          success: false,
-          code: 'SaveUserException',
-          message: "Save user '" + user.name + "' failed.",
-          error: error,
-        });
+        internalErrorResponse('Save user failed. Internal server error.', error, res);
+      } else if (!user) {
+        notFoundResponse('Save user failed. User not found.', res);
+      } else {
+        callback(user);
       }
-
-      callback(user);
     });
   },
 
-  createUser(_user, res) {
-    this.findUser('name', _user.name, res, (userByName) => {
-      if (userByName) {
-        return res.status(409).json({
-          success: false,
-          code: 'UserNameExistException',
-          message: 'Username is already taken.',
-        });
-      }
-
-      this.findUser('email', _user.email, res, (userByEmail) => {
-        if (userByEmail) {
-          return res.status(409).json({
-            success: false,
-            code: 'UserEmailExistException',
-            message: 'E-Mail is already taken.',
-          });
-        }
-
-        const { name, password, role, email, theme } = _user;
-        const newUser = new User({ name, password, role, email, theme });
-        newUser.save((err, createdUser) => {
-          if (err) {
-            return res.status(400).json({
-              success: false,
-              code: 'SaveNewUserException',
-              message: 'Save new user failed.',
-              error: err,
+  createUser(_user, res, callback) {
+    User.findOne({ name: _user.name }, (nameError, userByName) => {
+      if (nameError) {
+        internalErrorResponse(`Create user failed (1). Internal server error.`, nameError, res);
+      } else if (userByName) {
+        conflictResponse(`Create user failed. Name is already taken.`, res);
+      } else {
+        User.findOne({ email: _user.email }, (emailError, userbyEmail) => {
+          if (emailError) {
+            internalErrorResponse(`Create user failed (2). Internal server error.`, emailError, res);
+          } else if (userbyEmail) {
+            conflictResponse(`Create user failed. E-Mail is already taken.`, res);
+          } else {
+            const { name, password, role, email, theme } = _user;
+            const newUser = new User({ name, password, role, email, theme });
+            newUser.save((saveError, savedUser) => {
+              if (createError) {
+                internalErrorResponse(`Create user failed (3). Internal server error.`, saveError, res);
+              } else {
+                callback(savedUser);
+              }
             });
           }
-
-          this.sendRegisterVerificationCode(createdUser, res);
         });
-      });
+      }
     });
   },
 
-  forgotPassword(email, res) {
+  forgotPassword(email, res, callback) {
     this.findUser('email', email, res, (userByEmail) => {
-      if (!userByEmail) {
-        return res.status(400).json({
-          success: false,
-          code: 'UserNotFoundException',
-          message: "User with e-mail '" + email + "' not found",
-        });
-      }
-
       tokenService.generateVerificationToken(userByEmail, res, (token) => {
         const mailOptions = {
           from: 'no-reply@example.com',
@@ -94,16 +81,9 @@ module.exports = {
           html: changePassword.html(userByEmail, token),
         };
 
-        mailService.sendMail(mailOptions, res, (response) => {
-          const jwtToken = tokenService.signToken(userByEmail);
-
-          return res.status(201).json({
-            success: true,
-            message:
-              'A verification link has been sent to ' + userByEmail.email + '. It will be expire after 24 hours.',
-            user: userByEmail,
-            token: jwtToken,
-          });
+        mailService.sendMail(mailOptions, res, () => {
+          tokenService.signToken(userByEmail);
+          callback();
         });
       });
     });
@@ -112,112 +92,59 @@ module.exports = {
   editUser(user, res) {
     this.findUser('_id', user._id, res, (userById) => {
       if (user.newName) {
-        this.findUser('name', user.newName, res, (userByNewName) => {
-          if (userByNewName) {
-            return res.status(409).json({
-              success: false,
-              code: 'UserNameExistException',
-              message: 'Username is already taken.',
+        User.findOne({ name: user.newName }, (nameError, userByName) => {
+          if (nameError) {
+            internalErrorResponse('Edit user name failed. Internal server error.');
+          } else if (userByName) {
+            conflictResponse('Edit user name failed. Name is already taken.', res);
+          } else {
+            userById.name = user.newName;
+            this.saveUser(userById, res, (savedUser) => {
+              okResponse('Edit user name successful.', savedUser, res);
             });
           }
-
-          userById.name = user.newName;
-          userById.save((saveError) => {
-            if (saveError) {
-              return res.status(500).json({
-                success: false,
-                code: 'SaveUserNameException',
-                message: 'Save changed user name failed.',
-                error: saveError,
-              });
-            }
-
-            return res.status(201).json({
-              success: true,
-              message: 'User name changed successfully',
-              user: userById,
-            });
-          });
         });
       }
 
       if (user.email) {
-        this.findUser('email', user.email, res, (userByEmail) => {
-          if (userByEmail) {
-            return res.status(409).json({
-              success: false,
-              code: 'UserEmailExistException',
-              message: 'E-Mail is already taken',
+        User.findOne({ email: user.email }, (emailError, userByEmail) => {
+          if (emailError) {
+            internalErrorResponse('Edit user email failed. Internal server error.');
+          } else if (userByEmail) {
+            conflictResponse('Edit user email failed. Name is already taken.', res);
+          } else {
+            userById.name = user.newName;
+            this.saveUser(userById, res, (savedUser) => {
+              okResponse('Edit user email successful.', savedUser, res);
             });
           }
-
-          this.sendChangeEmailVerificationCode(userById, res);
         });
       }
 
       if (user.password) {
         userById.password = user.password;
-        userById.save((saveError, savedUser) => {
-          if (saveError) {
-            res.status(500).json({
-              success: false,
-              code: 'SaveUserPasswordException',
-              message: 'Save changed user password failed.',
-              error: saveError,
-            });
-          }
-
-          res.status(201).json({
-            success: true,
-            message: 'User password changed successfully',
-            user: savedUser,
-          });
+        this.saveUser(userById, res, (savedUser) => {
+          okResponse('Edit user password successful.', savedUser, res);
         });
       }
 
       if (user.progress) {
         userById.progress = user.progress;
-        userById.save((saveError, savedUser) => {
-          if (saveError) {
-            return res.status(500).json({
-              success: false,
-              code: 'SaveUserProgressException',
-              message: 'Save changed user progress failed.',
-              error: saveError,
-            });
-          }
-
-          return res.status(201).json({
-            success: true,
-            message: 'User progress changed successfully',
-            user: savedUser,
-          });
+        this.saveUser(userById, res, (savedUser) => {
+          okResponse('Edit user progress successful.', savedUser, res);
         });
       }
 
       if (user.theme) {
         userById.theme = user.theme;
-        userById.save((saveError, savedUser) => {
-          if (saveError) {
-            return res.status(500).json({
-              success: false,
-              code: 'SaveUserProgressException',
-              message: 'Save changed user theme failed.',
-              error: saveError,
-            });
-          }
-
-          return res.status(201).json({
-            success: true,
-            message: 'User theme changed successfully',
-            user: savedUser,
-          });
+        this.saveUser(userById, res, (savedUser) => {
+          okResponse('Edit user theme successful.', savedUser, res);
         });
       }
     });
   },
 
-  sendRegisterVerificationCode(newUser, res) {
+  sendRegisterVerificationCode(newUser, res, callback) {
     tokenService.generateVerificationToken(newUser, res, (token) => {
       const mailOptions = {
         from: 'no-reply@example.com',
@@ -227,14 +154,8 @@ module.exports = {
         html: verificationMail.html(newUser, token),
       };
 
-      mailService.sendMail(mailOptions, res, (response) => {
-        const jwtToken = tokenService.signToken(newUser);
-
-        return res.status(201).json({
-          success: true,
-          message: 'Verification code has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
-          token: jwtToken,
-        });
+      mailService.sendMail(mailOptions, res, () => {
+        callback();
       });
     });
   },
@@ -249,101 +170,57 @@ module.exports = {
         html: changeEmail.html(newUser, token),
       };
 
-      mailService.sendMail(mailOptions, res, (response) => {
-        const jwtToken = tokenService.signToken(newUser);
-
-        return res.status(201).json({
-          success: true,
-          message: 'A verification link has been sent to ' + newUser.email + '. It will be expire after 24 hours.',
-          user: newUser,
-          token: jwtToken,
-        });
+      mailService.sendMail(mailOptions, res, () => {
+        tokenService.signToken(newUser);
+        createdResponse('Verification code successfully created & sent', null, res);
       });
     });
   },
 
   verifyUser(code, email, res, newEmail = null) {
-    VerificationToken.findOne({ code: code }, (err, token) => {
+    VerificationToken.findOne({ code: code }, (error, token) => {
       if (!token) {
-        return res.status(400).send({
-          success: false,
-          code: 'TokenNotFoundException',
-          message: 'Verification Token not found or may have expired.',
+        unauthorizedResponse('Verify user failed. Matching verification code not found.', res);
+      } else {
+        this.findUser('_id', token._userId, res, async (userById) => {
+          if (userById.active !== true) {
+            userById.active = true;
+            this.saveUser(userById, res, (savedUser) => {
+              tokenService.deleteToken('code', token.code, res, () => {
+                okResponse('Verify user successful.', savedUser, res);
+              });
+            });
+          } else if (userById.active === true && newEmail !== null) {
+            userById.email = newEmail;
+            this.saveUser(userById, res, (savedUser) => {
+              tokenService.deleteToken('code', token.code, res, () => {
+                okResponse('Verify new user email successful.', savedUser, res);
+              });
+            });
+          } else if (userById.active === true) {
+            conflictResponse('Verify user failed. User is already verified.', res);
+          }
         });
       }
-
-      this.findUser('_id', token._userId, res, async (userById) => {
-        if (userById.active !== true) {
-          userById.active = true;
-          this.saveUser(userById, res, (user) => {
-            tokenService.deleteToken('code', token.code, res, (response) => {
-              return res.status(200).send({
-                success: true,
-                message: 'User verified successfully.',
-                user: user,
-              });
-            });
-          });
-        } else if (userById.active === true && newEmail !== null) {
-          userById.email = newEmail;
-          this.saveUser(userById, res, (user) => {
-            tokenService.deleteToken('code', token.code, res, (response) => {
-              return res.status(200).send({
-                success: true,
-                message: 'User E-Mail changed successfully.',
-                user: user,
-              });
-            });
-          });
-        } else if (userById.active === true) {
-          return res.status(200).send({
-            success: false,
-            code: 'UserVerifiedException',
-            message: 'User is already verified.',
-            error: err,
-          });
-        }
-      });
     });
   },
 
   changePassword(code, newPassword, res) {
-    VerificationToken.findOne({ code: code }, (err, token) => {
-      if (!token) {
-        return res.status(400).send({
-          success: false,
-          code: 'TokenNotFoundException',
-          message: 'Verification Token not found or may have expired.',
-        });
-      } else if (err) {
-        return res.status(500).send({
-          success: false,
-          code: 'FindTokenException',
-          message: 'Error occured while find verification token.',
-          error: err,
-        });
-      }
-
-      this.findUser('_id', token._userId, res, async (userById) => {
-        userById.password = newPassword;
-        userById.save((saveError, savedUser) => {
-          if (saveError) {
-            res.status(500).json({
-              success: false,
-              code: 'SaveNewPasswordException',
-              message: 'Save changed user password failed.',
-              error: saveError,
-            });
-          }
-
-          tokenService.deleteToken('code', token.code, res, (response) => {
-            return res.status(200).send({
-              success: true,
-              message: 'User password changed successfully.',
+    VerificationToken.findOne({ code: code }, (error, token) => {
+      if (error) {
+        internalErrorResponse('Change user password failed. Internal server error.', error, res);
+      } else if (!token) {
+        unauthorizedResponse('Change user password failed. Matching verification code not found.', res);
+      } else {
+        this.findUser('_id', token._userId, res, (userById) => {
+          userById.password = newPassword;
+          this.saveUser(userById, res, (savedUser) => {
+            tokenService.deleteToken('code', token.code, res, () => {
+              okResponse('Change user password successful.', savedUser, res);
             });
           });
         });
-      });
+      }
     });
   },
 };

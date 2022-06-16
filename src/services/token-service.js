@@ -3,6 +3,8 @@ const crypto = require('crypto');
 
 const VerificationToken = require('../models/user/VerificationToken');
 
+const { internalErrorResponse } = require('../helper/utils.js');
+
 module.exports = {
   generateVerificationToken: function (user, res, callback) {
     const generatedCode = () => {
@@ -12,18 +14,14 @@ module.exports = {
       } while (code.length < 6);
       return code.slice(0, 6);
     };
-    const verificationToken = new VerificationToken({ _userId: user._id, code: generatedCode() });
-    verificationToken.save(function (err, response) {
-      if (err) {
-        return res.status(500).send({
-          success: false,
-          code: 'SaveVerificationTokenException',
-          message: 'Save verification token failed.',
-          error: err,
-        });
-      }
 
-      callback(verificationToken);
+    const verificationToken = new VerificationToken({ _userId: user._id, code: generatedCode() });
+    verificationToken.save(function (saveError, savedToken) {
+      if (saveError) {
+        internalErrorResponse('Save generated verification code failed.', saveError, res);
+      } else {
+        callback(savedToken);
+      }
     });
   },
 
@@ -41,17 +39,12 @@ module.exports = {
   },
 
   deleteToken: async function (key, value, res, callback) {
-    await VerificationToken.remove({ [key]: value }, (err, response) => {
-      if (err) {
-        return res.status(500).send({
-          success: false,
-          code: 'DeleteVerificationTokenException',
-          message: 'Delete verification token failed.',
-          error: err,
-        });
+    await VerificationToken.remove({ [key]: value }, (removeError, removedToken) => {
+      if (removeError) {
+        internalErrorResponse('Delete verification code failed. Internal server error.', removeError, res);
+      } else {
+        callback();
       }
-
-      callback(response);
     });
   },
 };
