@@ -95,8 +95,9 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }, null)
 // });
 
 userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }, null), (req, res) => {
-  userService.findUser('_id', req.body.userId, res, (user) => {
-    if (user.progress.includes(req.body.postId)) {
+  const { userId, postId } = req.body;
+  userService.findUser('_id', userId, res, (user) => {
+    if (user.progress.includes(postId)) {
       conflictResponse('Lesson is already marked as read.', res);
     } else {
       const newProgress = new Progress(req.body);
@@ -104,7 +105,7 @@ userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }
         if (createError) {
           internalErrorResponse('Save new progress failed.', createError, res);
         } else {
-          req.user.progress.push(req.body.postId);
+          req.user.progress.push(postId);
           req.user.save((saveError, saveUser) => {
             if (saveError) {
               internalErrorResponse('Save edited user progress failed.', saveError, res);

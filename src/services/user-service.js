@@ -52,19 +52,19 @@ module.exports = {
       } else if (userByName) {
         conflictResponse(`Create user failed. Name is already taken.`, res);
       } else {
-        User.findOne({ email: _user.email }, (emailError, userbyEmail) => {
+        User.findOne({ email: _user.email }, (emailError, userByEmail) => {
           if (emailError) {
             internalErrorResponse(`Create user failed (2). Internal server error.`, emailError, res);
-          } else if (userbyEmail) {
+          } else if (userByEmail) {
             conflictResponse(`Create user failed. E-Mail is already taken.`, res);
           } else {
             const { name, password, role, email, theme } = _user;
             const newUser = new User({ name, password, role, email, theme });
-            newUser.save((saveError, savedUser) => {
+            newUser.save((createError, createdUser) => {
               if (createError) {
-                internalErrorResponse(`Create user failed (3). Internal server error.`, saveError, res);
+                internalErrorResponse(`Create user failed (3). Internal server error.`, createError, res);
               } else {
-                callback(savedUser);
+                callback(createdUser);
               }
             });
           }
