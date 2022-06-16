@@ -18,7 +18,7 @@ const {
 userRouter.post('/register', (req, res) => {
   userService.createUser(req.body, res, (createdUser) => {
     userService.sendRegisterVerificationCode(createdUser, res, () => {
-      createdResponse('Create user successful.', null, res);
+      createdResponse('Create user successful.', { user: createUser }, res);
     });
   });
 });
