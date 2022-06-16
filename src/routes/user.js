@@ -15,6 +15,15 @@ const {
   internalErrorResponse,
 } = require('../helper/utils.js');
 
+userRouter.post('/login', passport.authenticate('local', { session: false }, null), (req, res) => {
+  if (req.isAuthenticated()) {
+    const token = tokenService.signToken(req.user);
+    okResponse('Logged in successfully.', { user: req.user, token }, res);
+  } else {
+    unauthorizedResponse('Invalid username or password.', res);
+  }
+});
+
 userRouter.post('/register', (req, res) => {
   userService.createUser(req.body, res, (createdUser) => {
     userService.sendRegisterVerificationCode(createdUser, res, () => {
@@ -31,7 +40,6 @@ userRouter.post('/forgot-password', (req, res) => {
 
 userRouter.get('/confirmation/:email/:code', (req, res) => {
   const { code, email } = req.params;
-
   userService.verifyUser(code, email, res);
 });
 
@@ -70,15 +78,6 @@ userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }, 
   }
 });
 
-userRouter.post('/login', passport.authenticate('local', { session: false }, null), (req, res) => {
-  if (req.isAuthenticated()) {
-    const token = tokenService.signToken(req.user);
-    okResponse('Logged in successfully.', { user: req.user, token }, res);
-  } else {
-    unauthorizedResponse('Invalid username or password.', res);
-  }
-});
-
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }, null), (req, res) => {
   okResponse('Successfully logged out', null, res);
 });
@@ -90,7 +89,7 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }, null)
 //       if (error) {
 //         internalErrorResponse('Find user with populated progress failed.', error, res);
 //       } else {
-//         okResponse('Find user progress successful.', user, res);
+//         okResponse('Find user progress successful.', { user }, res);
 //       }
 //     });
 // });

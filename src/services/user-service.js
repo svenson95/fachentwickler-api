@@ -82,7 +82,6 @@ module.exports = {
         };
 
         mailService.sendMail(mailOptions, res, () => {
-          tokenService.signToken(userByEmail);
           callback();
         });
       });
