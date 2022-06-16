@@ -27,7 +27,7 @@ userRouter.post('/login', passport.authenticate('local', { session: false }, nul
 userRouter.post('/register', (req, res) => {
   userService.createUser(req.body, res, (createdUser) => {
     userService.sendRegisterVerificationCode(createdUser, res, () => {
-      createdResponse('Create user successful.', { user: createUser }, res);
+      createdResponse('Create user successful.', { user: createdUser }, res);
     });
   });
 });

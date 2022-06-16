@@ -30,7 +30,7 @@ function findUser(key, value, res, callback) {
 }
 
 function saveUser(user, res, callback) {
-  User.save({ _id: user._id }, (error, user) => {
+  user.save({ _id: user._id }, (error, user) => {
     if (error) {
       internalErrorResponse('Save user failed. Internal server error.', error, res);
     } else if (!user) {

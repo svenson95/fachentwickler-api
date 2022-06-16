@@ -39,7 +39,7 @@ module.exports = {
   },
 
   deleteToken: async function (key, value, res, callback) {
-    await VerificationToken.remove({ [key]: value }, (removeError, removedToken) => {
+    await VerificationToken.deleteOne({ [key]: value }, (removeError, removedToken) => {
       if (removeError) {
         internalErrorResponse('Delete verification code failed. Internal server error.', removeError, res);
       } else {
