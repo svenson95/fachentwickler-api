@@ -1,4 +1,4 @@
-const mongoose = require('../../middleware/mongoose');
+const mongoose = require('mongoose');
 const Topic = require('../topics/Topics');
 const Post = require('../posts/Posts');
 

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const mongoose = require('../../middleware/mongoose');
+const mongoose = require('mongoose');
 const Progress = require('./Progress');
 
 const UserSchema = new mongoose.Schema({

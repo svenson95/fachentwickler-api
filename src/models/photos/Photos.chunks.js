@@ -1,4 +1,4 @@
-const mongoose = require('../../middleware/mongoose');
+const mongoose = require('mongoose');
 
 const PhotoChunks = mongoose.postimages.model(
   'photos.chunks',

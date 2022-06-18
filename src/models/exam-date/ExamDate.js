@@ -1,4 +1,4 @@
-const mongoose = require('../../middleware/mongoose');
+const mongoose = require('mongoose');
 
 const ExamDate = mongoose.schoolbase.model(
   'exam-dates',

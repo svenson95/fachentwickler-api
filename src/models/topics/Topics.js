@@ -1,4 +1,4 @@
-const mongoose = require('../../middleware/mongoose');
+const mongoose = require('mongoose');
 const Post = require('../posts/Posts');
 
 const Topics = mongoose.schoolbase.model(

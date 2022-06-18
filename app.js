@@ -3,10 +3,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
-const mongoose = require('./src/middleware/mongoose');
-// eslint-disable-next-line import/no-unresolved, import/extensions, node/no-missing-require
+
+const { MongoDBInterface } = require('./src/helper/mongodb.interface');
 const { info, error } = require('./src/helper/logging');
 
+const mongoDBInterface = new MongoDBInterface();
 const whitelist = ['http://206.189.53.246', 'http://localhost:4200'];
 
 async function start() {
@@ -38,7 +39,7 @@ async function start() {
       ],
     }),
   );
-  await mongoose.connectToDatabase();
+  await mongoDBInterface.connect();
 
   /* Routes */
   /* eslint-disable global-require */
@@ -59,4 +60,16 @@ async function start() {
 
 start().catch((err) => {
   error(err);
+});
+
+process.on('SIGINT', async () => {
+  info("Received system signal 'SIGINT'. Shutting down service...");
+  await mongoDBInterface.disconnect();
+  // exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  info("Received system signal 'SIGTERM'. Shutting down service...");
+  await mongoDBInterface.disconnect();
+  // exit(0);
 });
