@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer');
 
-const { internalErrorResponse } = require('../helper/utils.js');
+const { internalErrorResponse } = require('../helper/utils');
 
 module.exports = {
-  sendMail: function (content, res, callback) {
+  sendMail(content, res, callback) {
     const transporter = nodemailer.createTransport({
       port: 465, // true for 465, false for other ports
       host: 'smtp.gmail.com',
@@ -14,7 +14,7 @@ module.exports = {
       secure: true,
     });
 
-    transporter.sendMail(content, function (sendError, response) {
+    transporter.sendMail(content, (sendError) => {
       if (sendError) {
         internalErrorResponse('Send E-Mail failed. Internal server error.', sendError, res);
       } else {

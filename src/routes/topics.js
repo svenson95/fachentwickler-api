@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const Topics = require('../models/topics/Topics');
 
@@ -10,7 +11,7 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.json({
       message: 'GET all topics failed. Try it again',
-      error: error,
+      error,
     });
   }
 });
@@ -23,7 +24,7 @@ router.get('/:subject', async (req, res) => {
   } catch (error) {
     res.json({
       message: 'GET all topics for subject failed. Try it again',
-      error: error,
+      error,
     });
   }
 });
@@ -41,7 +42,7 @@ router.get('/:subject/populated', async (req, res) => {
   } catch (error) {
     res.json({
       message: 'GET all topics for subject failed. Try it again',
-      error: error,
+      error,
     });
   }
 });
@@ -58,12 +59,12 @@ router.post('/new', async (req, res) => {
     await topic.save();
     res.json({
       message: 'Topic successfully created',
-      topic: topic,
+      topic,
     });
   } catch (error) {
     res.json({
       message: 'POST new topic failed. Try it again',
-      error: error,
+      error,
     });
   }
 });
@@ -76,7 +77,7 @@ router.delete('/:topicId', async (req, res) => {
   } catch (error) {
     res.json({
       message: 'DELETE topic failed. Try it again',
-      error: error,
+      error,
     });
   }
 });

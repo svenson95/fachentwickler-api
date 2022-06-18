@@ -3,7 +3,7 @@ const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
 const mongoose = require('./mongoose');
 
-var storage = new GridFsStorage({
+const storage = new GridFsStorage({
   db: mongoose.postimages,
   options: { useNewUrlParser: true, useUnifiedTopology: true },
   file: (req, file) => {
@@ -21,22 +21,20 @@ var storage = new GridFsStorage({
         bucketName: 'photos',
         filename: file.originalname,
       };
-    } else if (files.indexOf(file.mimetype) !== -1) {
+    }
+    if (files.indexOf(file.mimetype) !== -1) {
       return {
         bucketName: 'file-elements',
         filename: file.originalname,
       };
-    } else {
-      if (files.indexOf(file.mimetype) === -1) {
-        return {
-          bucketName: file.mimetype,
-          filename: file.originalname,
-        };
-      }
     }
+    return {
+      bucketName: file.mimetype,
+      filename: file.originalname,
+    };
   },
 });
 
-var uploadFile = multer({ storage: storage }).single('file');
-var uploadFilesMiddleware = util.promisify(uploadFile);
+const uploadFile = multer({ storage }).single('file');
+const uploadFilesMiddleware = util.promisify(uploadFile);
 module.exports = uploadFilesMiddleware;

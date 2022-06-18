@@ -1,7 +1,7 @@
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
-const User = require('../models/user/User');
 const passport = require('passport');
+const User = require('../models/user/User');
 
 const tokenExtractor = (req) => {
   let token = null;
@@ -27,7 +27,7 @@ passport.use(
       User.findById({ _id: payload.sub }, (err, user) => {
         if (err) return done(err, false);
         if (user) return done(null, user);
-        else return done(null, false);
+        return done(null, false);
       });
     },
   ),
@@ -38,13 +38,15 @@ passport.use(
   'local',
   new LocalStrategy((name, password, done) => {
     User.findOne({ name }, (err, user) => {
-      if (err)
+      if (err) {
         // something went wrong with database
         return done(err);
-      if (!user)
+      }
+      if (!user) {
         // if no user exist
         return done(null, false);
-      user.comparePassword(password, done); // check if password is correct
+      }
+      return user.comparePassword(password, done); // check if password is correct
     });
   }),
 );

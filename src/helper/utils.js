@@ -2,32 +2,32 @@ const Posts = require('../models/posts/Posts');
 
 function sendResponse(response, statusCode, success, message, data, error) {
   response.status(statusCode).json({
-    success: success,
-    message: message,
-    data: data,
-    error: error,
+    success,
+    message,
+    data,
+    error,
   });
 }
 
 module.exports = {
   async allArticles() {
-    return await Posts.find({}, { elements: 0 });
+    return Posts.find({}, { elements: 0 });
   },
 
   currentDate() {
     const today = new Date();
-    let yyyy = today.getFullYear();
+    const yyyy = today.getFullYear();
     let mm = today.getMonth() + 1; // 0-11
     let dd = today.getDate();
 
     if (dd < 10) {
-      dd = '0' + dd;
+      dd = `0${dd}`;
     }
 
     if (mm < 10) {
-      mm = '0' + mm;
+      mm = `0${mm}`;
     }
-    return yyyy + '-' + mm + '-' + dd;
+    return `${yyyy}-${mm}-${dd}`;
   },
 
   okResponse(message, data, res) {

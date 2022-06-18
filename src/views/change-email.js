@@ -1,5 +1,5 @@
 module.exports = {
-  html: function (user, token) {
+  html(user, token) {
     return `
 <!doctype html>
 <html>

@@ -2,31 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
-const path = require('path');
+require('dotenv').config();
 const mongoose = require('./src/middleware/mongoose');
-require('dotenv/config');
-
-// const {
-//   changePostTypeValues,
-//   changePostImageURLs,
-//   changePostSchoolWeekProp,
-// } = require("./src/helper/posts");
-// const { changeSubjectDescription } = require("./src/helper/subjects");
-// const { changeNewsTypeValues } = require("./src/helper/news");
+// eslint-disable-next-line import/no-unresolved, import/extensions, node/no-missing-require
 
 const whitelist = ['http://206.189.53.246', 'http://localhost:4200'];
 
 async function start() {
-  console.info('Start service...');
+  console.log('Start service...');
 
   /* Middleware */
   const app = express();
-  // app.use(express.static(path.join(__dirname, '/frontend/build')));
   app.use(bodyParser.json());
   app.use(helmet());
   app.use(
     cors({
-      origin: function (origin, callback) {
+      origin(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
           callback(null, true);
         } else {
@@ -49,6 +40,7 @@ async function start() {
   await mongoose.connectToDatabase();
 
   /* Routes */
+  /* eslint-disable global-require */
   app.use('/posts', require('./src/routes/posts'));
   app.use('/topics', require('./src/routes/topics'));
   app.use('/subjects', require('./src/routes/subjects'));
@@ -65,5 +57,5 @@ async function start() {
 }
 
 start().catch((err) => {
-  console.error(err);
+  console.log(err);
 });

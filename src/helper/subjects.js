@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const Subjects = require('../models/subject/Subject');
 
 async function changeSubjectDescription(prop) {
@@ -6,7 +7,7 @@ async function changeSubjectDescription(prop) {
   subjects.forEach(async (subject) => {
     const updatedElements = subject.description;
 
-    updatedElements.forEach(function (element, index) {
+    updatedElements.forEach((element, index) => {
       if (element.type === 'title') this[index].type = 'TITLE';
       if (element.type === 'subtitle') this[index].type = 'SUBTITLE';
       if (element.type === 'text') this[index].type = 'TEXT';

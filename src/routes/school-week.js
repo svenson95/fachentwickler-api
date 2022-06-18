@@ -1,21 +1,22 @@
 const express = require('express');
+
 const router = express.Router();
 
-const { allArticles } = require('../helper/utils.js');
+const { allArticles } = require('../helper/utils');
 
 // Get specific school week by number
 router.get('/number/:number', async (req, res) => {
   try {
     const objects = await allArticles();
-    let week = { schoolWeek: Number(req.params.number), posts: [] };
+    const week = { schoolWeek: Number(req.params.number), posts: [] };
 
     objects.forEach((post) => {
-      if (req.params.number == post.schoolWeek) {
+      if (req.params.number === post.schoolWeek) {
         week.posts.push(post);
       }
     });
 
-    week.posts.sort(function (a, b) {
+    week.posts.sort((a, b) => {
       if (a.lessonDate > b.lessonDate) {
         return 1;
       }
@@ -29,7 +30,7 @@ router.get('/number/:number', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'Get school-week failed. Try again',
-      error: error,
+      error,
     });
   }
 });
@@ -53,7 +54,7 @@ router.get('/all', async (req, res) => {
         }
       }
     });
-    weeksArray.sort(function (a, b) {
+    weeksArray.sort((a, b) => {
       if (Number(a.schoolWeek) > Number(b.schoolWeek)) {
         return 1;
       }
@@ -63,7 +64,7 @@ router.get('/all', async (req, res) => {
       return 0;
     });
     weeksArray.forEach((week) => {
-      week.posts.sort(function (a, b) {
+      week.posts.sort((a, b) => {
         if (a.lessonDate > b.lessonDate) {
           return 1;
         }
@@ -77,7 +78,7 @@ router.get('/all', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'Get all school-weeks (history) failed. Try again',
-      error: error,
+      error,
     });
   }
 });

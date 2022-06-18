@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const News = require('../models/news/News');
 
 async function changeNewsTypeValues() {
@@ -6,7 +7,7 @@ async function changeNewsTypeValues() {
   news.forEach(async (article) => {
     const updatedElements = article.content;
 
-    updatedElements.forEach(function (element, index) {
+    updatedElements.forEach(function _(element, index) {
       if (element.type === 'title') this[index].type = 'TITLE';
       if (element.type === 'subtitle') this[index].type = 'SUBTITLE';
       if (element.type === 'text') this[index].type = 'TEXT';

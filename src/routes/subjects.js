@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const Subjects = require('../models/subject/Subject');
 const Posts = require('../models/posts/Posts');
@@ -51,7 +52,9 @@ router.get('/:subject/populated', async (req, res) => {
 router.get('/post/:postId', async (req, res) => {
   const post = await Posts.findOne({ _id: req.params.postId });
   const subject = await Subjects.findOne({ subject: post.subject });
-  const topic = subject.topics.find((topic) => topic.links.find((link) => link.postId === req.params.postId));
+  const topic = subject.topics.find((t) => {
+    t.links.find((link) => link.postId === req.params.postId);
+  });
   let subPost = topic.links.find((el) => el.postId === req.params.postId);
   if (!subPost) subPost = subject.tests.find((test) => test.postId === req.params.postId);
   subPost.subject = subject.subject;
@@ -67,12 +70,12 @@ router.post('/new', async (req, res) => {
     await subject.save();
     res.json({
       message: 'Subject successfully created',
-      subject: subject,
+      subject,
     });
   } catch (error) {
     res.json({
       message: 'POST new subject failed. Try it again',
-      error: error,
+      error,
     });
   }
 });
@@ -90,7 +93,10 @@ router.delete('/:subject', async (req, res) => {
 // Update a subject
 router.patch('/edit', async (req, res) => {
   try {
-    const updatedSubject = await Subjects.updateOne({ subject: req.body.subject }, { $set: req.body });
+    const updatedSubject = await Subjects.updateOne(
+      { subject: req.body.subject },
+      { $set: req.body },
+    );
     res.json(updatedSubject);
   } catch (error) {
     res.json({ message: error });

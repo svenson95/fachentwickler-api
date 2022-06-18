@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
 
@@ -7,7 +8,6 @@ router.get('/', async (req, res) => {
   const { query } = req.query;
 
   // Search for post-titles
-  if (query === '') return [];
   const posts = await Posts.find();
   const foundPosts = [];
   const searchText = query.toLowerCase();
@@ -27,15 +27,15 @@ router.get('/', async (req, res) => {
         }
 
         if (element.list) {
-          // element.list.find(listItem => {
-          //     if (
-          //         (listItem?.content.toLowerCase().includes(searchText) || listItem?.toLowerCase().includes(searchText))
-          //         &&
-          //         !foundPosts.includes(post)
-          //     ) {
-          //         pushToResults(subjects, post, foundPosts);
-          //     }
-          // })
+          // element.list.find((listItem) => {
+          //   if (
+          //     (listItem?.content.toLowerCase().includes(searchText) ||
+          //       listItem?.toLowerCase().includes(searchText)) &&
+          //     !foundPosts.includes(post)
+          //   ) {
+          //     pushToResults(subjects, post, foundPosts);
+          //   }
+          // });
         }
       } else if (element.type === 'table') {
         if (element.rows) {
@@ -50,7 +50,11 @@ router.get('/', async (req, res) => {
         }
       }
 
-      if (element.content && element.content.toLowerCase().includes(searchText) && !foundPosts.includes(post)) {
+      if (
+        element.content &&
+        element.content.toLowerCase().includes(searchText) &&
+        !foundPosts.includes(post)
+      ) {
         foundPosts.push(post);
         // pushToResults(subjects, post, foundPosts);
       }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const Posts = require('../models/posts/Posts');
 
 async function changePostTypeValues() {
@@ -6,7 +7,7 @@ async function changePostTypeValues() {
   posts.forEach(async (post) => {
     const updatedElements = post.elements;
 
-    updatedElements.forEach(function (element, index) {
+    updatedElements.forEach((element, index) => {
       if (element.type === 'title') this[index].type = 'TITLE';
       if (element.type === 'subtitle') this[index].type = 'SUBTITLE';
       if (element.type === 'text') this[index].type = 'TEXT';
@@ -42,9 +43,13 @@ async function changePostImageURLs() {
   posts.forEach(async (post) => {
     const updatedElements = post.elements;
 
-    updatedElements.forEach(function (element) {
+    updatedElements.forEach((element) => {
       if (element.type === 'IMAGE') {
-        element.content = element.content.substring(element.content.lastIndexOf('/') + 1, element.content.length);
+        // eslint-disable-next-line no-param-reassign
+        element.content = element.content.substring(
+          element.content.lastIndexOf('/') + 1,
+          element.content.length,
+        );
       }
     }, updatedElements);
 
@@ -64,7 +69,7 @@ async function changePostImageURLs() {
 async function changePostSchoolWeekProp() {
   const posts = await Posts.find();
 
-  posts.forEach(async function (post) {
+  posts.forEach(async (post) => {
     // await Posts.updateOne(
     //   { _id: post._id },
     //   {
@@ -77,3 +82,9 @@ async function changePostSchoolWeekProp() {
 
   console.log('finished');
 }
+
+module.exports = {
+  changePostTypeValues,
+  changePostImageURLs,
+  changePostSchoolWeekProp,
+};

@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const News = require('../models/news/News');
 
@@ -7,7 +8,7 @@ router.get('/latest', async (req, res) => {
   try {
     const news = await News.find({}, { content: 0 }).sort({ date: -1 }).limit(1);
 
-    news.sort(function (a, b) {
+    news.sort((a, b) => {
       if (a.date > b.date) {
         return -1;
       }
@@ -19,20 +20,20 @@ router.get('/latest', async (req, res) => {
 
     res.json(news);
   } catch (error) {
-    res.json({ error: error, message: 'Error occured while get latest news' });
+    res.json({ error, message: 'Error occured while get latest news' });
   }
 });
 
 // Get news list
 router.get('/all', async (req, res) => {
   try {
-    let { page, size } = req.query;
+    const { page, size } = req.query;
 
     const news = await News.find({}, { content: 0 })
       .sort({ date: -1 })
       .skip(page * Number(size))
       .limit(Number(size));
-    news.sort(function (a, b) {
+    news.sort((a, b) => {
       if (a.date > b.date) {
         return -1;
       }
@@ -43,7 +44,7 @@ router.get('/all', async (req, res) => {
     });
     res.json(news);
   } catch (error) {
-    res.json({ error: error, message: 'Error occured while get news list' });
+    res.json({ error, message: 'Error occured while get news list' });
   }
 });
 
@@ -61,9 +62,9 @@ router.get('/count', async (req, res) => {
 router.get('/:url', async (req, res) => {
   try {
     const newsObject = await News.findOne({ url: req.params.url });
-    return res.json(newsObject);
+    res.json(newsObject);
   } catch (error) {
-    res.json({ message: 'Failed get specific news article', error: error });
+    res.json({ message: 'Failed get specific news article', error });
   }
 });
 
@@ -91,7 +92,7 @@ router.post('/new', async (req, res) => {
       }
     });
   } catch (error) {
-    return res.json({ message: 'Save new news object failed', error: error });
+    res.json({ message: 'Save new news object failed', error });
   }
 });
 
@@ -103,7 +104,7 @@ router.delete('/:url', async (req, res) => {
   } catch (error) {
     return res.json({
       message: 'Error occured while removing news object',
-      error: error,
+      error,
     });
   }
 });
@@ -125,7 +126,7 @@ router.patch('/:url/edit', async (req, res) => {
     );
     return res.json(updatedNewsObject);
   } catch (error) {
-    return res.json({ message: 'Update news object failed', error: error });
+    return res.json({ message: 'Update news object failed', error });
   }
 });
 

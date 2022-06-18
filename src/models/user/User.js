@@ -1,5 +1,5 @@
-const mongoose = require('../../middleware/mongoose');
 const bcrypt = require('bcrypt');
+const mongoose = require('../../middleware/mongoose');
 const Progress = require('./Progress');
 
 const UserSchema = new mongoose.Schema({
@@ -33,11 +33,13 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// function(next) as arrow function not work, no access to 'this'
-UserSchema.pre('save', function (next) {
-  if (!this.isModified('password'))
+// eslint-disable-next-line consistent-return
+UserSchema.pre('save', function _(next) {
+  if (!this.isModified('password')) {
     // its already hashed
     return next();
+  }
+  // eslint-disable-next-line consistent-return
   bcrypt.hash(this.password, 10, (err, passwordHash) => {
     if (err) return next(err);
     this.password = passwordHash;
@@ -45,10 +47,10 @@ UserSchema.pre('save', function (next) {
   });
 });
 
-UserSchema.methods.comparePassword = function (password, callback) {
+UserSchema.methods.comparePassword = function _(password, callback) {
   bcrypt.compare(password, this.password, (err, isMatch) => {
     if (err) return callback(err);
-    else if (!isMatch) return callback(null, isMatch);
+    if (!isMatch) return callback(null, isMatch);
     return callback(null, this); // this is the user object
   });
 };

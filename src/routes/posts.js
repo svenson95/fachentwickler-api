@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const Posts = require('../models/posts/Posts');
 const Subjects = require('../models/subject/Subject');
@@ -18,14 +19,14 @@ router.get('/', async (req, res) => {
 
 // Get mulitple articles (exam-lessons) by id array - e. g. "id1,id2,id3"
 router.get('/multiple/(:arr)*', async (req, res) => {
-  let articleArray = [];
+  const articleArray = [];
   const articles = await allArticles();
   const articleIds = req.params[0].split(',');
 
-  for (let i = 0; i < articleIds.length; i++) {
-    let post = articles.find((post) => String(post._id) === articleIds[i]);
-    articleArray.push(post);
-  }
+  articleIds.forEach((article) => {
+    const posts = articles.find((post) => String(post._id) === article);
+    articleArray.push(posts);
+  });
 
   res.json(articleArray);
 });
@@ -33,7 +34,7 @@ router.get('/multiple/(:arr)*', async (req, res) => {
 // Get all article ids (sorted by lessonDate in ascending order)
 router.get('/all-lessons', async (req, res) => {
   const articles = await allArticles();
-  articles.sort(function (a, b) {
+  articles.sort((a, b) => {
     if (a.lessonDate < b.lessonDate) {
       return -1;
     }
@@ -69,7 +70,7 @@ router.post('/new', async (req, res) => {
         const subjectObject = subject.toObject();
         subjectObject.tests.push(post);
 
-        subjectObject.tests.sort(function (a, b) {
+        subjectObject.tests.sort((a, b) => {
           if (a.lessonDate < b.lessonDate) {
             return -1;
           }
@@ -80,10 +81,13 @@ router.post('/new', async (req, res) => {
         });
         subjectObject.tests = subjectObject.tests.map((el) => el._id);
 
-        const subjectToUpdate = await Subjects.updateOne({ subject: req.body.subject }, { $set: subjectObject });
+        const subjectToUpdate = await Subjects.updateOne(
+          { subject: req.body.subject },
+          { $set: subjectObject },
+        );
         res.json({
           message: 'Post successfully created',
-          post: post,
+          post,
           updatedSubject: subjectToUpdate,
         });
       });
@@ -94,7 +98,7 @@ router.post('/new', async (req, res) => {
         const topicObject = topic.toObject();
         topicObject.links.push(post);
 
-        topicObject.links.sort(function (a, b) {
+        topicObject.links.sort((a, b) => {
           if (a.lessonDate < b.lessonDate) {
             return -1;
           }
@@ -105,10 +109,13 @@ router.post('/new', async (req, res) => {
         });
         topicObject.links = topicObject.links.map((el) => el._id);
 
-        const topicToUpdate = await Topics.updateOne({ _id: req.body.topicId }, { $set: topicObject });
+        const topicToUpdate = await Topics.updateOne(
+          { _id: req.body.topicId },
+          { $set: topicObject },
+        );
         res.json({
           message: 'Post successfully created',
-          post: post,
+          post,
           updatedTopic: topicToUpdate,
         });
       });
@@ -118,13 +125,15 @@ router.post('/new', async (req, res) => {
 // Get post article
 router.get('/:topic/:title', async (req, res) => {
   try {
-    let urlString = req.params.topic + '/' + req.params.title;
-    const post = await Posts.findOne({ url: urlString }, { schoolWeek: 0 }).populate('topicId', { links: 0 });
+    const urlString = `${req.params.topic}/${req.params.title}`;
+    const post = await Posts.findOne({ url: urlString }, { schoolWeek: 0 }).populate('topicId', {
+      links: 0,
+    });
     res.json(post);
   } catch (error) {
     res.json({
       message: 'Post not found',
-      error: error,
+      error,
     });
   }
 });
@@ -132,13 +141,15 @@ router.get('/:topic/:title', async (req, res) => {
 // Get post quiz, index-cards or matching
 router.get('/:topic/:title/:type', async (req, res) => {
   try {
-    let urlString = req.params.topic + '/' + req.params.title + '/' + req.params.type;
-    const post = await Posts.findOne({ url: urlString }, { schoolWeek: 0 }).populate('topicId', { links: 0 });
+    const urlString = `${req.params.topic}/${req.params.title}/${req.params.type}`;
+    const post = await Posts.findOne({ url: urlString }, { schoolWeek: 0 }).populate('topicId', {
+      links: 0,
+    });
     res.json(post);
   } catch (error) {
     res.json({
       message: 'Post not found',
-      error: error,
+      error,
     });
   }
 });
@@ -152,7 +163,7 @@ router.get('/:postId', async (req, res) => {
   } catch (error) {
     res.json({
       message: 'Post not found (by id)',
-      error: error,
+      error,
     });
   }
 });
@@ -170,7 +181,7 @@ router.delete('/:postId/delete', async (req, res) => {
       topicObject.links.splice(index, 1);
     }
 
-    topicObject.links.sort(function (a, b) {
+    topicObject.links.sort((a, b) => {
       if (a.lessonDate < b.lessonDate) {
         return -1;
       }
@@ -180,17 +191,20 @@ router.delete('/:postId/delete', async (req, res) => {
       return 0;
     });
 
-    const topicToUpdate = await Topics.updateOne({ _id: removedPost.topicId }, { $set: topicObject });
+    const topicToUpdate = await Topics.updateOne(
+      { _id: removedPost.topicId },
+      { $set: topicObject },
+    );
 
     res.json({
       message: 'Post successfully removed',
-      removedPost: removedPost,
+      removedPost,
       updatedTopic: topicToUpdate,
     });
   } catch (error) {
     res.json({
       message: 'Delete post failed. Try again',
-      error: error,
+      error,
     });
   }
 });
@@ -211,7 +225,7 @@ router.patch('/:postId/edit', async (req, res) => {
           lastUpdate: currentDate(),
           schoolWeek: req.body.schoolWeek,
           elements: req.body.elements,
-          topicId: req.body.topicId, // we send the topicId to update the related topic object in database
+          topicId: req.body.topicId,
         },
       },
     );

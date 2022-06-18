@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const homeController = require('../controllers/images-home');
 const uploadController = require('../controllers/upload');
@@ -10,7 +11,7 @@ router.get('/', homeController.getHome);
 // Get all images with pagination params
 router.get('/all', async (req, res) => {
   try {
-    let { page, size, sort } = req.query;
+    const { page, size, sort } = req.query;
 
     const files = await PhotoFiles.find()
       .sort({ $natural: sort === 'ascending' ? 1 : -1 })
@@ -35,11 +36,11 @@ router.get('/count', async (req, res) => {
 
 // Get specific image by id
 router.get('/:id', async (req, res) => {
-  await PhotoFiles.findOne({ _id: req.params.id }, async (err, file) => {
-    if (err) {
+  await PhotoFiles.findOne({ _id: req.params.id }, async (filesError, file) => {
+    if (filesError) {
       res.status(500).json({
         message: 'Error occured while find file.',
-        error: err,
+        error: filesError,
       });
     } else if (!file) {
       res.status(400).json({
@@ -47,16 +48,16 @@ router.get('/:id', async (req, res) => {
         id: req.params.id,
       });
     }
-    await PhotoChunks.find({ files_id: req.params.id }, (err, chunks) => {
-      if (err) {
+    await PhotoChunks.find({ files_id: req.params.id }, (chunksError, chunks) => {
+      if (chunksError) {
         res.status(500).json({
           message: 'Error occured while find chunks.',
-          error: err,
+          error: chunksError,
         });
       } else {
         res.status(200).json({
-          file: file,
-          chunks: chunks,
+          file,
+          chunks,
         });
       }
     }).clone();

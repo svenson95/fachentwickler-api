@@ -1,4 +1,5 @@
 const express = require('express');
+
 const userRouter = express.Router();
 const passport = require('passport');
 require('../middleware/passport');
@@ -13,7 +14,7 @@ const {
   unauthorizedResponse,
   conflictResponse,
   internalErrorResponse,
-} = require('../helper/utils.js');
+} = require('../helper/utils');
 
 userRouter.post('/login', passport.authenticate('local', { session: false }, null), (req, res) => {
   if (req.isAuthenticated()) {
@@ -48,35 +49,47 @@ userRouter.get('/confirmation/:email/:code/:newEmail', (req, res) => {
   userService.verifyUser(code, email, res, newEmail);
 });
 
-userRouter.post('/resend-verification-code', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const { email } = req.body;
+userRouter.post(
+  '/resend-verification-code',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { email } = req.body;
 
-  userService.findUser('email', email, res, (userByEmail) => {
-    if (userByEmail.active) {
-      conflictResponse('Resend verification code failed. User is already verified.', res);
-    } else {
-      tokenService.deleteToken('_userId', userByEmail._id, res, () => {
-        userService.sendRegisterVerificationCode(userByEmail, res, () => {
-          createdResponse('Verification code successfully resent. Previous verification code deleted.', null, res);
+    userService.findUser('email', email, res, (userByEmail) => {
+      if (userByEmail.active) {
+        conflictResponse('Resend verification code failed. User is already verified.', res);
+      } else {
+        tokenService.deleteToken('_userId', userByEmail._id, res, () => {
+          userService.sendRegisterVerificationCode(userByEmail, res, () => {
+            createdResponse(
+              'Verification code successfully resent. Previous verification code deleted.',
+              null,
+              res,
+            );
+          });
         });
-      });
-    }
-  });
-});
+      }
+    });
+  },
+);
 
 userRouter.post('/change-password', (req, res) => {
   const { code, newPassword } = req.body;
   userService.changePassword(code, newPassword, res);
 });
 
-userRouter.patch('/edit-user', passport.authenticate('jwt', { session: false }, null), (req, res) => {
-  const user = req.body;
-  if (req.isAuthenticated()) {
-    userService.editUser(user, res);
-  } else {
-    unauthorizedResponse('Edit user failed. Not authorized.', res);
-  }
-});
+userRouter.patch(
+  '/edit-user',
+  passport.authenticate('jwt', { session: false }, null),
+  (req, res) => {
+    const user = req.body;
+    if (req.isAuthenticated()) {
+      userService.editUser(user, res);
+    } else {
+      unauthorizedResponse('Edit user failed. Not authorized.', res);
+    }
+  },
+);
 
 userRouter.get('/logout', passport.authenticate('jwt', { session: false }, null), (req, res) => {
   okResponse('Successfully logged out', null, res);
@@ -94,38 +107,50 @@ userRouter.get('/logout', passport.authenticate('jwt', { session: false }, null)
 //     });
 // });
 
-userRouter.post('/add-progress', passport.authenticate('jwt', { session: false }, null), (req, res) => {
-  const { userId, postId } = req.body;
-  userService.findUser('_id', userId, res, (user) => {
-    if (user.progress.includes(postId)) {
-      conflictResponse('Lesson is already marked as read.', res);
-    } else {
-      const newProgress = new Progress(req.body);
-      newProgress.save((createError, createProgress) => {
-        if (createError) {
-          internalErrorResponse('Save new progress failed.', createError, res);
-        } else {
-          req.user.progress.push(postId);
-          req.user.save((saveError, saveUser) => {
-            if (saveError) {
-              internalErrorResponse('Save edited user progress failed.', saveError, res);
-            } else {
-              okResponse('Added user progress successfully.', { progress: createProgress, user: saveUser }, res);
-            }
-          });
-        }
-      });
-    }
-  });
-});
+userRouter.post(
+  '/add-progress',
+  passport.authenticate('jwt', { session: false }, null),
+  (req, res) => {
+    const { userId, postId } = req.body;
+    userService.findUser('_id', userId, res, (user) => {
+      if (user.progress.includes(postId)) {
+        conflictResponse('Lesson is already marked as read.', res);
+      } else {
+        const newProgress = new Progress(req.body);
+        newProgress.save((createError, createProgress) => {
+          if (createError) {
+            internalErrorResponse('Save new progress failed.', createError, res);
+          } else {
+            req.user.progress.push(postId);
+            req.user.save((saveError, saveUser) => {
+              if (saveError) {
+                internalErrorResponse('Save edited user progress failed.', saveError, res);
+              } else {
+                okResponse(
+                  'Added user progress successfully.',
+                  { progress: createProgress, user: saveUser },
+                  res,
+                );
+              }
+            });
+          }
+        });
+      }
+    });
+  },
+);
 
-userRouter.get('/authenticated', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  if (req.isAuthenticated()) {
-    const token = tokenService.signToken(req.user);
-    okResponse('Authenticated.', { user: req.user, token }, res);
-  } else {
-    unauthorizedResponse('Not Authorized.', res);
-  }
-});
+userRouter.get(
+  '/authenticated',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    if (req.isAuthenticated()) {
+      const token = tokenService.signToken(req.user);
+      okResponse('Authenticated.', { user: req.user, token }, res);
+    } else {
+      unauthorizedResponse('Not Authorized.', res);
+    }
+  },
+);
 
 module.exports = userRouter;
