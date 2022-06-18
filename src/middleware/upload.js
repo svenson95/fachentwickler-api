@@ -1,9 +1,9 @@
 const util = require('util');
 const multer = require('multer');
-const GridFsStorage = require('multer-gridfs-storage');
+const mongoose = require('./mongoose');
 
 var storage = new GridFsStorage({
-  url: process.env.DB_CONNECTION_POST_IMAGES,
+  db: mongoose.postimages,
   options: { useNewUrlParser: true, useUnifiedTopology: true },
   file: (req, file) => {
     const images = ['image/png', 'image/jpeg', 'image/gif'];

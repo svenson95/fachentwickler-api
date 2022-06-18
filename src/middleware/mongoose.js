@@ -1,37 +1,38 @@
 const mongoose = require('mongoose');
 
 mongoose.connectToDatabase = () => {
-  console.info(`Connecting to database...`);
+  return new Promise((resolve, reject) => {
+    console.info(`Connecting to database...`);
 
-  const school_base = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOL_BASE, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  });
-  const school_users = mongoose.createConnection(process.env.DB_CONNECTION_SCHOOL_USERS, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  });
-  const post_images = mongoose.createConnection(process.env.DB_CONNECTION_POST_IMAGES, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  });
+    const connection = mongoose.createConnection(process.env.DB_CONNECTION);
 
-  const connections = [school_base, school_users, post_images];
-  connections.forEach((c) => {
-    c.once('connected', () => {
-      console.info(`Connected to database: ${c.name}`);
-    });
-    c.once('reconnected', () => {
-      console.info(`Reconnected to database: ${c.name}`);
-    });
-    c.on('disconnected', () => {
-      console.warn(`Disconnected from database: ${c.name}`);
-    });
-  });
+    connection
+      .once('connected', () => {
+        console.info(`Connected to database: ${connection.host}`);
 
-  mongoose.schoolbase = school_base;
-  mongoose.schoolusers = school_users;
-  mongoose.schoolfiles = post_images;
+        const options = {
+          //ensures connections to the same databases are cached
+          useCache: true,
+          //remove event listeners from the main connection
+          noListener: true,
+        };
+
+        mongoose.schoolbase = connection.useDb('school-base');
+        mongoose.schoolusers = connection.useDb('school-users');
+        mongoose.postimages = connection.useDb('post-images');
+
+        resolve();
+      })
+      .once('reconnected', () => {
+        console.info(`Reconnected to database: ${connection.host}`);
+      })
+      .on('disconnected', () => {
+        console.warn(`Disconnected from database: ${connection.host}`);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
 };
 
 module.exports = mongoose;

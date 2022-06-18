@@ -1,6 +1,6 @@
 const mongoose = require('../../middleware/mongoose');
 
-const PhotoFiles = mongoose.schoolfiles.model(
+const PhotoFiles = mongoose.postimages.model(
   'photos.files',
   new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, required: true },

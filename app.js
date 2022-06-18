@@ -46,7 +46,7 @@ async function start() {
       ],
     }),
   );
-  mongoose.connectToDatabase();
+  await mongoose.connectToDatabase();
 
   /* Routes */
   app.use('/posts', require('./src/routes/posts'));
@@ -59,8 +59,8 @@ async function start() {
   app.use('/school-week', require('./src/routes/school-week'));
   app.use('/news', require('./src/routes/news'));
 
-  app.listen(3000, async () => {
-    await console.log('Listening on port 3000.');
+  app.listen(3000, () => {
+    console.log('Listening on port 3000.');
   });
 }
 
