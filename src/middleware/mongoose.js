@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const { info, warn, error } = require('../helper/logging');
 
 function connectToDatabase() {
   return new Promise((resolve, reject) => {
-    console.info('Connecting to database...');
+    info('Connecting to database...');
 
     const connection = mongoose.createConnection(process.env.DB_CONNECTION_STRING, {
       user: process.env.DB_USER,
@@ -12,7 +13,7 @@ function connectToDatabase() {
 
     connection
       .once('connected', () => {
-        console.info(`Connected to database: ${connection.host}`);
+        info(`Connected to database: ${connection.host}`);
 
         const options = {
           // ensures connections to the same databases are cached
@@ -28,13 +29,13 @@ function connectToDatabase() {
         resolve();
       })
       .once('reconnected', () => {
-        console.info(`Reconnected to database: ${connection.host}`);
+        info(`Reconnected to database: ${connection.host}`);
       })
       .on('disconnected', () => {
-        console.warn(`Disconnected from database: ${connection.host}`);
+        warn(`Disconnected from database: ${connection.host}`);
       })
       .on('error', (err) => {
-        console.error(err);
+        error(err);
         reject(err);
       });
   });

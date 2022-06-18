@@ -5,11 +5,12 @@ const helmet = require('helmet');
 require('dotenv').config();
 const mongoose = require('./src/middleware/mongoose');
 // eslint-disable-next-line import/no-unresolved, import/extensions, node/no-missing-require
+const { info, error } = require('./src/helper/logging');
 
 const whitelist = ['http://206.189.53.246', 'http://localhost:4200'];
 
 async function start() {
-  console.log('Start service...');
+  info('Start service...');
 
   /* Middleware */
   const app = express();
@@ -52,10 +53,10 @@ async function start() {
   app.use('/news', require('./src/routes/news'));
 
   app.listen(3000, () => {
-    console.log('Listening on port 3000.');
+    info('Listening on port 3000.');
   });
 }
 
 start().catch((err) => {
-  console.log(err);
+  error(err);
 });
