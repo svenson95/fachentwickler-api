@@ -28,7 +28,7 @@ router.post('/add', async (req, res) => {
 router.delete('/:subject/:topic/:post*', async (req, res) => {
   // const urlString = req.params.topic + "/" + req.params.post;
   // try {
-  //     const removedPost = await Posts.remove({ "url": urlString });
+  //     const removedPost = await Posts.deleteOne({ "url": urlString });
   //     res.json({ message: "Post successfully removed", post: removedPost });
   // } catch (error) {
   //     res.json({ message: "Delete post failed", error: error });

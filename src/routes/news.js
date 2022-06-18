@@ -98,7 +98,7 @@ router.post('/new', async (req, res) => {
 // Delete specific news object
 router.delete('/:url', async (req, res) => {
   try {
-    const removedNews = await News.remove({ url: req.params.url });
+    const removedNews = await News.deleteOne({ url: req.params.url });
     return res.json(removedNews);
   } catch (error) {
     return res.json({
