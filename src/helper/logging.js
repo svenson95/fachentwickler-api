@@ -7,7 +7,15 @@
 // }
 
 function now() {
-  return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+  return new Date().toLocaleString('de-DE', {
+    timeZone: 'Europe/Berlin',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 }
 
 function printConsoleMessage(level, consoleMessage) {
