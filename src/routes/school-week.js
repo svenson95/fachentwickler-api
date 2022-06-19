@@ -11,7 +11,7 @@ router.get('/number/:number', async (req, res) => {
     const week = { schoolWeek: Number(req.params.number), posts: [] };
 
     objects.forEach((post) => {
-      if (req.params.number === post.schoolWeek) {
+      if (req.params.number == post.schoolWeek) {
         week.posts.push(post);
       }
     });
