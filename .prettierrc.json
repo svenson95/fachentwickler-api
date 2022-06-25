@@ -3,9 +3,9 @@
   "singleQuote": true,
   "overrides": [
     {
-      "files": ["**/*.html", "**/*.js"],
+      "files": ["*.html", "*.ts"],
       "options": {
-        "printWidth": 100
+        "printWidth": 120
       }
     }
   ]
