@@ -18,7 +18,9 @@ export class MongoDBInterface {
         info(`Reconnected to database '${this.connection.host}'.`);
       })
       .on('disconnected', () => {
-        warn(`Disconnected from database '${this.connection.host}'.`);
+      })
+      .on('error', (err) => {
+        warn(`Connection error: '${err}'`);
       });
 
     return new Promise((resolve, reject) => {

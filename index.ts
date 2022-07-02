@@ -74,11 +74,11 @@ start().catch((err) => {
 process.on('SIGINT', () => {
   info("Received system signal 'SIGINT'. Shutting down service...");
   mongoDBInterface.disconnect();
-  // exit(0);
+  process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   info("Received system signal 'SIGTERM'. Shutting down service...");
   mongoDBInterface.disconnect();
-  // exit(0);
+  process.exit(0);
 });
