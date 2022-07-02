@@ -204,7 +204,6 @@ export function verifyUser(code: string, email: string, res: Response, newEmail:
             });
           });
         } else if (userById.active === true && newEmail !== null) {
-          console.log('right case');
           const editedUser = userById;
           editedUser.email = newEmail;
           saveUser(editedUser, res, (savedUser: UserData) => {

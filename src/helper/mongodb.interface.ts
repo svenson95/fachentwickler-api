@@ -12,12 +12,13 @@ export class MongoDBInterface {
 
     this.connection
       .once('connected', () => {
-        info(`Connected to database '${this.connection.host}'.`);
+        info(`Connected to database '${this.connection.host}'`);
       })
       .once('reconnected', () => {
-        info(`Reconnected to database '${this.connection.host}'.`);
+        info(`Reconnected to database '${this.connection.host}'`);
       })
       .on('disconnected', () => {
+        warn(`Disconnected from database '${this.connection.host}'`);
       })
       .on('error', (err) => {
         warn(`Connection error: '${err}'`);

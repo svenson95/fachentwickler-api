@@ -8,7 +8,6 @@ const subjectsRouter = express.Router();
 
 subjectsRouter.get('/:subject/populated', (req: Request, res: Response) => {
   const { subject } = req.params;
-  console.log(subject);
   Subjects.findOne({ subject: subject })
     .populate({ path: 'tests', select: '_id url lessonDate title type' })
     .populate({
