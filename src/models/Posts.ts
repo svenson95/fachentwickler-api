@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { schoolbase } from '../helper/mongodb.interface';
-import { PostElementType } from '../types/post';
 
 const PostSchema = new mongoose.Schema({
   url: { type: String, required: true },
