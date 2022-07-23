@@ -19,6 +19,7 @@ export async function changeSubjectDescriptionElementTypes() {
     //   if (element.type === 'hint') this[index].type = 'HINT';
     //   if (element.type === 'answer-group') this[index].type = 'ANSWER_GROUP';
     //   if (element.type === 'table-group') this[index].type = 'TABLE_GROUP';
+    //   if (element.type === 'youtube-video') this[index].type = 'YOUTUBE_VIDEO';
     // }, updatedElements);
 
     console.log(subject);
