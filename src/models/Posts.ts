@@ -10,16 +10,8 @@ const PostSchema = new mongoose.Schema({
   type: { type: String, required: true },
   lessonDate: { type: String, required: true },
   lastUpdate: { type: String, required: true },
-  schoolWeek: { type: Number, required: true },
-  elements: [
-    {
-      type: {
-        type: String,
-        enum: PostElementType,
-        required: true,
-      },
-    },
-  ],
+  schoolWeek: { type: Number },
+  elements: { type: Array },
 });
 
 const Posts = schoolbase.model('subjects-posts', PostSchema);
