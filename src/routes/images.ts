@@ -50,7 +50,7 @@ imagesRouter.get('/:id', (req: Request, res: Response) => {
           notFoundResponse('Photo chunks not found.', res);
         } else {
           res.status(200).json({
-            files: filesResult,
+            file: filesResult,
             chunks: chunksResult,
           });
         }
@@ -74,7 +74,7 @@ imagesRouter.delete('/:id/delete', (req: Request, res: Response) => {
             'Image successfully removed.',
             {
               chunks: chunksResult,
-              files: filesResult,
+              file: filesResult,
             },
             res,
           );
