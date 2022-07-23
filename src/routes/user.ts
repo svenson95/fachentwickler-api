@@ -31,9 +31,9 @@ userRouter.post(
   (req: Request, res: Response) => {
     if (req.isAuthenticated()) {
       const token = signToken(req.user);
-      okResponse('Logged in successfully.', { user: req.user, token }, res);
+      okResponse('Successfully logged in', { user: req.user, token }, res);
     } else {
-      unauthorizedResponse('Invalid username or password.', res);
+      unauthorizedResponse('Invalid username or password', res);
     }
   },
 );
@@ -41,7 +41,7 @@ userRouter.post(
 userRouter.post('/register', (req: Request, res: Response) => {
   createUser(req.body, res, (createdUser) => {
     sendRegisterVerificationCode(createdUser, res, () => {
-      createdResponse('Create user successful.', { user: createdUser }, res);
+      createdResponse('User successfully created', { user: createdUser }, res);
     });
   });
 });
@@ -64,11 +64,11 @@ userRouter.post(
 
     findUser('email', email, res, (userByEmail) => {
       if (userByEmail.active) {
-        conflictResponse('Resend verification code failed. User is already verified.', res);
+        conflictResponse('Resend verification code failed, user is already verified', res);
       } else {
         deleteToken('_userId', userByEmail._id, res, () => {
           sendRegisterVerificationCode(userByEmail, res, () => {
-            createdResponse('Verification code successfully resent. Previous verification code deleted.', null, res);
+            createdResponse('Verification code successfully resent, previous verification code deleted', null, res);
           });
         });
       }
@@ -78,7 +78,7 @@ userRouter.post(
 
 userRouter.post('/forgot-password', (req: Request, res: Response) => {
   forgotPassword(req.body.email, res, () => {
-    createdResponse('Verification code sent.', null, res);
+    createdResponse('Verification code sent', null, res);
   });
 });
 
@@ -95,7 +95,7 @@ userRouter.patch(
     if (req.isAuthenticated()) {
       editUser(user, res);
     } else {
-      unauthorizedResponse('Edit user failed. Not authorized.', res);
+      unauthorizedResponse('Edit user failed, not authorized', res);
     }
   },
 );
@@ -115,19 +115,19 @@ userRouter.post(
     const { userId, postId } = req.body;
     findUser('_id', userId, res, (user: any) => {
       if (user.progress.includes(postId)) {
-        conflictResponse('Lesson is already marked as read.', res);
+        conflictResponse('Lesson is already marked as read', res);
       } else {
         const newProgress = new Progress(req.body);
         newProgress.save((progressError: CallbackError, createProgress: any) => {
           if (progressError) {
-            internalErrorResponse('Save new progress failed.', progressError, res);
+            internalErrorResponse('Save new progress failed', progressError, res);
           } else {
             user.progress.push(postId);
             user.save((userError: CallbackError, saveUser: any) => {
               if (userError) {
-                internalErrorResponse('Save edited user progress failed.', userError, res);
+                internalErrorResponse('Save edited user progress failed', userError, res);
               } else {
-                okResponse('Added user progress successfully.', { progress: createProgress, user: saveUser }, res);
+                okResponse('Added user progress successfully', { progress: createProgress, user: saveUser }, res);
               }
             });
           }
@@ -143,9 +143,9 @@ userRouter.get(
   async (req: Request, res: Response) => {
     if (req.isAuthenticated()) {
       const token = signToken(req.user);
-      okResponse('Authenticated.', { user: req.user, token }, res);
+      okResponse('Successfully authenticated', { user: req.user, token }, res);
     } else {
-      unauthorizedResponse('Not Authorized.', res);
+      unauthorizedResponse('Authorization failed', res);
     }
   },
 );

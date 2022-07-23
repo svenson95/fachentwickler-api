@@ -7,7 +7,7 @@ const uploadFile = async (req: Request, res: Response) => {
   if (req.file === undefined) {
     return res.status(400).send('You must select a file.');
   } else {
-    return res.json({ message: 'Image successfully uplaoded', file: req.file });
+    return res.json({ message: 'Image successfully uploaded', file: req.file });
   }
 };
 
